@@ -27,3 +27,6 @@
 *.exe
 *.out
 *.app
+
+# Merde de mac
+*.DS_Store
