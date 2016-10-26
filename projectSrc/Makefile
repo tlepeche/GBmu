@@ -6,22 +6,30 @@
 #    By: barbare <barbare@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/10/26 12:39:41 by barbare           #+#    #+#              #
-#    Updated: 2016/10/26 12:46:13 by barbare          ###   ########.fr        #
+#    Updated: 2016/10/26 13:53:37 by barbare          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME=GBmu
 
 # Src for debugger
-SRCS +=	src/db/debugger.cpp
+DIR_DB := src/db/
+SRCS_DB  += debugger.cpp
+
+OBJS = $(patsubst $(DIR_DB)/%.c, obj/%.o,$(SRCS))
 
 # Src for gameboy
-SRCS += src/gb/gameboy.cpp
+DIR_GB := src/db/
+SRCS_GB  += src/gb/gameboy.cpp
+
+OBJS += $(patsubst $(DIR_GB)/%.c, obj/%.o,$(SRCS))
 
 # Srcs common
-SRCS += src/main.cpp
+DIR_COM := src/db/
+SRCS_COM += src/main.cpp
 
-OBJS = $(SRCS:.cpp=.o)
+OBJS += $(patsubst $(DIR_COM)/%.c, obj/%.o,$(SRCS))
+
 
 RM = rm -f
 
