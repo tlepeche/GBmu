@@ -30,3 +30,4 @@
 
 # Merde de mac
 *.DS_Store
+obj/
