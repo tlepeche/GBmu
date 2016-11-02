@@ -64,3 +64,19 @@ void		Rom::reset(void)
 {
 	this->_pos = 0;
 }
+
+irom		Rom::getType(void)
+{
+	irom	info;
+	char	flag_cgb;
+
+	flag_cgb = (data[0x0143] & 0xFF)
+	if (flag_cgb == 0x00 || flag_cgb == 0x80)
+		info.type = GB;
+	else if (flag_cgb == 0xC0)
+		info.type = GBC;
+	info.cartridge = (data[0x0147]);
+	info.romSize = (data[0x0148]);
+	info.eramSize = (data[0x0149]);
+	return info;
+}
