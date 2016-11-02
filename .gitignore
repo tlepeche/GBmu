@@ -1,3 +1,6 @@
+# Qt 
+*.stash
+
 # Compiled Object files
 *.slo
 *.lo
