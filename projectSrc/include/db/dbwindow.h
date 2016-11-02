@@ -4,8 +4,10 @@
 #include <QDialog>
 
 namespace Ui {
-class DbWindow;
+	class DbWindow;
 }
+
+class QTableWidget;
 
 class DbWindow : public QDialog
 {
@@ -15,6 +17,11 @@ public:
     explicit DbWindow(QWidget *parent = 0);
     ~DbWindow();
 
+	QTableWidget *tableRegisters;
+	QTableWidget *tableOtherRegisters;
+	QTableWidget *tableVideoRegisters;
+	QTableWidget *tableDisassembler;
+	QTableWidget *tableMemory;
 private:
     Ui::DbWindow *ui;
 };

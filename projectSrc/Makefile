@@ -646,6 +646,9 @@ obj/main.o: src/main.cpp include/gb/gui/openglwindow.h \
 		/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers/qwindow.h \
 		/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers/QOpenGLFunctions \
 		/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers/qopenglfunctions.h \
+		include/db/dbwindow.h \
+		/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/QDialog \
+		/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/qdialog.h \
 		/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/QApplication \
 		/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/qapplication.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/main.o src/main.cpp

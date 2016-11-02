@@ -6,6 +6,12 @@ DbWindow::DbWindow(QWidget *parent) :
     ui(new Ui::DbWindow)
 {
     ui->setupUi(this);
+
+	tableRegisters		= this->findChild<QTableWidget*>("tableRegisters");
+	tableOtherRegisters	= this->findChild<QTableWidget*>("tableOtherRegisters");
+	tableVideoRegisters	= this->findChild<QTableWidget*>("tableVideoRegisters");
+	tableDisassembler	= this->findChild<QTableWidget*>("tableDisassembler");
+	tableMemory			= this->findChild<QTableWidget*>("tableMemory");
 }
 
 DbWindow::~DbWindow()
