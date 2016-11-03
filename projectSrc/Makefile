@@ -659,7 +659,3 @@ uninstall:  FORCE
 
 FORCE:
 
-<<<<<<< HEAD
-=======
-.PHONY: clean fclean re all
->>>>>>> Makefile fix
