@@ -1,6 +1,8 @@
 #ifndef _TIMER_HPP
 # define _TIMER_HPP
 
+#include <iostream>
+#include <array>
 
 class Timer
 {
@@ -13,7 +15,7 @@ class Timer
 		Timer &Instance();
 
 	private:
-		Timer(void) : _cycles(0);
+		Timer(void);
 		~Timer(void);
 
 	/*
@@ -24,7 +26,7 @@ class Timer
 	public:
 		void reset();
 		void setCycleAcc(unsigned int cycle);
-		void setFrequency(const std::array<int, 4> arrFrequency);
+		void setFrequency(std::array<int, 4> arrFrequency);
 		void setCycleTotal(unsigned int cycle);
 
 	/*
@@ -45,7 +47,7 @@ class Timer
 		void sleep(unsigned char ms);
 
 	private:
-		unsigned int _getCycleOpcodeTotal(void)
+		unsigned int _getCycleOpcodeTotal(void);
 
 	/*
 	** ################################################################
@@ -55,8 +57,7 @@ class Timer
 	private:
 		std::array<int, 4> _arrayFrequency;
 		unsigned int _cycles;
-		const unsigned int _cyclesTotal;
-
-}
+		unsigned int _cyclesTotal;
+};
 
 #endif
