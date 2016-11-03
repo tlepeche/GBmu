@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>702</width>
-    <height>417</height>
+    <width>709</width>
+    <height>460</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -65,22 +65,240 @@
   <widget class="QTableWidget" name="tableVideoRegisters">
    <property name="geometry">
     <rect>
-     <x>420</x>
+     <x>410</x>
      <y>70</y>
-     <width>121</width>
-     <height>331</height>
+     <width>131</width>
+     <height>341</height>
     </rect>
    </property>
+   <property name="verticalScrollBarPolicy">
+    <enum>Qt::ScrollBarAlwaysOff</enum>
+   </property>
+   <property name="horizontalScrollBarPolicy">
+    <enum>Qt::ScrollBarAlwaysOff</enum>
+   </property>
+   <property name="gridStyle">
+    <enum>Qt::DotLine</enum>
+   </property>
+   <attribute name="horizontalHeaderDefaultSectionSize">
+    <number>45</number>
+   </attribute>
+   <attribute name="verticalHeaderDefaultSectionSize">
+    <number>20</number>
+   </attribute>
+   <row>
+    <property name="text">
+     <string>LCDC</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>STAT</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>SCY</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>SCX</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>LY</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>LYC</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>DMA</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>BGP</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>OBP0</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>OBP1</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>WY</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>WX</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>BCPS</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>BCPD</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>OCPS</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>OCPD</string>
+    </property>
+   </row>
+   <column>
+    <property name="text">
+     <string>Addr</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Value</string>
+    </property>
+   </column>
   </widget>
   <widget class="QTableWidget" name="tableOtherRegisters">
    <property name="geometry">
     <rect>
-     <x>560</x>
+     <x>550</x>
      <y>70</y>
-     <width>121</width>
-     <height>331</height>
+     <width>151</width>
+     <height>361</height>
     </rect>
    </property>
+   <property name="verticalScrollBarPolicy">
+    <enum>Qt::ScrollBarAlwaysOff</enum>
+   </property>
+   <property name="horizontalScrollBarPolicy">
+    <enum>Qt::ScrollBarAlwaysOff</enum>
+   </property>
+   <property name="gridStyle">
+    <enum>Qt::DotLine</enum>
+   </property>
+   <attribute name="horizontalHeaderDefaultSectionSize">
+    <number>50</number>
+   </attribute>
+   <attribute name="verticalHeaderDefaultSectionSize">
+    <number>20</number>
+   </attribute>
+   <attribute name="verticalHeaderMinimumSectionSize">
+    <number>21</number>
+   </attribute>
+   <row>
+    <property name="text">
+     <string>P1</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>SB</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>SC</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>DIV</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>TIMA</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>TMA</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>TAC</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>KEY1</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>VBK</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>HDMA1</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>HDMA2</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>HDMA3</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>HDMA4</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>HDMA5</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>SVBK</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>IF</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>IE</string>
+    </property>
+   </row>
+   <column>
+    <property name="text">
+     <string>Addr</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Value</string>
+    </property>
+   </column>
   </widget>
   <widget class="QTableWidget" name="tableDisassembler">
    <property name="geometry">
@@ -91,16 +309,57 @@
      <height>151</height>
     </rect>
    </property>
-  </widget>
-  <widget class="QTableWidget" name="tableMemory">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>231</y>
-     <width>371</width>
-     <height>171</height>
-    </rect>
+   <property name="verticalScrollBarPolicy">
+    <enum>Qt::ScrollBarAlwaysOff</enum>
    </property>
+   <property name="horizontalScrollBarPolicy">
+    <enum>Qt::ScrollBarAlwaysOff</enum>
+   </property>
+   <property name="tabKeyNavigation">
+    <bool>true</bool>
+   </property>
+   <property name="gridStyle">
+    <enum>Qt::DashLine</enum>
+   </property>
+   <property name="rowCount">
+    <number>6</number>
+   </property>
+   <attribute name="horizontalHeaderDefaultSectionSize">
+    <number>90</number>
+   </attribute>
+   <attribute name="horizontalHeaderMinimumSectionSize">
+    <number>19</number>
+   </attribute>
+   <attribute name="verticalHeaderVisible">
+    <bool>false</bool>
+   </attribute>
+   <attribute name="verticalHeaderDefaultSectionSize">
+    <number>22</number>
+   </attribute>
+   <attribute name="verticalHeaderMinimumSectionSize">
+    <number>20</number>
+   </attribute>
+   <row/>
+   <row/>
+   <row/>
+   <row/>
+   <row/>
+   <row/>
+   <column>
+    <property name="text">
+     <string>Address</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Instruction</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Data</string>
+    </property>
+   </column>
   </widget>
   <widget class="QWidget" name="widget_2" native="true">
    <property name="geometry">
@@ -137,6 +396,9 @@
     </property>
     <property name="textElideMode">
      <enum>Qt::ElideRight</enum>
+    </property>
+    <property name="gridStyle">
+     <enum>Qt::DotLine</enum>
     </property>
     <property name="rowCount">
      <number>6</number>
@@ -233,6 +495,193 @@
     </property>
     <property name="text">
      <string>Registers</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QWidget" name="widget_3" native="true">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>230</y>
+     <width>391</width>
+     <height>221</height>
+    </rect>
+   </property>
+   <widget class="QTableWidget" name="tableMemory">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>40</y>
+      <width>391</width>
+      <height>181</height>
+     </rect>
+    </property>
+    <property name="verticalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
+    </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
+    </property>
+    <property name="tabKeyNavigation">
+     <bool>true</bool>
+    </property>
+    <property name="showDropIndicator" stdset="0">
+     <bool>true</bool>
+    </property>
+    <property name="gridStyle">
+     <enum>Qt::NoPen</enum>
+    </property>
+    <property name="sortingEnabled">
+     <bool>false</bool>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+    <property name="cornerButtonEnabled">
+     <bool>true</bool>
+    </property>
+    <property name="rowCount">
+     <number>8</number>
+    </property>
+    <attribute name="horizontalHeaderDefaultSectionSize">
+     <number>23</number>
+    </attribute>
+    <attribute name="verticalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="verticalHeaderDefaultSectionSize">
+     <number>19</number>
+    </attribute>
+    <attribute name="verticalHeaderMinimumSectionSize">
+     <number>21</number>
+    </attribute>
+    <row/>
+    <row/>
+    <row/>
+    <row/>
+    <row/>
+    <row/>
+    <row/>
+    <row/>
+    <column>
+     <property name="text">
+      <string>*</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>x0</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>x1</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>x2</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>x3</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>x4</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>x5</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>x6</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>x7</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>x8</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>x9</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>xA</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>xB</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>xC</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>xD</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>xE</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>xF</string>
+     </property>
+    </column>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>59</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Memory</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>10</y>
+      <width>51</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>0000</string>
+    </property>
+    <property name="maxLength">
+     <number>4</number>
+    </property>
+    <property name="echoMode">
+     <enum>QLineEdit::Normal</enum>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
   </widget>
