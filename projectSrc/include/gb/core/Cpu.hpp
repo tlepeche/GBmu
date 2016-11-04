@@ -53,7 +53,7 @@ class Cpu_z80
 	*/
 
 	public:
-		std::array<uint8_t, 4>			getArrayFrequency();
+		std::array<uint32_t, 4>			getArrayFrequency();
 		void							interrupt(void);
 		void							initIOFlags(void);
 
@@ -79,7 +79,7 @@ class Cpu_z80
 	private:
 		unsigned int					_ptrAddr;
 		Memory							&_memory;
-		std::array<uint8_t, 4>			_arrayFrequency;
+		std::array<uint32_t, 4>			_arrayFrequency {{static_cast<uint32_t>(4096), static_cast<uint32_t>(16385), static_cast<uint32_t>(65536), static_cast<uint32_t>(262144) }};
 		t_opcode						_opcodeInProgress;
 
 	public:

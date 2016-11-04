@@ -1,16 +1,5 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   cpu.cpp                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/10/27 14:10:07 by barbare           #+#    #+#             */
-/*   Updated: 2016/11/04 11:30:18 by barbare          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Cpu.hpp"
+#include "stdio.h"
 
 /*
 ** ################################################################
@@ -84,8 +73,8 @@ uint8_t Cpu_z80::_getLengthDataOpcode(void)
 
 void Cpu_z80::_nextPtr(void)
 {
-	this->_cpuRegister.PC >> this->_opcodeInProgress.lengthData * sizeof(uint8_t);
-	this->_getOpcode(this->_memory.read_byte(this->_cpuRegister.PC));
+	this->_cpuRegister.PC = this->_cpuRegister.PC >> this->_opcodeInProgress.lengthData * sizeof(uint8_t);
+	this->_opcodeInProgress = this->_getOpcode(this->_memory.read_byte(this->_cpuRegister.PC));
 	this->_setDataOpcode();
 }
 
@@ -107,6 +96,8 @@ void Cpu_z80::initIOFlags(void)
 	this->_memory.reset();
 	this->_cpuRegister.PC = 0x100;
 	this->_setHightBit(REGISTER_TAC, 2);
+	this->_opcodeInProgress = this->_getOpcode(this->_memory.read_byte(this->_cpuRegister.PC));
+	this->_setDataOpcode();
 }
 
 /*
@@ -127,9 +118,10 @@ void Cpu_z80::_setHightBit(uint16_t addr, uint8_t bit)
 
 void Cpu_z80::interrupt(void)
 {
+	std::cout << "interrupt cpu" << std::endl;
 }
 
-std::array<uint8_t, 4> Cpu_z80::getArrayFrequency()
+std::array<uint32_t, 4> Cpu_z80::getArrayFrequency()
 {
 	return this->_arrayFrequency;
 }
