@@ -8,6 +8,7 @@ namespace Ui {
 }
 
 class QTableWidget;
+class Memory;
 typedef struct s_register t_register;
 
 class DbWindow : public QDialog
@@ -19,6 +20,7 @@ public:
     ~DbWindow();
 
 	void 	updateRegister(t_register& r);
+	void 	updateMemory(Memory& m);
 
 	QTableWidget *tableRegisters;
 	QTableWidget *tableOtherRegisters;

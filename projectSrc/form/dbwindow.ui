@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>709</width>
-    <height>460</height>
+    <width>770</width>
+    <height>507</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -65,7 +65,7 @@
   <widget class="QTableWidget" name="tableVideoRegisters">
    <property name="geometry">
     <rect>
-     <x>410</x>
+     <x>460</x>
      <y>70</y>
      <width>131</width>
      <height>341</height>
@@ -180,7 +180,7 @@
   <widget class="QTableWidget" name="tableOtherRegisters">
    <property name="geometry">
     <rect>
-     <x>550</x>
+     <x>610</x>
      <y>70</y>
      <width>151</width>
      <height>361</height>
@@ -503,8 +503,8 @@
     <rect>
      <x>10</x>
      <y>230</y>
-     <width>391</width>
-     <height>221</height>
+     <width>431</width>
+     <height>241</height>
     </rect>
    </property>
    <widget class="QTableWidget" name="tableMemory">
@@ -512,9 +512,14 @@
      <rect>
       <x>0</x>
       <y>40</y>
-      <width>391</width>
-      <height>181</height>
+      <width>431</width>
+      <height>201</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
     </property>
     <property name="verticalScrollBarPolicy">
      <enum>Qt::ScrollBarAlwaysOff</enum>
@@ -541,10 +546,10 @@
      <bool>true</bool>
     </property>
     <property name="rowCount">
-     <number>8</number>
+     <number>9</number>
     </property>
     <attribute name="horizontalHeaderDefaultSectionSize">
-     <number>23</number>
+     <number>25</number>
     </attribute>
     <attribute name="verticalHeaderVisible">
      <bool>false</bool>
@@ -553,8 +558,9 @@
      <number>19</number>
     </attribute>
     <attribute name="verticalHeaderMinimumSectionSize">
-     <number>21</number>
+     <number>20</number>
     </attribute>
+    <row/>
     <row/>
     <row/>
     <row/>

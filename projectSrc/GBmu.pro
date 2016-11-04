@@ -14,7 +14,8 @@ INCPATH  += include/gb/gui \
 
 SOURCES  += src/main.cpp \
 			src/gb/gui/openglwindow.cpp \
-			src/db/dbwindow.cpp 
+			src/db/dbwindow.cpp \
+		    src/gb/core/Memory.cpp	
 
 
 HEADERS  += include/gb/gui/openglwindow.h \
