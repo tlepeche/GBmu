@@ -5,6 +5,6 @@ enum htype {
 	AUTO,
 	GB,
 	GBC
-}
+};
 
 #endif
