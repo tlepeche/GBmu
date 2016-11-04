@@ -1,22 +1,26 @@
 #ifndef _MACHINE_HPP
-# define _MACHINE_HPP
+#define _MACHINE_HPP
+
+#include "Cpu.hpp"
+#include "Memory.hpp"
+#include "Timer.hpp"
 
 class Machine
 {
 	private:
-		Timer::Timer &_clock;
-		Cpu::Cpu &_cpu;
-		Rom::Rom &_rom;
-		Gpu::Gpu &_gpu;
+		Timer &_clock;
+		Cpu_z80 &_cpu;
+		Memory &_memory;
+		//Gpu::Gpu &_gpu;
 
-		_getFrequencyFrameTimeGpu(void);
-		_getCycleOpcode(void);
+
+		uint8_t _getFrequencyFrameTimeGpu(void);
+		uint8_t _getCycleOpcode(void);
 
 	public:
-		Machine(void) : _clock(Timer::Instance()),
-						_cpu(Cpu::Instance());
-		~Machine(void);
+		Machine(void);
+		virtual ~Machine(void) {};
 		void run(void);
 
-}
+};
 #endif
