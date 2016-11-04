@@ -12,52 +12,53 @@ class Timer
 	** ################################################################
 	*/
 	public:
-		Timer &Instance();
+		static Timer &Instance();
 
 	private:
 		Timer(void);
-		~Timer(void);
+		virtual ~Timer(void) {};
+		static Timer			_instance;
 
 	/*
-	** ################################################################
+	** ############################################################
 	** SETTEUR
-	** ################################################################
+	** ############################################################
 	*/
 	public:
-		void reset();
-		void setCycleAcc(unsigned int cycle);
-		void setFrequency(std::array<int, 4> arrFrequency);
-		void setCycleTotal(unsigned int cycle);
+		void						reset();
+		void 						setCycleAcc(uint8_t cycle);
+		void 						setFrequency(std::array<uint8_t, 4> arrFrequency);
+		void 						setCycleTotal(uint8_t cycle);
 
 	/*
-	** ################################################################
+	** ########################################################
 	** GETTEUR
-	** ################################################################
+	** ########################################################
 	*/
 	public:
-		unsigned int getArrayFrequency(const unsigned int idFrequency);
-		unsigned int getCycleAcc(void);
+		uint8_t						getArrayFrequency(const uint8_t idFrequency);
+		uint8_t 					getCycleAcc(void);
 
 	/*
-	** ################################################################
+	** ########################################################
 	** METHOD
-	** ################################################################
+	** ########################################################
 	*/
 	public:
-		void sleep(unsigned char ms);
+		void						sleep(unsigned char ms);
 
 	private:
-		unsigned int _getCycleOpcodeTotal(void);
+		uint8_t						_getCycleOpcodeTotal(void);
 
 	/*
-	** ################################################################
+	** ########################################################
 	** ATTRIBUTE
-	** ################################################################
+	** ########################################################
 	*/
 	private:
-		std::array<int, 4> _arrayFrequency;
-		unsigned int _cycles;
-		unsigned int _cyclesTotal;
+		std::array<uint8_t, 4>		_arrayFrequency;
+		uint8_t						_cycles;
+		uint8_t						_cyclesTotal;
 };
 
 #endif
