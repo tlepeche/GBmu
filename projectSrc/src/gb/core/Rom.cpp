@@ -48,8 +48,8 @@ char		*Rom::read(uint32_t size)
 
 	if (this->_rom == NULL)
 		return NULL;
-	if (size > this->_rom_size)
-		size = this->_rom_size;
+	if (size > (this->_rom_size - this->_pos))
+		size = (this->_rom_size - this->_pos);
 	data = new char [size + 1];
 	if (data == NULL)
 		return NULL;
@@ -68,15 +68,15 @@ void		Rom::reset(void)
 irom		Rom::getType(void)
 {
 	irom	info;
-	char	flag_cgb;
+	uint8_t	flag_cgb;
 
-	flag_cgb = (data[0x0143] & 0xFF)
+	flag_cgb = (this->_rom[0x0143] & 0xFF);
 	if (flag_cgb == 0x00 || flag_cgb == 0x80)
 		info.type = GB;
 	else if (flag_cgb == 0xC0)
 		info.type = GBC;
-	info.cartridge = (data[0x0147]);
-	info.romSize = (data[0x0148]);
-	info.eramSize = (data[0x0149]);
+	info.cartridge = (this->_rom[0x0147]);
+	info.romSize = (this->_rom[0x0148]);
+	info.eramSize = (this->_rom[0x0149]);
 	return info;
 }
