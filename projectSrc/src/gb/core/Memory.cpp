@@ -1,5 +1,5 @@
 #include <iostream>
-#include <string>
+#include <cstring>
 #include "Memory.hpp"
 
 Memory		Memory::_instance = Memory();
@@ -18,12 +18,12 @@ Memory			&Memory::Instance(void)
 
 void			Memory::reset(void)
 {
-	bzero(this->_m_rom_bank0, 16384);
-	bzero(this->_m_rom_bank1, 16384);
-	bzero(this->_m_wram, 32768);
-	bzero(this->_m_vram, 16384);
-	bzero(this->_m_oam, 160);
-	bzero(this->_m_io, 127);
+	memset(this->_m_rom_bank0, 0, 16384);
+	memset(this->_m_rom_bank1, 0, 16384);
+	memset(this->_m_wram, 0, 32768);
+	memset(this->_m_vram, 0, 16384);
+	memset(this->_m_oam, 0, 160);
+	memset(this->_m_io, 0, 127);
 }
 
 uint8_t			Memory::read_byte(uint16_t addr)
