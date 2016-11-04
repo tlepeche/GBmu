@@ -27,7 +27,7 @@ class Timer
 	public:
 		void						reset();
 		void 						setCycleAcc(uint8_t cycle);
-		void 						setFrequency(std::array<uint8_t, 4> arrFrequency);
+		void 						setFrequency(std::array<uint32_t, 4> arrFrequency);
 		void 						setCycleTotal(uint8_t cycle);
 
 	/*
@@ -36,7 +36,7 @@ class Timer
 	** ########################################################
 	*/
 	public:
-		uint8_t						getArrayFrequency(const uint8_t idFrequency);
+		uint32_t						getArrayFrequency(const uint8_t idFrequency);
 		uint8_t 					getCycleAcc(void);
 
 	/*
@@ -56,7 +56,7 @@ class Timer
 	** ########################################################
 	*/
 	private:
-		std::array<uint8_t, 4>		_arrayFrequency;
+		std::array<uint32_t, 4>		_arrayFrequency;
 		uint8_t						_cycles;
 		uint8_t						_cyclesTotal;
 };

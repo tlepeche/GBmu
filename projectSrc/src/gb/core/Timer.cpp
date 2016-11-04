@@ -30,7 +30,7 @@ void Timer::reset(void)
 	this->_cycles = 0;
 }
 
-void Timer::setFrequency(const std::array<uint8_t, 4> arrFrequency)
+void Timer::setFrequency(const std::array<uint32_t, 4> arrFrequency)
 {
 	this->_arrayFrequency = arrFrequency;
 }
@@ -55,7 +55,7 @@ uint8_t Timer::getCycleAcc(void)
 	return (this->_getCycleOpcodeTotal() - this->_cycles);
 }
 
-uint8_t Timer::getArrayFrequency(const uint8_t idFrequency)
+uint32_t Timer::getArrayFrequency(const uint8_t idFrequency)
 {
 	return (_arrayFrequency[idFrequency]);
 }
