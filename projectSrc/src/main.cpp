@@ -3,6 +3,9 @@
 
 #include <QApplication>
 
+
+#include "register.h"
+
 int		main(int argc, char **argv)
 {
 	QApplication	a(argc, argv);
@@ -12,6 +15,10 @@ int		main(int argc, char **argv)
 	w.drawPixel(0, 0xFFFF00);
 	w.drawPixel(1, 0xFFFF00);
 	w.drawPixel(2, 0xFFFF00);
+
+	t_register	r;
+
+	dbgui.updateRegister(r);
 
 	w.show();
 	dbgui.show();

@@ -8,6 +8,7 @@ namespace Ui {
 }
 
 class QTableWidget;
+typedef struct s_register t_register;
 
 class DbWindow : public QDialog
 {
@@ -16,6 +17,8 @@ class DbWindow : public QDialog
 public:
     explicit DbWindow(QWidget *parent = 0);
     ~DbWindow();
+
+	void 	updateRegister(t_register& r);
 
 	QTableWidget *tableRegisters;
 	QTableWidget *tableOtherRegisters;

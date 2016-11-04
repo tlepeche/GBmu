@@ -374,9 +374,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>20</y>
-      <width>67</width>
-      <height>153</height>
+      <y>22</y>
+      <width>64</width>
+      <height>152</height>
      </rect>
     </property>
     <property name="verticalScrollBarPolicy">
@@ -407,7 +407,7 @@
      <number>1</number>
     </property>
     <attribute name="horizontalHeaderDefaultSectionSize">
-     <number>42</number>
+     <number>44</number>
     </attribute>
     <attribute name="horizontalHeaderMinimumSectionSize">
      <number>19</number>

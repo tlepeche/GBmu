@@ -9,7 +9,8 @@ TEMPLATE = app
 OBJECTS_DIR   = obj
 
 INCPATH  += include/gb/gui \
-			include/db
+			include/db \
+			include/gb/core/
 
 SOURCES  += src/main.cpp \
 			src/gb/gui/openglwindow.cpp \

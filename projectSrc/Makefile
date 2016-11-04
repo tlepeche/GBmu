@@ -13,9 +13,9 @@ MAKEFILE      = Makefile
 CC            = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang
 CXX           = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
 DEFINES       = -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
-CFLAGS        = -pipe -O2 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -mmacosx-version-min=10.8 -Wall -W -fPIC $(DEFINES)
-CXXFLAGS      = -pipe -stdlib=libc++ -O2 -std=gnu++11 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -mmacosx-version-min=10.8 -Wall -W -fPIC $(DEFINES)
-INCPATH       = -I. -Iinclude/gb/gui -Iinclude/db -I/goinfre/Qt/5.7/clang_64/lib/QtOpenGL.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/OpenGL.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/AGL.framework/Headers -I. -I/goinfre/Qt/5.7/clang_64/mkspecs/macx-clang -F/goinfre/Qt/5.7/clang_64/lib
+CFLAGS        = -pipe -O2 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -mmacosx-version-min=10.8 -Wall -W -fPIC $(DEFINES)
+CXXFLAGS      = -pipe -stdlib=libc++ -O2 -std=gnu++11 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -mmacosx-version-min=10.8 -Wall -W -fPIC $(DEFINES)
+INCPATH       = -I. -Iinclude/gb/gui -Iinclude/db -Iinclude/gb/core -I/goinfre/Qt/5.7/clang_64/lib/QtOpenGL.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/OpenGL.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/AGL.framework/Headers -I. -I/goinfre/Qt/5.7/clang_64/mkspecs/macx-clang -F/goinfre/Qt/5.7/clang_64/lib
 QMAKE         = /goinfre/Qt/5.7/clang_64/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -35,7 +35,7 @@ COMPRESS      = gzip -9f
 DISTNAME      = GBmu1.0.0
 DISTDIR = /Users/edelangh/work/GBmu/projectSrc/obj/GBmu1.0.0
 LINK          = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
-LFLAGS        = -headerpad_max_install_names -stdlib=libc++ -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -mmacosx-version-min=10.8 -Wl,-rpath,/goinfre/Qt/5.7/clang_64/lib
+LFLAGS        = -headerpad_max_install_names -stdlib=libc++ -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -mmacosx-version-min=10.8 -Wl,-rpath,/goinfre/Qt/5.7/clang_64/lib
 LIBS          = $(SUBLIBS) -F/goinfre/Qt/5.7/clang_64/lib -framework QtOpenGL -framework QtWidgets -framework QtGui -framework QtCore -framework DiskArbitration -framework IOKit -framework OpenGL -framework AGL 
 AR            = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar cq
 RANLIB        = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib -s
@@ -562,7 +562,7 @@ GBmu.app/Contents/Resources/empty.lproj:
 GBmu.app/Contents/Info.plist: 
 	@test -d GBmu.app/Contents || mkdir -p GBmu.app/Contents
 	@$(DEL_FILE) GBmu.app/Contents/Info.plist
-	@sed -e "s,@SHORT_VERSION@,1.0,g" -e "s,@FULL_VERSION@,1.0.0,g" -e "s,@TYPEINFO@,????,g" -e "s,@BUNDLEIDENTIFIER@,com.yourcompany.GBmu,g" -e "s,@ICON@,,g" -e "s,@EXECUTABLE@,GBmu,g" -e "s,@LIBRARY@,GBmu,g" -e "s,@TYPEINFO@,????,g" /goinfre/Qt/5.7/clang_64/mkspecs/macx-clang/Info.plist.app >GBmu.app/Contents/Info.plist
+	@sed -e "s,@SHORT_VERSION@,1.0,g" -e "s,@FULL_VERSION@,1.0.0,g" -e "s,@TYPEINFO@,????,g" -e "s,@BUNDLEIDENTIFIER@,qweqwe.GBmu,g" -e "s,@ICON@,,g" -e "s,@EXECUTABLE@,GBmu,g" -e "s,@LIBRARY@,GBmu,g" -e "s,@TYPEINFO@,????,g" /goinfre/Qt/5.7/clang_64/mkspecs/macx-clang/Info.plist.app >GBmu.app/Contents/Info.plist
 
 all: Makefile \
 		GBmu.app/Contents/PkgInfo \
@@ -612,13 +612,13 @@ moc_openglwindow.cpp: /goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers/QWind
 		/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers/qopenglfunctions.h \
 		include/gb/gui/openglwindow.h \
 		/goinfre/Qt/5.7/clang_64/bin/moc
-	/goinfre/Qt/5.7/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/goinfre/Qt/5.7/clang_64/mkspecs/macx-clang -I/Users/edelangh/work/GBmu/projectSrc -I/Users/edelangh/work/GBmu/projectSrc/include/gb/gui -I/Users/edelangh/work/GBmu/projectSrc/include/db -I/goinfre/Qt/5.7/clang_64/lib/QtOpenGL.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -I/usr/local/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/7.3.0/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/usr/include -I'/System/Library/Frameworks (framework directory)' -I'/Library/Frameworks (framework directory)' -F/goinfre/Qt/5.7/clang_64/lib include/gb/gui/openglwindow.h -o moc_openglwindow.cpp
+	/goinfre/Qt/5.7/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/goinfre/Qt/5.7/clang_64/mkspecs/macx-clang -I/Users/edelangh/work/GBmu/projectSrc -I/Users/edelangh/work/GBmu/projectSrc/include/gb/gui -I/Users/edelangh/work/GBmu/projectSrc/include/db -I/Users/edelangh/work/GBmu/projectSrc/include/gb/core -I/goinfre/Qt/5.7/clang_64/lib/QtOpenGL.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -I/usr/local/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/7.3.0/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/usr/include -I'/System/Library/Frameworks (framework directory)' -I'/Library/Frameworks (framework directory)' -F/goinfre/Qt/5.7/clang_64/lib include/gb/gui/openglwindow.h -o moc_openglwindow.cpp
 
 moc_dbwindow.cpp: /goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/QDialog \
 		/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/qdialog.h \
 		include/db/dbwindow.h \
 		/goinfre/Qt/5.7/clang_64/bin/moc
-	/goinfre/Qt/5.7/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/goinfre/Qt/5.7/clang_64/mkspecs/macx-clang -I/Users/edelangh/work/GBmu/projectSrc -I/Users/edelangh/work/GBmu/projectSrc/include/gb/gui -I/Users/edelangh/work/GBmu/projectSrc/include/db -I/goinfre/Qt/5.7/clang_64/lib/QtOpenGL.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -I/usr/local/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/7.3.0/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/usr/include -I'/System/Library/Frameworks (framework directory)' -I'/Library/Frameworks (framework directory)' -F/goinfre/Qt/5.7/clang_64/lib include/db/dbwindow.h -o moc_dbwindow.cpp
+	/goinfre/Qt/5.7/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/goinfre/Qt/5.7/clang_64/mkspecs/macx-clang -I/Users/edelangh/work/GBmu/projectSrc -I/Users/edelangh/work/GBmu/projectSrc/include/gb/gui -I/Users/edelangh/work/GBmu/projectSrc/include/db -I/Users/edelangh/work/GBmu/projectSrc/include/gb/core -I/goinfre/Qt/5.7/clang_64/lib/QtOpenGL.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -I/usr/local/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/7.3.0/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/usr/include -I'/System/Library/Frameworks (framework directory)' -I'/Library/Frameworks (framework directory)' -F/goinfre/Qt/5.7/clang_64/lib include/db/dbwindow.h -o moc_dbwindow.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -671,7 +671,8 @@ obj/openglwindow.o: src/gb/gui/openglwindow.cpp include/gb/gui/openglwindow.h \
 obj/dbwindow.o: src/db/dbwindow.cpp include/db/dbwindow.h \
 		/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/QDialog \
 		/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/qdialog.h \
-		ui_dbwindow.h
+		ui_dbwindow.h \
+		include/gb/core/register.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/dbwindow.o src/db/dbwindow.cpp
 
 obj/moc_openglwindow.o: moc_openglwindow.cpp 
