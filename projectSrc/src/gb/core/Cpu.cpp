@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/27 14:10:07 by barbare           #+#    #+#             */
-/*   Updated: 2016/11/03 10:34:49 by barbare          ###   ########.fr       */
+/*   Updated: 2016/11/04 11:30:18 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,119 +17,20 @@
 ** CREATE Singleton
 ** ################################################################
 */
+Cpu_z80		Cpu_z80::_instance = Cpu_z80();
 
-Cpu::Cpu(unsigned int cpuAddrLenght,
-			std::array<unsigned int, 4> arrFrequency,
-			Register register) :	addrLenght(cpuAddrLenght),
-									ptrAddr(0x00),
-									_opcodeMap {
-										{0x00, 0x00, 4 , 4 , 1, NULL},
-										{0x01, 0x00, 12, 12, 3, NULL},
-										{0x02, 0x00, 8 , 8 , 1, NULL},
-										{0x03, 0x00, 8 , 8 , 1, NULL},
-										{0x04, 0x00, 4 , 4 , 1, NULL},
-										{0x05, 0x00, 4 , 4 , 1, NULL},
-										{0x06, 0x00, 8 , 8 , 2, NULL},
-										{0x07, 0x00, 4 , 4 , 1, NULL},
-										{0x08, 0x00, 20, 20, 3, NULL},
-										{0x09, 0x00, 8 , 8 , 1, NULL},
-										{0x0a, 0x00, 8 , 8 , 1, NULL},
-										{0x0b, 0x00, 8 , 8 , 1, NULL},
-										{0x0c, 0x00, 4 , 4 , 1, NULL},
-										{0x0d, 0x00, 4 , 4 , 1, NULL},
-										{0x0e, 0x00, 8 , 8 , 2, NULL},
-										{0x0f, 0x00, 4 , 4 , 1, NULL},
-										{0x10, 0x00, 4 , 4 , 2, NULL},
-										{0x11, 0x00, 12, 12, 3, NULL},
-										{0x12, 0x00, 8 , 8 , 1, NULL},
-										{0x13, 0x00, 8 , 8 , 1, NULL},
-										{0x14, 0x00, 4 , 4 , 1, NULL},
-										{0x15, 0x00, 4 , 4 , 1, NULL},
-										{0x16, 0x00, 8 , 8 , 2, NULL},
-										{0x17, 0x00, 4 , 4 , 1, NULL},
-										{0x18, 0x00, 12, 12, 2, NULL},
-										{0x19, 0x00, 8 , 8 , 1, NULL},
-										{0x1a, 0x00, 8 , 8 , 1, NULL},
-										{0x1b, 0x00, 8 , 8 , 1, NULL},
-										{0x1c, 0x00, 4 , 4 , 1, NULL},
-										{0x1d, 0x00, 4 , 4 , 1, NULL},
-										{0x1e, 0x00, 8 , 8 , 2, NULL},
-										{0x1f, 0x00, 4 , 4 , 1, NULL},
-										{0x20, 0xc0, 12, 8 , 2, NULL},
-										{0x21, 0x00, 12, 12, 3, NULL},
-										{0x22, 0x00, 8 , 8 , 1, NULL},
-										{0x23, 0x00, 8 , 8 , 1, NULL},
-										{0x24, 0x00, 4 , 4 , 1, NULL},
-										{0x25, 0x00, 4 , 4 , 1, NULL},
-										{0x26, 0x00, 12, 12, 2, NULL},
-										{0x27, 0x00, 4 , 4 , 1, NULL},
-										{0x28, 0x80, 12, 8 , 2, NULL},
-										{0x29, 0x00, 8 , 8 , 1, NULL},
-										{0x2a, 0x00, 8 , 8 , 1, NULL},
-										{0x2b, 0x00, 8 , 8 , 1, NULL},
-										{0x2c, 0x00, 4 , 4 , 1, NULL},
-										{0x2d, 0x00, 4 , 4 , 1, NULL},
-										{0x2e, 0x00, 8 , 8 , 2, NULL},
-										{0x2f, 0x00, 4 , 4 , 3, NULL},
-										{0x30, 0x70, 12, 8 , 2, NULL},
-										{0x31, 0x00, 12, 12, 3, NULL},
-										{0x32, 0x00, 12, 12, 3, NULL},
-										{0x33, 0x00, 8 , 8 , 1, NULL},
-										{0x34, 0x00, 12, 12, 1, NULL},
-										{0x35, 0x00, 12, 12, 1, NULL},
-										{0x36, 0x00, 12, 12, 2, NULL},
-										{0x37, 0x00, 4 , 4 , 1, NULL},
-										{0x38, 0x10, 12, 8 , 2, NULL},
-										{0x39, 0x00, 8 , 8 , 1, NULL},
-										{0x3a, 0x00, 8 , 8 , 1, NULL},
-										{0x3b, 0x00, 8 , 8 , 1, NULL},
-										{0x3c, 0x00, 4 , 4 , 1, NULL},
-										{0x3d, 0x00, 4 , 4 , 1, NULL},
-										{0x3e, 0x00, 8 , 8 , 2, NULL},
-										{0x3f, 0x00, 4 , 4 , 1, NULL},
-										{0x40, 0x00, 4 , 4 , 1, NULL},
-										{0x41, 0x00, 4 , 4 , 1, NULL},
-										{0x42, 0x00, 4 , 4 , 1, NULL},
-										{0x43, 0x00, 4 , 4 , 1, NULL},
-										{0x44, 0x00, 4 , 4 , 1, NULL},
-										{0x45, 0x00, 4 , 4 , 1, NULL},
-										{0x46, 0x00, 8 , 8 , 1, NULL},
-										{0x47, 0x00, 4 , 4 , 1, NULL},
-										{0x48, 0x00, 4 , 4 , 1, NULL},
-										{0x49, 0x00, 4 , 4 , 1, NULL},
-										{0x4a, 0x00, 4 , 4 , 1, NULL},
-										{0x4b, 0x00, 4 , 4 , 1, NULL},
-										{0x4c, 0x00, 4 , 4 , 1, NULL},
-										{0x4d, 0x00, 4 , 4 , 1, NULL},
-										{0x4e, 0x00, 8 , 8 , 1, NULL},
-										{0x4f, 0x00, 4 , 4 , 1, NULL},
-										{0x50, 0x00, 4 , 4 , 1, NULL},
-										{0x51, 0x00, 4 , 4 , 1, NULL},
-										{0x52, 0x00, 4 , 4 , 1, NULL},
-										{0x53, 0x00, 4 , 4 , 1, NULL},
-										{0x54, 0x00, 4 , 4 , 1, NULL},
-										{0x55, 0x00, 4 , 4 , 1, NULL},
-										{0x56, 0x00, 8 , 8 , 1, NULL},
-										{0x57, 0x00, 4 , 4 , 1, NULL},
-										{0x58, 0x00, 4 , 4 , 1, NULL},
-										{0x59, 0x00, 4 , 4 , 1, NULL},
-										{0x5a, 0x00, 4 , 4 , 1, NULL},
-										{0x5b, 0x00, 4 , 4 , 1, NULL},
-										{0x5c, 0x00, 4 , 4 , 1, NULL},
-										{0x5d, 0x00, 4 , 4 , 1, NULL},
-										{0x5e, 0x00, 8 , 8 , 1, NULL},
-										{0x5f, 0x00, 4 , 4 , 1, NULL},
-										{0x60, 0x00, 4 , 4 , 1, NULL},
-									}
-}
-									register(register)
+Cpu_z80::Cpu_z80(void) :
+						_memory(Memory::Instance())
 {
-	regInProgress.execute = true;
+}
+
+Cpu_z80::~Cpu_z80(void)
+{
 }
 
 Cpu_z80 &Cpu_z80::Instance(void)
 {
-	return this->_instance;
+	return Cpu_z80::_instance;
 }
 
 	/*
@@ -138,89 +39,102 @@ Cpu_z80 &Cpu_z80::Instance(void)
 	** ################################################################
 	*/
 
-t_opcode Cpu::_getOpcode(uint8_t opcode)
+t_opcode Cpu_z80::_getOpcode(uint8_t opcode)
 {
-	unsigned int i = 0;
+	uint8_t i = 0;
 
 	while (i < NB_OPCODE)
 	{
-		if (this->opcodeMap[i].opcode == opcode)
-			return this->opcodeMap[i];
+		if (_opcodeMap[i].opcode == opcode)
+			return _opcodeMap[i];
 		++i;
 	}
-	return this->opcodeMap[0];
+	return _opcodeMap[0];
 }
 
-uint8_t	Cpu::getCylceOpcode()
+uint8_t	Cpu_z80::_getCycleOpcode(void)
 {
-	if (this->register.F & mask > 0)
-		return this->cycleOpcodeFlag;
-	return cycleOpcodeNoFlag;
+	//if (this->register.F & mask > 0)
+	//	return this->_opcodeInProgress.cycleOpcodeFlag;
+	return this->_opcodeInProgress.cycleOpcodeNoFlag > this->_opcodeInProgress.cycleOpcodeFlag ?
+				this->_opcodeInProgress.cycleOpcodeNoFlag : this->_opcodeInProgress.cycleOpcodeFlag;
 }
 
 
-unsigned int Cpu::getCycleOpcode(void)
+void Cpu_z80::_setDataOpcode(void)
 {
-	if (this->regInProgress.execute == true)
-		this->regInProgress = this->getOpcode;
-	return this->regInProgress.reg.cycleOpcode;
+	if (this->_opcodeInProgress.lengthData > 1)
+	{
+		if (this->_opcodeInProgress.lengthData > 2)
+			this->_opcodeInProgress.data = this->_memory.read_byte(this->_cpuRegister.PC >> sizeof(uint8_t));
+		else
+			this->_opcodeInProgress.data = this->_memory.read_word(this->_cpuRegister.PC >> sizeof(uint8_t));
+	}
 }
 
-void *Cpu::getFunctionOpcode(void)
+uint16_t Cpu_z80::_getDataOpcode(void) //TODO: can create type 8b or 16b data, moment use uint
 {
-	if (this->regInProgress.execute == true)
-		this->regInProgress = this->getOpcode;
-	return this->regInProgress.reg.functionOpcode;
+	return this->_opcodeInProgress.data;
 }
 
-unsigned int Cpu::getDataOpcode(void) //TODO: can create type 8b or 16b data, moment use uint
+uint8_t Cpu_z80::_getLengthDataOpcode(void)
 {
-	if (this->regInProgress.execute == true)
-		this->regInProgress = this->getOpcode;
-	return this->regInProgress.reg.data;
+	return this->_opcodeInProgress.lengthData;
 }
 
-unsigned int Cpu::getLenghtDataOpcode(void)
+void Cpu_z80::_nextPtr(void)
 {
-	if (this->regInProgress.execute == true)
-		this->regInProgress = this->getOpcode;
-	return this->regInProgress.reg.lenghtData;
-}
-unsigned int Cpu::nbCycleNextOpCode(void)
-{
-	return getCycleOpcode(opcode);
+	this->_cpuRegister.PC >> this->_opcodeInProgress.lengthData * sizeof(uint8_t);
+	this->_getOpcode(this->_memory.read_byte(this->_cpuRegister.PC));
+	this->_setDataOpcode();
 }
 
-unsigned int Cpu::executeNextOpcode(void)
+uint8_t Cpu_z80::nbCycleNextOpCode(void)
 {
-	getFunctionOpcode()(this->getDataOpcode());
-	unsigned int cycle = this->getCycleOpcode();
+	return this->_getCycleOpcode();
+}
+
+uint8_t Cpu_z80::executeNextOpcode(void)
+{
+	this->_opcodeInProgress.functionOpcode();
+	uint8_t cycle = this->_getCycleOpcode();
 	this->_nextPtr();
-	this->regInProgress.execute = true;
 	return cycle;
 }
 
-void Cpu::_nextPtr(void)
+void Cpu_z80::initIOFlags(void)
 {
-	this->_ptrAddr >> (addressLength + this->getLenghtDataOpcode());
+	this->_memory.reset();
+	this->_cpuRegister.PC = 0x100;
+	this->_setHightBit(REGISTER_TAC, 2);
 }
 
+/*
+** ################################################################
+** METHOD Math
+** ################################################################
+*/
 
-void Cpu::interrupt(void)
+void Cpu_z80::_setLowBit(uint16_t addr, uint8_t bit)
+{
+	this->_memory.write_byte(addr, (uint8_t)((0x00 << bit) & this->_memory.read_byte(addr)));
+}
+
+void Cpu_z80::_setHightBit(uint16_t addr, uint8_t bit)
+{
+	this->_memory.write_byte(addr, (uint8_t)((0x01 << bit) | this->_memory.read_byte(addr)));
+}
+
+void Cpu_z80::interrupt(void)
 {
 }
 
-std::array<unsigned int, 4> Cpu::getArrayFrequency()
+std::array<uint8_t, 4> Cpu_z80::getArrayFrequency()
 {
 	return this->_arrayFrequency;
 }
 
-unsigned int Cpu::_getNextOpcode()
+void Cpu_z80::_resetPtrAddr(void)
 {
-	return (this->_ram.read8b(this->_ptrAddr));
-}
-
-void Cpu::_resetPtrAddr(void)
-{
-	this->_ptrAddr = 0x00;
+	this->_cpuRegister.PC = 0x100;
 }
