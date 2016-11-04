@@ -15,6 +15,7 @@ DbWindow::DbWindow(QWidget *parent) :
 	tableVideoRegisters	= this->findChild<QTableWidget*>("tableVideoRegisters");
 	tableDisassembler	= this->findChild<QTableWidget*>("tableDisassembler");
 	tableMemory			= this->findChild<QTableWidget*>("tableMemory");
+	tableMemory->resizeColumnsToContents();
 }
 static inline
 void customSetItem(QTableWidget* table, int x, int y, const char *format, int value)
