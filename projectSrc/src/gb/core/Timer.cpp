@@ -1,16 +1,17 @@
-
 #include "Timer.hpp"
+#include <unistd.h>
 
 /*
 ** ############################################################################
 ** CREATE Singleton
 ** ############################################################################
 */
-static Timer::Timer g_Timer = new Timer();
 
-Timer::Timer &Timer::Instance(void)
+Timer		Timer::_instance = Timer();
+
+Timer &Timer::Instance(void)
 {
-	return &g_Timer;
+	return Timer::_instance;
 }
 
 Timer::Timer(void)
@@ -29,32 +30,32 @@ void Timer::reset(void)
 	this->_cycles = 0;
 }
 
-void Timer::setFrequency(const std::array<int, 4> arrFrequency)
+void Timer::setFrequency(const std::array<uint8_t, 4> arrFrequency)
 {
 	this->_arrayFrequency = arrFrequency;
 }
 
-void Timer::setCycleTotal(unsigned int cycleTotal)
+void Timer::setCycleTotal(uint8_t cycleTotal)
 {
 	this->_cyclesTotal = cycleTotal;
 }
 
-void Timer::setCycleAcc(unsigned int cycles)
+void Timer::setCycleAcc(uint8_t cycles)
 {
-	this->_cycle += cycles
+	this->_cycles += cycles;
 }
-_
+
 /*
 ** ############################################################################
 ** Methodes GETTEUR
 ** ############################################################################
 */
-unsigned int Timer::getCycleAcc(void)
+uint8_t Timer::getCycleAcc(void)
 {
 	return (this->_getCycleOpcodeTotal() - this->_cycles);
 }
 
-unsigned int Timer::getArrayFrequency(const unsigned int idFrequency)
+uint8_t Timer::getArrayFrequency(const uint8_t idFrequency)
 {
 	return (_arrayFrequency[idFrequency]);
 }
@@ -70,7 +71,7 @@ void Timer::sleep(unsigned char ms)
 	usleep(ms);
 }
 
-unsigned int _getCycleOpcodeTotal(void)
+uint8_t Timer::_getCycleOpcodeTotal(void)
 {
 	return (this->_cyclesTotal);
 }
