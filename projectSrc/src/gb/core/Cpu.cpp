@@ -108,7 +108,7 @@ void Cpu_z80::initIOFlags(void)
 
 void Cpu_z80::_setLowBit(uint16_t addr, uint8_t bit)
 {
-	this->_memory.write_byte(addr, (uint8_t)((0x00 << bit) & this->_memory.read_byte(addr)));
+	this->_memory.write_byte(addr, (uint8_t)((0x01 << bit) ^ this->_memory.read_byte(addr)));
 }
 
 void Cpu_z80::_setHightBit(uint16_t addr, uint8_t bit)
