@@ -2,7 +2,6 @@
 #define GAMEBOY_HPP
 
 #include "Machine.hpp"
-#include "OpenGLWindow.hpp"
 
 enum htype {
 	AUTO,
@@ -11,6 +10,8 @@ enum htype {
 };
 
 #include <thread>
+class OpenGLWindow;
+class DbWindow;
 
 // QWidget for signals 
 #include <QWidget>
@@ -19,10 +20,11 @@ class Gameboy : public Machine, public QWidget
 {
 	private:
 		OpenGLWindow*	_window;
+		DbWindow*		_windowDebug;
 
 	public:
-		bool				is_debug_mode;
 		std::thread			*_thread;
+		std::atomic<bool>	_debugMode;
 		std::atomic<bool>	_willRun;
 
 		Gameboy();
@@ -32,6 +34,7 @@ class Gameboy : public Machine, public QWidget
 
 	protected slots:
 		void	openRomSlot(std::string path);
+		void	gbDbSlot();
 };
 
 #endif

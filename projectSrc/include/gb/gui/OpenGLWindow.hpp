@@ -33,9 +33,11 @@ class OpenGLWindow : public QWindow, protected QOpenGLFunctions
 
 	private slots:
 		void openSlot();
+		void gbDbSlot();
 
 	signals:
 		void openRomSign(std::string path);
+		void gbDbSign();
 
 	protected:
 		bool event(QEvent *event) Q_DECL_OVERRIDE;

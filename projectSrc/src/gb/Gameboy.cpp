@@ -1,21 +1,24 @@
 
 
+#include "OpenGLWindow.hpp"
+#include "DbWindow.hpp"
 #include "Gameboy.hpp"
 
 Gameboy::Gameboy() :
 	_window(new OpenGLWindow())
-	, is_debug_mode(false)
 	, _thread(nullptr)
 {
+	_debugMode.store(false);
 	_willRun.store(false);
 
 	connect(_window, &OpenGLWindow::openRomSign, this, &Gameboy::openRomSlot);
+	connect(_window, &OpenGLWindow::gbDbSign, this, &Gameboy::gbDbSlot);
 	_window->show();
 }
 
 Gameboy::~Gameboy()
 {
-
+	delete this->_windowDebug;
 	delete this->_window;
 }
 
@@ -28,7 +31,7 @@ void	Gameboy::run()
 {
 	if (_willRun)
 	{
-		if (is_debug_mode)
+		if (_debugMode.load())
 		{
 
 		}
@@ -47,4 +50,11 @@ void	Gameboy::openRomSlot(std::string path)
 	std::cout << "Gameboy path: " << path << std::endl;
 	_willRun.store(true);
 	_thread = new std::thread(&Gameboy::run, this);
+}
+
+void	Gameboy::gbDbSlot()
+{
+	_windowDebug = new DbWindow();
+	_windowDebug->show();
+	_debugMode.store(true);
 }

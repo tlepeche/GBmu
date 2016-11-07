@@ -28,11 +28,14 @@ OpenGLWindow::OpenGLWindow(QWindow *parent)
 QMenuBar	*OpenGLWindow::genMenuBar()
 {
 	QMenuBar*	menuBar	= new QMenuBar();
-	QMenu*		menu	= new QMenu(tr("Files"));
+	QMenu*		menu	= new QMenu(tr("Actions"));
 	QAction*	openAct	= new QAction(tr("Open"));
+	QAction*	gbDbAct = new QAction(tr("Debbuger"));
 
 	connect(openAct, &QAction::triggered, this, &OpenGLWindow::openSlot);
+	connect(gbDbAct, &QAction::triggered, this, &OpenGLWindow::gbDbSlot);
 	menu->addAction(openAct);
+	menu->addAction(gbDbAct);
 	menuBar->addMenu(menu);
 
 	return menuBar;
@@ -43,6 +46,11 @@ void	OpenGLWindow::openSlot()
 	QString path = QFileDialog::getOpenFileName(NULL, tr("Open XML File 1"), "/home", tr("XML Files (*.xml, *)"));
 
 	emit openRomSign(path.toStdString());
+}
+
+void	OpenGLWindow::gbDbSlot()
+{
+	emit gbDbSign();
 }
 
 OpenGLWindow::~OpenGLWindow()
