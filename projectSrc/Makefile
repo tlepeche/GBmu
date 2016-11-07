@@ -51,12 +51,20 @@ OBJECTS_DIR   = obj/
 SOURCES       = src/main.cpp \
 		src/gb/gui/openglwindow.cpp \
 		src/db/dbwindow.cpp \
-		src/gb/core/Memory.cpp moc_openglwindow.cpp \
+		src/gb/core/Memory.cpp \
+		src/gb/core/Machine.cpp \
+		src/gb/core/Cpu.cpp \
+		src/gb/core/Timer.cpp \
+		src/gb/core/opcode.cpp moc_openglwindow.cpp \
 		moc_dbwindow.cpp
 OBJECTS       = obj/main.o \
 		obj/openglwindow.o \
 		obj/dbwindow.o \
 		obj/Memory.o \
+		obj/Machine.o \
+		obj/Cpu.o \
+		obj/Timer.o \
+		obj/opcode.o \
 		obj/moc_openglwindow.o \
 		obj/moc_dbwindow.o
 DIST          = /goinfre/Qt/5.7/clang_64/mkspecs/features/spec_pre.prf \
@@ -217,12 +225,15 @@ DIST          = /goinfre/Qt/5.7/clang_64/mkspecs/features/spec_pre.prf \
 		include/db/dbwindow.h src/main.cpp \
 		src/gb/gui/openglwindow.cpp \
 		src/db/dbwindow.cpp \
-		src/gb/core/Memory.cpp
+		src/gb/core/Memory.cpp \
+		src/gb/core/Machine.cpp \
+		src/gb/core/Cpu.cpp \
+		src/gb/core/Timer.cpp \
+		src/gb/core/opcode.cpp
 QMAKE_TARGET  = GBmu
 DESTDIR       = 
 TARGET        = GBmu.app/Contents/MacOS/GBmu
 
-INC_FILES =
 
 first: all
 ####### Build rules
@@ -580,7 +591,7 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents include/gb/gui/openglwindow.h include/db/dbwindow.h $(DISTDIR)/
-	$(COPY_FILE) --parents src/main.cpp src/gb/gui/openglwindow.cpp src/db/dbwindow.cpp src/gb/core/Memory.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents src/main.cpp src/gb/gui/openglwindow.cpp src/db/dbwindow.cpp src/gb/core/Memory.cpp src/gb/core/Machine.cpp src/gb/core/Cpu.cpp src/gb/core/Timer.cpp src/gb/core/opcode.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents form/dbwindow.ui $(DISTDIR)/
 
 
@@ -656,7 +667,11 @@ obj/main.o: src/main.cpp include/gb/gui/openglwindow.h \
 		/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/QApplication \
 		/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/qapplication.h \
 		include/gb/core/Memory.hpp \
-		include/gb/core/register.h
+		include/gb/core/register.hpp \
+		include/gb/core/Machine.hpp \
+		include/gb/core/Cpu.hpp \
+		include/gb/core/Timer.hpp \
+		include/gb/core/opcode.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/main.o src/main.cpp
 
 obj/openglwindow.o: src/gb/gui/openglwindow.cpp include/gb/gui/openglwindow.h \
@@ -678,11 +693,32 @@ obj/dbwindow.o: src/db/dbwindow.cpp include/db/dbwindow.h \
 		/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/QDialog \
 		/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/qdialog.h \
 		ui_dbwindow.h \
-		include/gb/core/register.h
+		include/gb/core/Memory.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/dbwindow.o src/db/dbwindow.cpp
 
 obj/Memory.o: src/gb/core/Memory.cpp include/gb/core/Memory.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/Memory.o src/gb/core/Memory.cpp
+
+obj/Machine.o: src/gb/core/Machine.cpp include/gb/core/Machine.hpp \
+		include/gb/core/Cpu.hpp \
+		include/gb/core/Timer.hpp \
+		include/gb/core/Memory.hpp \
+		include/gb/core/register.hpp \
+		include/gb/core/opcode.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/Machine.o src/gb/core/Machine.cpp
+
+obj/Cpu.o: src/gb/core/Cpu.cpp include/gb/core/Cpu.hpp \
+		include/gb/core/Timer.hpp \
+		include/gb/core/Memory.hpp \
+		include/gb/core/register.hpp \
+		include/gb/core/opcode.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/Cpu.o src/gb/core/Cpu.cpp
+
+obj/Timer.o: src/gb/core/Timer.cpp include/gb/core/Timer.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/Timer.o src/gb/core/Timer.cpp
+
+obj/opcode.o: src/gb/core/opcode.cpp include/gb/core/opcode.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/opcode.o src/gb/core/opcode.cpp
 
 obj/moc_openglwindow.o: moc_openglwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/moc_openglwindow.o moc_openglwindow.cpp

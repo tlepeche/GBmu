@@ -5,12 +5,16 @@
 
 
 #include "Memory.hpp"
-#include "register.h"
+#include "register.hpp"
 
-
+#include "Machine.hpp"
 
 int		main(int argc, char **argv)
 {
+	Machine 	gameboy;
+
+	gameboy.run();
+	/*
 	QApplication	a(argc, argv);
 	OpenGLWindow	w;
 	DbWindow		dbgui;
@@ -31,4 +35,5 @@ int		main(int argc, char **argv)
 	w.show();
 	dbgui.show();
 	return (a.exec());
+	*/
 }
