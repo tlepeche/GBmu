@@ -17,7 +17,7 @@ class DbWindow : public QDialog
 
 public:
     explicit DbWindow(QWidget *parent = 0);
-    ~DbWindow();
+    virtual	~DbWindow();
 
 	void 	updateRegister(t_register& r);
 	void 	updateMemory(Memory& m);

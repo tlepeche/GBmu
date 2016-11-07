@@ -1,5 +1,5 @@
-#include "openglwindow.h"
-#include "dbwindow.h"
+#include "OpenGLWindow.hpp"
+#include "DbWindow.hpp"
 
 #include <QApplication>
 

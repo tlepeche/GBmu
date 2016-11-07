@@ -1,7 +1,7 @@
-#include "dbwindow.h"
+#include "DbWindow.hpp"
 #include "ui_dbwindow.h"
 
-#include "register.h"
+#include "register.hpp"
 #include "Memory.hpp"
 
 DbWindow::DbWindow(QWidget *parent) :
