@@ -1,4 +1,4 @@
-#include "openglwindow.h"
+#include "OpenGLWindow.hpp"
 
 #include <QCoreApplication>
 #include <QOpenGLContext>

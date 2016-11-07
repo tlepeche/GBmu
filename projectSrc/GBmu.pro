@@ -8,12 +8,21 @@ TEMPLATE = app
 
 OBJECTS_DIR   = obj
 
-INCPATH  += include/gb/gui
+INCPATH  += include/gb/gui \
+			include/db \
+			include/gb/core/
 
 SOURCES  += src/main.cpp \
-			src/gb/gui/openglwindow.cpp 
+			src/gb/gui/OpenGLWindow.cpp \
+			src/db/DbWindow.cpp \
+		    src/gb/core/Memory.cpp	\
+			src/gb/core/Machine.cpp \
+			src/gb/core/Cpu.cpp \
+			src/gb/core/Timer.cpp \
+			src/gb/core/opcode.cpp
 
 
-HEADERS  += include/gb/gui/openglwindow.h
+HEADERS  += include/gb/gui/OpenGLWindow.hpp \
+			include/db/DbWindow.hpp 
 
-FORMS    +=  
+FORMS    +=  form/dbwindow.ui
