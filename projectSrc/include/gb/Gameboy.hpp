@@ -10,6 +10,8 @@ enum htype {
 	GBC
 };
 
+#include <thread>
+
 // QWidget for signals 
 #include <QWidget>
 
@@ -19,7 +21,9 @@ class Gameboy : public Machine, public QWidget
 		OpenGLWindow*	_window;
 
 	public:
-		bool	is_debug_mode;
+		bool				is_debug_mode;
+		std::thread			*_thread;
+		std::atomic<bool>	_willRun;
 
 		Gameboy();
 		virtual	~Gameboy();
