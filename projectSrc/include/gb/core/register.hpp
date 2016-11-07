@@ -55,6 +55,8 @@ typedef struct			s_register
 		};
 		uint16_t		HL;
 	};
+	uint16_t			PC;
+	uint16_t			SP;
 
 }						t_register;
 

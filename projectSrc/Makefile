@@ -222,6 +222,7 @@ QMAKE_TARGET  = GBmu
 DESTDIR       = 
 TARGET        = GBmu.app/Contents/MacOS/GBmu
 
+INC_FILES =
 
 first: all
 ####### Build rules
