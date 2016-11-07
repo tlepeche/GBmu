@@ -10,7 +10,10 @@ enum htype {
 	GBC
 };
 
-class Gameboy : public Machine
+// QWidget for signals 
+#include <QWidget>
+
+class Gameboy : public Machine, public QWidget
 {
 	private:
 		OpenGLWindow*	_window;
@@ -22,6 +25,9 @@ class Gameboy : public Machine
 		virtual	~Gameboy();
 
 		virtual void	run();
+
+	protected slots:
+		void	openRomSlot(std::string path);
 };
 
 #endif

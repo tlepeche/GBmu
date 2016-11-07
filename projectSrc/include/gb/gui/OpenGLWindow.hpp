@@ -7,6 +7,7 @@
 class QPainter;
 class QOpenGLContext;
 class QOpenGLPaintDevice;
+class QMenuBar;
 
 class OpenGLWindow : public QWindow, protected QOpenGLFunctions
 {
@@ -25,9 +26,16 @@ class OpenGLWindow : public QWindow, protected QOpenGLFunctions
 		void drawPixel(uint16_t addr, uint8_t r, uint8_t g, uint8_t b);
 		void drawPixel(uint16_t addr, uint32_t color);
 
-		public slots:
-			void renderLater();
+		QMenuBar*	genMenuBar(void);
+	public slots:
+		void renderLater();
 		void renderNow();
+
+	private slots:
+		void openSlot();
+
+	signals:
+		void openRomSign(std::string path);
 
 	protected:
 		bool event(QEvent *event) Q_DECL_OVERRIDE;
@@ -38,6 +46,7 @@ class OpenGLWindow : public QWindow, protected QOpenGLFunctions
 		bool m_update_pending;
 		bool m_animating;
 
+		QMenuBar			*_menuBar;
 		QImage				*frameBuffer;
 		QOpenGLContext 		*m_context;
 		QOpenGLPaintDevice	*m_device;

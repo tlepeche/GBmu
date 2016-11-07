@@ -7,6 +7,8 @@ Gameboy::Gameboy() :
 	_window(new OpenGLWindow()),
 	is_debug_mode(true)
 {
+
+	connect(_window, &OpenGLWindow::openRomSign, this, &Gameboy::openRomSlot);
 	_window->show();
 }
 
@@ -32,4 +34,9 @@ void	Gameboy::run()
 	}
 	sleep(3);
 	run();
+}
+
+void	Gameboy::openRomSlot(std::string path)
+{
+	std::cout << "Gameboy path: " << path << std::endl;
 }
