@@ -19,7 +19,7 @@ SOURCES  += src/main.cpp \
 			src/gb/core/Machine.cpp \
 			src/gb/core/Cpu.cpp \
 			src/gb/core/Timer.cpp \
-			src/gb/core/opcode.cpp
+			src/gb/core/CpuOpcode.cpp 
 
 
 HEADERS  += include/gb/gui/OpenGLWindow.hpp \
