@@ -55,9 +55,9 @@ void Cpu_z80::_setDataOpcode(void)
 	if (this->_opcodeInProgress.lengthData > 1)
 	{
 		if (this->_opcodeInProgress.lengthData > 2)
-			this->_opcodeInProgress.data = this->_memory.read_byte(this->_cpuRegister.PC >> sizeof(uint8_t));
+			this->_opcodeInProgress.data = this->_memory.read_byte(this->_cpuRegister.PC + LENGTH_ADDR);
 		else
-			this->_opcodeInProgress.data = this->_memory.read_word(this->_cpuRegister.PC >> sizeof(uint8_t));
+			this->_opcodeInProgress.data = this->_memory.read_word(this->_cpuRegister.PC + LENGTH_ADDR);
 	}
 }
 
@@ -73,7 +73,7 @@ uint8_t Cpu_z80::_getLengthDataOpcode(void)
 
 void Cpu_z80::_nextPtr(void)
 {
-	this->_cpuRegister.PC = this->_cpuRegister.PC >> this->_opcodeInProgress.lengthData * sizeof(uint8_t);
+	this->_cpuRegister.PC = this->_cpuRegister.PC + this->_opcodeInProgress.lengthData;
 	this->_opcodeInProgress = this->_getOpcode(this->_memory.read_byte(this->_cpuRegister.PC));
 	this->_setDataOpcode();
 }

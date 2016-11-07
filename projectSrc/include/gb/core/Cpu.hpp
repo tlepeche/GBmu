@@ -14,6 +14,9 @@
 #define NB_OPCODE 255
 #define NOP_OPCODE 0
 
+#define LENGTH_ADDR 0x01
+
+
 class Cpu_z80
 {
 	/*
