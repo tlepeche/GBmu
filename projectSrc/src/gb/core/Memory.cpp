@@ -61,14 +61,14 @@ uint8_t			Memory::read_byte(uint16_t addr)
 		case 0xF000:
 			switch (addr & 0x0F00){
 				case 0x0E00:
-					if ((addr & 0xFF) >= 0x00 && (addr & 0xFF) <= 0x9F)
+					if ((addr & 0xFF) <= 0x9F)
 					{
 						// SPRITE
 						return this->_m_oam[(addr & 0xFF)];
 					}
 					break;
 				case 0x0F00:
-					if ((addr & 0xFF) >= 0x00 && (addr & 0xFF) <= 0x7F)
+					if ((addr & 0xFF) <= 0x7F)
 					{
 						// I/O
 						return this->_m_io[(addr & 0xFF)];
@@ -115,14 +115,14 @@ void			Memory::write_byte(uint16_t addr, uint8_t val)
 		case 0xF000:
 			switch (addr & 0x0F00){
 				case 0x0E00:
-					if ((addr & 0xFF) >= 0x00 && (addr & 0xFF) <= 0x9F)
+					if ((addr & 0xFF) <= 0x9F)
 					{
 						// SPRITE
 						this->_m_oam[(addr & 0xFF)] = val;
 					}
 					break;
 				case 0x0F00:
-					if ((addr & 0xFF) >= 0x00 && (addr & 0xFF) <= 0x7F)
+					if ((addr & 0xFF) <= 0x7F)
 					{
 						// I/O
 						this->_m_io[(addr & 0xFF)] = val;
