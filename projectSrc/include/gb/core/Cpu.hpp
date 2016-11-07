@@ -16,7 +16,6 @@
 
 #define LENGTH_ADDR 0x01
 
-
 class Cpu_z80
 {
 	/*
@@ -51,14 +50,14 @@ class Cpu_z80
 
 	/*
 	** ################################################################
-	** METHOD opcode
+	** METHOD
 	** ################################################################
 	*/
 
 	public:
 		std::array<uint32_t, 4>			getArrayFrequency();
 		void							interrupt(void);
-		void							initIOFlags(void);
+		void							init(void);
 
 	private:
 		void							_resetPtrAddr(void);
@@ -73,6 +72,18 @@ class Cpu_z80
 	private:
 		void							_setLowBit(uint16_t addr, uint8_t bit);
 		void 							_setHightBit(uint16_t addr, uint8_t bit);
+
+	/*
+	** ################################################################
+	** METHOD display -- see display.cpp
+	** ################################################################
+	*/
+	public:
+		void							setInterrupt(uint16_t addr, uint8_t bit);
+
+	private:
+		void							_getInterrupt(void);
+
 
 	/*
 	** ################################################################

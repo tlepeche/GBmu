@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/27 20:25:39 by barbare           #+#    #+#             */
-/*   Updated: 2016/11/04 14:55:55 by barbare          ###   ########.fr       */
+/*   Updated: 2016/11/07 18:30:41 by barbare          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 */
 Machine::Machine(void) : _memory(Memory::Instance()), _clock(Timer::Instance()), _cpu(Cpu_z80::Instance())
 {
-	this->_cpu.initIOFlags();
+	this->_cpu.init();
 	this->_clock.setFrequency(this->_cpu.getArrayFrequency());
 	this->_clock.setCycleTotal(this->_getCycleOpcode());
 }
