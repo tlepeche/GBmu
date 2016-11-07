@@ -8,6 +8,7 @@ namespace Ui {
 }
 
 class QTableWidget;
+class QLineEdit;
 class Memory;
 typedef struct s_register t_register;
 
@@ -21,6 +22,7 @@ public:
 
 	void 	updateRegister(t_register& r);
 	void 	updateMemory(Memory& m);
+	void	updateDisassembler(t_register& r, Memory& mem);
 
 	QTableWidget	*tableRegisters;
 	QTableWidget	*tableOtherRegisters;
@@ -31,6 +33,8 @@ public:
 	QPushButton		*buttonReset;
 	QPushButton		*buttonStep;
 	QPushButton		*buttonFrame;
+
+	QLineEdit		*lineAddr;
 
 	signals:
 		void	stepPressedSign();

@@ -758,7 +758,7 @@
      <string>Memory</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEdit">
+   <widget class="QLineEdit" name="lineAddr">
     <property name="geometry">
      <rect>
       <x>70</x>
@@ -768,7 +768,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>0000</string>
+     <string>D000</string>
     </property>
     <property name="maxLength">
      <number>4</number>

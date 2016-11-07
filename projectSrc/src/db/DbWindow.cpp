@@ -52,6 +52,18 @@ void DbWindow::updateRegister(t_register& r)
 	customSetItem(tableRegisters, 0, 5, "%0.4X", r.SP);
 }
 
+void DbWindow::updateDisassembler(t_register& r, Memory& mem)
+{
+	int		i;
+	int		opcode;
+
+	for (i = 0; i < tableDisassembler->rowCount(); ++i)
+	{
+		opcode = mem.read_byte(r.PC + i);
+		customSetItem(tableDisassembler, i, 0, "%0.2X", opcode);
+	}
+}
+
 void DbWindow::updateMemory(Memory& m)
 {
 	unsigned int _start = 0xD000;
@@ -75,6 +87,7 @@ void	DbWindow::updateAllSlot()
 {
 	updateRegister(*_r);
 	updateMemory(*_mem);
+	updateDisassembler(*_r, *_mem);
 }
 
 DbWindow::~DbWindow()
