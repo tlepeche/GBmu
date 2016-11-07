@@ -4,9 +4,14 @@
 #include "register.hpp"
 #include "Memory.hpp"
 
-DbWindow::DbWindow(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::DbWindow)
+#include <QTimer>
+QTimer timer;
+
+DbWindow::DbWindow(t_register* r, Memory* mem) :
+    QDialog(nullptr),
+    ui(new Ui::DbWindow),
+	_r(r),
+	_mem(mem)
 {
     ui->setupUi(this);
 
@@ -16,7 +21,12 @@ DbWindow::DbWindow(QWidget *parent) :
 	tableDisassembler	= this->findChild<QTableWidget*>("tableDisassembler");
 	tableMemory			= this->findChild<QTableWidget*>("tableMemory");
 	tableMemory->resizeColumnsToContents();
+
+
+	connect(&timer, &QTimer::timeout, this, &DbWindow::updateAllSlot);
+	timer.start(100);
 }
+
 static inline
 void customSetItem(QTableWidget* table, int x, int y, const char *format, int value)
 {
@@ -28,13 +38,12 @@ void customSetItem(QTableWidget* table, int x, int y, const char *format, int va
 
 void DbWindow::updateRegister(t_register& r)
 {
-// TODO: after merge 
-//	customSetItem(tableRegisters, 0, 0, "%0.4X", r.PC);
+	customSetItem(tableRegisters, 0, 0, "%0.4X", r.PC);
 	customSetItem(tableRegisters, 0, 1, "%0.4X", r.AF);
 	customSetItem(tableRegisters, 0, 2, "%0.4X", r.BC);
 	customSetItem(tableRegisters, 0, 3, "%0.4X", r.DE);
 	customSetItem(tableRegisters, 0, 4, "%0.4X", r.HL);
-//	customSetItem(tableRegisters, 0, 5, "%0.4X", r.SP);
+	customSetItem(tableRegisters, 0, 5, "%0.4X", r.SP);
 }
 
 void DbWindow::updateMemory(Memory& m)
@@ -48,6 +57,13 @@ void DbWindow::updateMemory(Memory& m)
 		for (col = 0 ; col <= 0xF ; ++col)
 			customSetItem(tableMemory, row, col + 1, "%0.2X", m.read_byte(curr + col));
 	}
+}
+
+// This function il call every 100ms see _timer 
+void	DbWindow::updateAllSlot()
+{
+	updateRegister(*_r);
+	updateMemory(*_mem);
 }
 
 DbWindow::~DbWindow()

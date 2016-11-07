@@ -6,6 +6,7 @@
 
 Gameboy::Gameboy() :
 	_window(new OpenGLWindow())
+	, _windowDebug(nullptr)
 	, _thread(nullptr)
 {
 	_debugMode.store(false);
@@ -13,6 +14,7 @@ Gameboy::Gameboy() :
 
 	connect(_window, &OpenGLWindow::openRomSign, this, &Gameboy::openRomSlot);
 	connect(_window, &OpenGLWindow::gbDbSign, this, &Gameboy::gbDbSlot);
+
 	_window->show();
 }
 
@@ -21,19 +23,15 @@ Gameboy::~Gameboy()
 	delete this->_windowDebug;
 	delete this->_window;
 }
-
-#include <ctime>
-#include <time.h>
-#include <stdio.h>
 #include <unistd.h>
 
 void	Gameboy::run()
 {
 	if (_willRun)
 	{
-		if (_debugMode.load())
+		if (_debugMode && _windowDebug)
 		{
-
+			step();
 		}
 		else
 		{
@@ -54,7 +52,7 @@ void	Gameboy::openRomSlot(std::string path)
 
 void	Gameboy::gbDbSlot()
 {
-	_windowDebug = new DbWindow();
+	_windowDebug = new DbWindow(&_cpu._cpuRegister, &_memory);
 	_windowDebug->show();
 	_debugMode.store(true);
 }

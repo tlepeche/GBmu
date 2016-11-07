@@ -1,5 +1,4 @@
 # Qt 
-*.stash
 moc_*.cpp
 ui_*.h
 

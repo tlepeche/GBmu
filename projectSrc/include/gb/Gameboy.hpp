@@ -31,6 +31,7 @@ class Gameboy : public Machine, public QWidget
 		virtual	~Gameboy();
 
 		virtual void	run();
+		void			updateGbDb();
 
 	protected slots:
 		void	openRomSlot(std::string path);

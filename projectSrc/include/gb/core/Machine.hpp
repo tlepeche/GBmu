@@ -7,7 +7,7 @@
 
 class Machine
 {
-	private:
+	protected:
 		Timer &_clock;
 		Cpu_z80 &_cpu;
 		Memory &_memory;
