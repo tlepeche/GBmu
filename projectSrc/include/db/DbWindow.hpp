@@ -22,13 +22,20 @@ public:
 	void 	updateRegister(t_register& r);
 	void 	updateMemory(Memory& m);
 
-	QTableWidget *tableRegisters;
-	QTableWidget *tableOtherRegisters;
-	QTableWidget *tableVideoRegisters;
-	QTableWidget *tableDisassembler;
-	QTableWidget *tableMemory;
+	QTableWidget	*tableRegisters;
+	QTableWidget	*tableOtherRegisters;
+	QTableWidget	*tableVideoRegisters;
+	QTableWidget	*tableDisassembler;
+	QTableWidget	*tableMemory;
 
+	QPushButton		*buttonReset;
+	QPushButton		*buttonStep;
+	QPushButton		*buttonFrame;
+
+	signals:
+		void	stepPressedSign();
 	public slots:
+		void	stepPressedSlot();
 		void	updateAllSlot();
 
 private:

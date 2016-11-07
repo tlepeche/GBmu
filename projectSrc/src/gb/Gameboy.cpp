@@ -31,16 +31,20 @@ void	Gameboy::run()
 	{
 		if (_debugMode && _windowDebug)
 		{
-			step();
+			// if freeRun
+			// 	step();
 		}
 		else
 		{
 			step();
 		}
-		std::cout << "STEP" << std::endl;
-		sleep(1);
 		run();
 	}
+}
+
+void	Gameboy::stepPressedSlot()
+{
+	step();
 }
 
 void	Gameboy::openRomSlot(std::string path)
@@ -53,6 +57,8 @@ void	Gameboy::openRomSlot(std::string path)
 void	Gameboy::gbDbSlot()
 {
 	_windowDebug = new DbWindow(&_cpu._cpuRegister, &_memory);
+	connect(_windowDebug, &DbWindow::stepPressedSign, this, &Gameboy::stepPressedSlot);
+
 	_windowDebug->show();
 	_debugMode.store(true);
 }

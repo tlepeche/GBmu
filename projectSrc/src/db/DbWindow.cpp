@@ -20,8 +20,14 @@ DbWindow::DbWindow(t_register* r, Memory* mem) :
 	tableVideoRegisters	= this->findChild<QTableWidget*>("tableVideoRegisters");
 	tableDisassembler	= this->findChild<QTableWidget*>("tableDisassembler");
 	tableMemory			= this->findChild<QTableWidget*>("tableMemory");
+
+	buttonReset			= this->findChild<QPushButton*>("buttonReset");
+	buttonStep			= this->findChild<QPushButton*>("buttonStep");
+	buttonFrame			= this->findChild<QPushButton*>("buttonFrame");
+
 	tableMemory->resizeColumnsToContents();
 
+	connect(buttonStep, &QPushButton::pressed, this, &DbWindow::stepPressedSlot);
 
 	connect(&timer, &QTimer::timeout, this, &DbWindow::updateAllSlot);
 	timer.start(100);
@@ -57,6 +63,11 @@ void DbWindow::updateMemory(Memory& m)
 		for (col = 0 ; col <= 0xF ; ++col)
 			customSetItem(tableMemory, row, col + 1, "%0.2X", m.read_byte(curr + col));
 	}
+}
+
+void	DbWindow::stepPressedSlot()
+{
+	emit	stepPressedSign();
 }
 
 // This function il call every 100ms see _timer 

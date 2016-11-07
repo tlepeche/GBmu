@@ -36,6 +36,7 @@ class Gameboy : public Machine, public QWidget
 	protected slots:
 		void	openRomSlot(std::string path);
 		void	gbDbSlot();
+		void	stepPressedSlot();
 };
 
 #endif
