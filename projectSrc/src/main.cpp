@@ -1,19 +1,14 @@
-#include "OpenGLWindow.hpp"
-#include "DbWindow.hpp"
 
 #include <QApplication>
-
-
-#include "Memory.hpp"
-#include "register.hpp"
-
-#include "Machine.hpp"
+#include "Gameboy.hpp"
 
 int		main(int argc, char **argv)
 {
-	Machine 	gameboy;
+	QApplication	a(argc, argv);
+	Gameboy		gb;
 
-	gameboy.run();
+	// gb.run();
+	return (a.exec());
 	/*
 	QApplication	a(argc, argv);
 	OpenGLWindow	w;

@@ -20,7 +20,9 @@ class Machine
 	public:
 		Machine(void);
 		virtual ~Machine(void) {};
-		void run(void);
+
+		void			step(void);
+		virtual void	run(void);
 
 };
 #endif
