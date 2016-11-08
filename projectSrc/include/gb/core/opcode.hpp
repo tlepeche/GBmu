@@ -1,9 +1,10 @@
 #include <iostream>
+#include <functional>
 
 #ifndef _OPCODE_HPP
 # define _OPCODE_HPP
 
-void nop(void);
+typedef std::function<void()>	opcodeFct;
 
 typedef struct	s_opcode
 {
@@ -12,10 +13,10 @@ typedef struct	s_opcode
 	uint8_t		cycleOpcodeFlag;
 	uint8_t		cycleOpcodeNoFlag;
 	uint8_t		lengthData;
-	void		(*functionOpcode)();
+	opcodeFct	functionOpcode;
 	uint16_t	data;
 }				t_opcode;
 
-extern t_opcode _opcodeMap[255];
+extern std::array<t_opcode, 256>	_opcodeMap;
 
 #endif
