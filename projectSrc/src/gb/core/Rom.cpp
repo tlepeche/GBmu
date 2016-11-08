@@ -98,13 +98,13 @@ void		Rom::write(uint16_t addr, uint8_t val)
 			if (this->_tbank)
 			{
 				// eram
-				if (val == 0x01 || val <= 0x1f)
+				if (val >= 0x01 && val <= 0x1f)
 					this->_rambank = val;
 			}
 			else
 			{
 				// rom
-				if (val == 0x01 || val <= 0x1f)
+				if (val >= 0x01 && val <= 0x1f)
 					this->_bank = val;
 			}
 			break;
