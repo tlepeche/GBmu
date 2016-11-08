@@ -1,7 +1,7 @@
 #ifndef ROM_HPP
 #define ROM_HPP
 
-#include "gameboy.hpp"
+#include "htype.hpp"
 
 typedef struct		info_rom
 {

@@ -12,8 +12,7 @@ std::array<t_opcode, 256>	_CBopcodeMap;
 Cpu_z80		Cpu_z80::_instance = Cpu_z80();
 
 Cpu_z80::Cpu_z80(void) :
-	_memory(Memory::Instance()),
-	_rom(Rom::Instance())
+	_memory(Memory::Instance())
 {
 	_setOpcodeMap();
 }
@@ -99,7 +98,6 @@ void Cpu_z80::init(void)
 	printf("INITIALIZING\n");
 	htype typeRom;
 	this->_memory.reset();
-	this->_rom.reset();
 
 	//init register cpu
 	//if (this->_rom.isLoaded()) //TODO: when david PR his code
