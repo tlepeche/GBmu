@@ -15,7 +15,7 @@ CXX           = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefau
 DEFINES       = -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -O2 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -mmacosx-version-min=10.8 -Wall -W -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -stdlib=libc++ -O2 -std=gnu++11 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -mmacosx-version-min=10.8 -Wall -W -fPIC $(DEFINES)
-INCPATH       = -I. -Iinclude/gb/gui -Iinclude/db -Iinclude/gb/core -I/goinfre/Qt/5.7/clang_64/lib/QtOpenGL.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/OpenGL.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/AGL.framework/Headers -I. -I/goinfre/Qt/5.7/clang_64/mkspecs/macx-clang -F/goinfre/Qt/5.7/clang_64/lib
+INCPATH       = -I. -Iinclude/gb/gui -Iinclude/db -Iinclude/gb -Iinclude/gb/core -I. -I/goinfre/Qt/5.7/clang_64/lib/QtOpenGL.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/OpenGL.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/AGL.framework/Headers -I. -I/goinfre/Qt/5.7/clang_64/mkspecs/macx-clang -F/goinfre/Qt/5.7/clang_64/lib
 QMAKE         = /goinfre/Qt/5.7/clang_64/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -33,7 +33,7 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = GBmu1.0.0
-DISTDIR = /Users/tlepeche/projet/GBmu/projectSrc/obj/GBmu1.0.0
+DISTDIR = /Users/edelangh/work/GBmu/projectSrc/obj/GBmu1.0.0
 LINK          = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
 LFLAGS        = -headerpad_max_install_names -stdlib=libc++ -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -mmacosx-version-min=10.8 -Wl,-rpath,/goinfre/Qt/5.7/clang_64/lib
 LIBS          = $(SUBLIBS) -F/goinfre/Qt/5.7/clang_64/lib -framework QtOpenGL -framework QtWidgets -framework QtGui -framework QtCore -framework DiskArbitration -framework IOKit -framework OpenGL -framework AGL 
@@ -55,6 +55,7 @@ SOURCES       = src/main.cpp \
 		src/gb/core/Machine.cpp \
 		src/gb/core/Cpu.cpp \
 		src/gb/core/Timer.cpp \
+		src/gb/Gameboy.cpp \
 		src/gb/core/CpuOpcode.cpp moc_OpenGLWindow.cpp \
 		moc_DbWindow.cpp
 OBJECTS       = obj/main.o \
@@ -64,6 +65,7 @@ OBJECTS       = obj/main.o \
 		obj/Machine.o \
 		obj/Cpu.o \
 		obj/Timer.o \
+		obj/Gameboy.o \
 		obj/CpuOpcode.o \
 		obj/moc_OpenGLWindow.o \
 		obj/moc_DbWindow.o
@@ -229,6 +231,7 @@ DIST          = /goinfre/Qt/5.7/clang_64/mkspecs/features/spec_pre.prf \
 		src/gb/core/Machine.cpp \
 		src/gb/core/Cpu.cpp \
 		src/gb/core/Timer.cpp \
+		src/gb/Gameboy.cpp \
 		src/gb/core/CpuOpcode.cpp
 QMAKE_TARGET  = GBmu
 DESTDIR       = 
@@ -577,7 +580,7 @@ GBmu.app/Contents/Resources/empty.lproj:
 GBmu.app/Contents/Info.plist: 
 	@test -d GBmu.app/Contents || mkdir -p GBmu.app/Contents
 	@$(DEL_FILE) GBmu.app/Contents/Info.plist
-	@sed -e "s,@SHORT_VERSION@,1.0,g" -e "s,@FULL_VERSION@,1.0.0,g" -e "s,@TYPEINFO@,????,g" -e "s,@BUNDLEIDENTIFIER@,com.yourcompany.GBmu,g" -e "s,@ICON@,,g" -e "s,@EXECUTABLE@,GBmu,g" -e "s,@LIBRARY@,GBmu,g" -e "s,@TYPEINFO@,????,g" /goinfre/Qt/5.7/clang_64/mkspecs/macx-clang/Info.plist.app >GBmu.app/Contents/Info.plist
+	@sed -e "s,@SHORT_VERSION@,1.0,g" -e "s,@FULL_VERSION@,1.0.0,g" -e "s,@TYPEINFO@,????,g" -e "s,@BUNDLEIDENTIFIER@,qweqwe.GBmu,g" -e "s,@ICON@,,g" -e "s,@EXECUTABLE@,GBmu,g" -e "s,@LIBRARY@,GBmu,g" -e "s,@TYPEINFO@,????,g" /goinfre/Qt/5.7/clang_64/mkspecs/macx-clang/Info.plist.app >GBmu.app/Contents/Info.plist
 
 all: Makefile \
 		GBmu.app/Contents/PkgInfo \
@@ -591,7 +594,7 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents include/gb/gui/OpenGLWindow.hpp include/db/DbWindow.hpp $(DISTDIR)/
-	$(COPY_FILE) --parents src/main.cpp src/gb/gui/OpenGLWindow.cpp src/db/DbWindow.cpp src/gb/core/Memory.cpp src/gb/core/Machine.cpp src/gb/core/Cpu.cpp src/gb/core/Timer.cpp src/gb/core/CpuOpcode.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents src/main.cpp src/gb/gui/OpenGLWindow.cpp src/db/DbWindow.cpp src/gb/core/Memory.cpp src/gb/core/Machine.cpp src/gb/core/Cpu.cpp src/gb/core/Timer.cpp src/gb/Gameboy.cpp src/gb/core/CpuOpcode.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents form/dbwindow.ui $(DISTDIR)/
 
 
@@ -627,13 +630,13 @@ moc_OpenGLWindow.cpp: /goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers/QWind
 		/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers/qopenglfunctions.h \
 		include/gb/gui/OpenGLWindow.hpp \
 		/goinfre/Qt/5.7/clang_64/bin/moc
-	/goinfre/Qt/5.7/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/goinfre/Qt/5.7/clang_64/mkspecs/macx-clang -I/Users/tlepeche/projet/GBmu/projectSrc -I/Users/tlepeche/projet/GBmu/projectSrc/include/gb/gui -I/Users/tlepeche/projet/GBmu/projectSrc/include/db -I/Users/tlepeche/projet/GBmu/projectSrc/include/gb/core -I/goinfre/Qt/5.7/clang_64/lib/QtOpenGL.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -I/usr/local/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/7.3.0/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/usr/include -I'/System/Library/Frameworks (framework directory)' -I'/Library/Frameworks (framework directory)' -F/goinfre/Qt/5.7/clang_64/lib include/gb/gui/OpenGLWindow.hpp -o moc_OpenGLWindow.cpp
+	/goinfre/Qt/5.7/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/goinfre/Qt/5.7/clang_64/mkspecs/macx-clang -I/Users/edelangh/work/GBmu/projectSrc -I/Users/edelangh/work/GBmu/projectSrc/include/gb/gui -I/Users/edelangh/work/GBmu/projectSrc/include/db -I/Users/edelangh/work/GBmu/projectSrc/include/gb -I/Users/edelangh/work/GBmu/projectSrc/include/gb/core -I/Users/edelangh/work/GBmu/projectSrc -I/goinfre/Qt/5.7/clang_64/lib/QtOpenGL.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -I/usr/local/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/7.3.0/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/usr/include -I'/System/Library/Frameworks (framework directory)' -I'/Library/Frameworks (framework directory)' -F/goinfre/Qt/5.7/clang_64/lib include/gb/gui/OpenGLWindow.hpp -o moc_OpenGLWindow.cpp
 
 moc_DbWindow.cpp: /goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/QDialog \
 		/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/qdialog.h \
 		include/db/DbWindow.hpp \
 		/goinfre/Qt/5.7/clang_64/bin/moc
-	/goinfre/Qt/5.7/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/goinfre/Qt/5.7/clang_64/mkspecs/macx-clang -I/Users/tlepeche/projet/GBmu/projectSrc -I/Users/tlepeche/projet/GBmu/projectSrc/include/gb/gui -I/Users/tlepeche/projet/GBmu/projectSrc/include/db -I/Users/tlepeche/projet/GBmu/projectSrc/include/gb/core -I/goinfre/Qt/5.7/clang_64/lib/QtOpenGL.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -I/usr/local/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/7.3.0/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/usr/include -I'/System/Library/Frameworks (framework directory)' -I'/Library/Frameworks (framework directory)' -F/goinfre/Qt/5.7/clang_64/lib include/db/DbWindow.hpp -o moc_DbWindow.cpp
+	/goinfre/Qt/5.7/clang_64/bin/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -I/goinfre/Qt/5.7/clang_64/mkspecs/macx-clang -I/Users/edelangh/work/GBmu/projectSrc -I/Users/edelangh/work/GBmu/projectSrc/include/gb/gui -I/Users/edelangh/work/GBmu/projectSrc/include/db -I/Users/edelangh/work/GBmu/projectSrc/include/gb -I/Users/edelangh/work/GBmu/projectSrc/include/gb/core -I/Users/edelangh/work/GBmu/projectSrc -I/goinfre/Qt/5.7/clang_64/lib/QtOpenGL.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers -I/goinfre/Qt/5.7/clang_64/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -I/usr/local/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/7.3.0/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/usr/include -I'/System/Library/Frameworks (framework directory)' -I'/Library/Frameworks (framework directory)' -F/goinfre/Qt/5.7/clang_64/lib include/db/DbWindow.hpp -o moc_DbWindow.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -656,22 +659,17 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 
 ####### Compile
 
-obj/main.o: src/main.cpp include/gb/gui/OpenGLWindow.hpp \
-		/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers/QWindow \
-		/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers/qwindow.h \
-		/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers/QOpenGLFunctions \
-		/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers/qopenglfunctions.h \
-		include/db/DbWindow.hpp \
-		/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/QDialog \
-		/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/qdialog.h \
-		/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/QApplication \
+obj/main.o: src/main.cpp /goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/QApplication \
 		/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/qapplication.h \
-		include/gb/core/Memory.hpp \
-		include/gb/core/register.hpp \
+		include/gb/Gameboy.hpp \
 		include/gb/core/Machine.hpp \
 		include/gb/core/Cpu.hpp \
 		include/gb/core/Timer.hpp \
-		include/gb/core/opcode.hpp
+		include/gb/core/Memory.hpp \
+		include/gb/core/register.hpp \
+		include/gb/core/opcode.hpp \
+		/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/QWidget \
+		/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/qwidget.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/main.o src/main.cpp
 
 obj/OpenGLWindow.o: src/gb/gui/OpenGLWindow.cpp include/gb/gui/OpenGLWindow.hpp \
@@ -686,7 +684,11 @@ obj/OpenGLWindow.o: src/gb/gui/OpenGLWindow.cpp include/gb/gui/OpenGLWindow.hpp 
 		/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers/QOpenGLPaintDevice \
 		/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers/qopenglpaintdevice.h \
 		/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers/QPainter \
-		/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers/qpainter.h
+		/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers/qpainter.h \
+		/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/QMenuBar \
+		/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/qmenubar.h \
+		/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/QFileDialog \
+		/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/qfiledialog.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/OpenGLWindow.o src/gb/gui/OpenGLWindow.cpp
 
 obj/DbWindow.o: src/db/DbWindow.cpp include/db/DbWindow.hpp \
@@ -694,7 +696,9 @@ obj/DbWindow.o: src/db/DbWindow.cpp include/db/DbWindow.hpp \
 		/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/qdialog.h \
 		ui_dbwindow.h \
 		include/gb/core/register.hpp \
-		include/gb/core/Memory.hpp
+		include/gb/core/Memory.hpp \
+		/goinfre/Qt/5.7/clang_64/lib/QtCore.framework/Headers/QTimer \
+		/goinfre/Qt/5.7/clang_64/lib/QtCore.framework/Headers/qtimer.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/DbWindow.o src/db/DbWindow.cpp
 
 obj/Memory.o: src/gb/core/Memory.cpp include/gb/core/Memory.hpp
@@ -717,6 +721,25 @@ obj/Cpu.o: src/gb/core/Cpu.cpp include/gb/core/Cpu.hpp \
 
 obj/Timer.o: src/gb/core/Timer.cpp include/gb/core/Timer.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/Timer.o src/gb/core/Timer.cpp
+
+obj/Gameboy.o: src/gb/Gameboy.cpp include/gb/gui/OpenGLWindow.hpp \
+		/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers/QWindow \
+		/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers/qwindow.h \
+		/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers/QOpenGLFunctions \
+		/goinfre/Qt/5.7/clang_64/lib/QtGui.framework/Headers/qopenglfunctions.h \
+		include/db/DbWindow.hpp \
+		/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/QDialog \
+		/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/qdialog.h \
+		include/gb/Gameboy.hpp \
+		include/gb/core/Machine.hpp \
+		include/gb/core/Cpu.hpp \
+		include/gb/core/Timer.hpp \
+		include/gb/core/Memory.hpp \
+		include/gb/core/register.hpp \
+		include/gb/core/opcode.hpp \
+		/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/QWidget \
+		/goinfre/Qt/5.7/clang_64/lib/QtWidgets.framework/Headers/qwidget.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/Gameboy.o src/gb/Gameboy.cpp
 
 obj/CpuOpcode.o: src/gb/core/CpuOpcode.cpp include/gb/core/Cpu.hpp \
 		include/gb/core/Timer.hpp \

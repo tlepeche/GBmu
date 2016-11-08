@@ -4,11 +4,20 @@
 #include <QOpenGLContext>
 #include <QOpenGLPaintDevice>
 #include <QPainter>
+#include <QMenuBar>
+
+#include <QFileDialog>
+
+#include <iostream>
+
+// GOOD tuto
+// http://doc.qt.io/qt-5/qtwidgets-mainwindows-menus-example.html
 
 OpenGLWindow::OpenGLWindow(QWindow *parent)
 	: QWindow(parent)
 	, m_update_pending(false)
 	, m_animating(false)
+	, _menuBar(this->genMenuBar())
 	, frameBuffer(new QImage(160, 140, QImage::Format_RGB32))
 	, m_context(0)
 	, m_device(0)
@@ -16,8 +25,37 @@ OpenGLWindow::OpenGLWindow(QWindow *parent)
 	setSurfaceType(QWindow::OpenGLSurface);
 }
 
+QMenuBar	*OpenGLWindow::genMenuBar()
+{
+	QMenuBar*	menuBar	= new QMenuBar();
+	QMenu*		menu	= new QMenu(tr("Actions"));
+	QAction*	openAct	= new QAction(tr("Open"));
+	QAction*	gbDbAct = new QAction(tr("Debbuger"));
+
+	connect(openAct, &QAction::triggered, this, &OpenGLWindow::openSlot);
+	connect(gbDbAct, &QAction::triggered, this, &OpenGLWindow::gbDbSlot);
+	menu->addAction(openAct);
+	menu->addAction(gbDbAct);
+	menuBar->addMenu(menu);
+
+	return menuBar;
+}
+
+void	OpenGLWindow::openSlot()
+{
+	QString path = QFileDialog::getOpenFileName(NULL, tr("Open XML File 1"), "/home", tr("XML Files (*.xml, *)"));
+
+	emit openRomSign(path.toStdString());
+}
+
+void	OpenGLWindow::gbDbSlot()
+{
+	emit gbDbSign();
+}
+
 OpenGLWindow::~OpenGLWindow()
 {
+	delete _menuBar;
 	delete m_device;
 	delete frameBuffer;
 }
