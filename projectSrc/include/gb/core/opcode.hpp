@@ -4,6 +4,8 @@
 #ifndef _OPCODE_HPP
 # define _OPCODE_HPP
 
+#include <array>
+
 typedef std::function<void()>	opcodeFct;
 
 typedef struct	s_opcode
