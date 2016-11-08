@@ -16,7 +16,8 @@ INCPATH  += include/gb/gui \
 SOURCES  += src/main.cpp \
 			src/gb/gui/OpenGLWindow.cpp \
 			src/db/DbWindow.cpp \
-		    src/gb/core/Memory.cpp	\
+		    src/gb/core/Memory.cpp \
+		    src/gb/core/Rom.cpp \
 			src/gb/core/Machine.cpp \
 			src/gb/core/Cpu.cpp \
 			src/gb/core/Timer.cpp \

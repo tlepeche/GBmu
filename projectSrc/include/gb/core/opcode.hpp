@@ -18,5 +18,6 @@ typedef struct	s_opcode
 }				t_opcode;
 
 extern std::array<t_opcode, 256>	_opcodeMap;
+extern std::array<t_opcode, 256>	_CBopcodeMap;
 
 #endif
