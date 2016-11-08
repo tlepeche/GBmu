@@ -6,7 +6,7 @@
 /*   By: barbare <barbare@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/27 20:25:39 by barbare           #+#    #+#             */
-/*   Updated: 2016/11/04 14:55:55 by barbare          ###   ########.fr       */
+/*   Updated: 2016/11/07 19:48:39 by edelangh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ Machine::Machine(void) : _memory(Memory::Instance()), _clock(Timer::Instance()),
 	this->_clock.setCycleTotal(this->_getCycleOpcode());
 }
 
-void Machine::run(void)
+void Machine::step(void)
 {
 	if (((this->_memory.read_byte(REGISTER_TAC) & 0x4) == 0x4))
 	{
@@ -42,8 +42,13 @@ void Machine::run(void)
 			this->_clock.reset();
 			this->_cpu.interrupt();
 		}
-		this->run();
 	}
+}
+
+void Machine::run(void)
+{
+	this->step();
+	this->run();
 }
 
 uint8_t Machine::_getCycleOpcode(void)
