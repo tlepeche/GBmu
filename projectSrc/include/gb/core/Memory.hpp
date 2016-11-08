@@ -1,6 +1,7 @@
 #ifndef MEMORY_HPP
 #define MEMORY_HPP
 
+#include "Rom.hpp"
 // Define I/O Register Address
 
 // Port / Mode
@@ -46,11 +47,11 @@
 #define OCPS	0xFF6A
 #define OCPD	0xFF6B
 
-
 class Memory {
 
 	public:
 		static Memory		&Instance(void);
+		void				Init(void);
 		void				reset(void);
 		uint8_t				read_byte(uint16_t addr);
 		void				write_byte(uint16_t addr, uint8_t val);
@@ -59,8 +60,7 @@ class Memory {
 
 	private:
 		static Memory		_instance;
-		uint8_t				_m_rom_bank0[16384];
-		uint8_t				_m_rom_bank1[16384];
+		Rom					&_rom;
 		uint8_t				_m_wram[8][4095];
 		uint8_t				_m_vram[2][8192];
 		uint8_t				_m_oam[160];
