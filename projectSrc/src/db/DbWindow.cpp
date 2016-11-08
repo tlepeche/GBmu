@@ -11,7 +11,8 @@ DbWindow::DbWindow(t_register* r, Memory* mem) :
     QDialog(nullptr),
     ui(new Ui::DbWindow),
 	_r(r),
-	_mem(mem)
+	_mem(mem),
+	_start(0xD000)
 {
     ui->setupUi(this);
 
@@ -25,9 +26,11 @@ DbWindow::DbWindow(t_register* r, Memory* mem) :
 	buttonStep			= this->findChild<QPushButton*>("buttonStep");
 	buttonFrame			= this->findChild<QPushButton*>("buttonFrame");
 
+	lineAddr			= this->findChild<QLineEdit*>("lineAddr");
 	tableMemory->resizeColumnsToContents();
 
 	connect(buttonStep, &QPushButton::pressed, this, &DbWindow::stepPressedSlot);
+	connect(lineAddr, &QLineEdit::editingFinished, this, &DbWindow::lineAddrEditedSlot);
 
 	connect(&timer, &QTimer::timeout, this, &DbWindow::updateAllSlot);
 	timer.start(100);
@@ -66,7 +69,6 @@ void DbWindow::updateDisassembler(t_register& r, Memory& mem)
 
 void DbWindow::updateMemory(Memory& m)
 {
-	unsigned int _start = 0xD000;
 	unsigned int row, col, curr;
 
 	for (row = 0 ; row < 9 ; ++row) {
@@ -75,6 +77,19 @@ void DbWindow::updateMemory(Memory& m)
 		for (col = 0 ; col <= 0xF ; ++col)
 			customSetItem(tableMemory, row, col + 1, "%0.2X", m.read_byte(curr + col));
 	}
+}
+
+#include <sstream>
+
+void	DbWindow::lineAddrEditedSlot()
+{
+	std::stringstream	ss;
+	unsigned int		max = 0xFFFF - 8 * 0x10;
+	ss << std::hex << lineAddr->text().toStdString();
+	ss >> _start;
+
+	if (_start >= max)
+		_start = max;
 }
 
 void	DbWindow::stepPressedSlot()

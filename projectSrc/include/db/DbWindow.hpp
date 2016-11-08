@@ -41,12 +41,15 @@ public:
 	public slots:
 		void	stepPressedSlot();
 		void	updateAllSlot();
+		void	lineAddrEditedSlot();
 
 private:
     Ui::DbWindow	*ui;
 
 	t_register		*_r;
 	Memory			*_mem;
+
+	unsigned int	_start;
 };
 
 #endif // DBWINDOW_H
