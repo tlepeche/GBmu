@@ -3,6 +3,7 @@
 
 #include "Timer.hpp"
 #include "Memory.hpp"
+#include "Rom.hpp"
 #include "register.hpp"
 #include "opcode.hpp"
 
@@ -15,7 +16,6 @@
 #define NOP_OPCODE 0
 
 #define LENGTH_ADDR 0x01
-
 
 template <typename T1, typename T2, typename T3>
 inline bool testAdd(T1 op1, T2 op2, T3 mask)
@@ -68,14 +68,15 @@ class Cpu_z80
 
 	/*
 	** ################################################################
-	** METHOD opcode
+	** METHOD
 	** ################################################################
 	*/
 
 	public:
 		std::array<uint32_t, 4>			getArrayFrequency();
 		void							interrupt(void);
-		void							initIOFlags(void);
+		void							init(void);
+
 		void							NOP();			//0x00
 		void							LD_BC_n();		//0x01     Not done yet
 		void							LD_BC_A();		//0x02
@@ -321,7 +322,7 @@ class Cpu_z80
 		void							EI();			//0xfb     Not done yet
 		void							CP_n();			//0xfe     Not done yet
 		void							RST_38H();		//0xff     Not done yet
-						
+
 	private:
 		void							_resetPtrAddr(void);
 		void							_nextPtr(void);
@@ -335,6 +336,18 @@ class Cpu_z80
 	private:
 		void							_setLowBit(uint16_t addr, uint8_t bit);
 		void 							_setHightBit(uint16_t addr, uint8_t bit);
+
+	/*
+	** ################################################################
+	** METHOD display -- see display.cpp
+	** ################################################################
+	*/
+	public:
+		void							setInterrupt(uint16_t addr, uint8_t bit);
+
+	private:
+		void							_getInterrupt(void);
+
 
 	/*
 	** ################################################################

@@ -3,12 +3,6 @@
 
 #include "Machine.hpp"
 
-enum htype {
-	AUTO,
-	GB,
-	GBC
-};
-
 #include <thread>
 class OpenGLWindow;
 class DbWindow;

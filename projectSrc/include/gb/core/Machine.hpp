@@ -8,9 +8,9 @@
 class Machine
 {
 	protected:
+		Memory &_memory;
 		Timer &_clock;
 		Cpu_z80 &_cpu;
-		Memory &_memory;
 		//Gpu::Gpu &_gpu;
 
 
