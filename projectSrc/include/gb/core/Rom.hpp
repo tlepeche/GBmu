@@ -16,18 +16,30 @@ class Rom {
 	public:
 		static Rom		&Instance(void);
 		int				load(char *file);
-		char			*read(uint32_t size);
+		bool			isLoaded(void);
+		uint8_t			read(uint16_t addr);
+		void			write(uint16_t addr, uint8_t val);
 		void			reset(void);
 		irom			getType(void);
 
 	private:
 		static Rom		_instance;
 		char			*_rom;
-		uint32_t		_rom_size;
-		uint32_t		_pos;
+		uint8_t			*_eram;
+		irom			_info;
+		uint8_t			_nbanks;
+		uint8_t			_nrambanks;
+		uint8_t			_bank;
+		uint8_t			_u_bank;
+		uint8_t			_rambank;
+		uint8_t			_tbank;
+		uint8_t			_write_protect;
 
 		Rom(void);
 		~Rom(void);
+		void			init(void);
+		uint8_t			getBankRom(uint8_t octet);
+		uint8_t			getBankEram(uint8_t octet);
 };
 
 #endif

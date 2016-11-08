@@ -4,7 +4,7 @@
 
 Memory		Memory::_instance = Memory();
 
-Memory::Memory(void)
+Memory::Memory(void) : _rom(Rom::Instance())
 {
 	this->reset();
 }
@@ -16,10 +16,13 @@ Memory			&Memory::Instance(void)
 	return Memory::_instance;
 }
 
+void			Memory::Init(void)
+{
+	this->reset();
+}
+
 void			Memory::reset(void)
 {
-	memset(this->_m_rom_bank0, 0, 16384);
-	memset(this->_m_rom_bank1, 0, 16384);
 	memset(this->_m_wram, 0, 32768);
 	memset(this->_m_vram, 0, 16384);
 	memset(this->_m_oam, 0, 160);
@@ -33,13 +36,12 @@ uint8_t			Memory::read_byte(uint16_t addr)
 		case 0x1000:
 		case 0x2000:
 		case 0x3000:
-			// ROM BANK 0
-			break;
 		case 0x4000:
 		case 0x5000:
 		case 0x6000:
 		case 0x7000:
-			// ROM BANK 1
+			// ROM
+			return this->_rom.read(addr);
 			break;
 		case 0x8000:
 		case 0x9000:
@@ -49,6 +51,7 @@ uint8_t			Memory::read_byte(uint16_t addr)
 		case 0xA000:
 		case 0xB000:
 			// ERAM
+			return this->_rom.read(addr);
 			break;
 		case 0xC000:
 		case 0xD000:
@@ -87,13 +90,12 @@ void			Memory::write_byte(uint16_t addr, uint8_t val)
 		case 0x1000:
 		case 0x2000:
 		case 0x3000:
-			// ROM BANK 0
-			break;
 		case 0x4000:
 		case 0x5000:
 		case 0x6000:
 		case 0x7000:
-			// ROM BANK 1
+			// ROM
+			this->_rom.write(addr, val);
 			break;
 		case 0x8000:
 		case 0x9000:
@@ -103,6 +105,7 @@ void			Memory::write_byte(uint16_t addr, uint8_t val)
 		case 0xA000:
 		case 0xB000:
 			// ERAM
+			this->_rom.write(addr, val);
 			break;
 		case 0xC000:
 		case 0xD000:
