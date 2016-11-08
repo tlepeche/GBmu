@@ -55,15 +55,32 @@ void DbWindow::updateRegister(t_register& r)
 	customSetItem(tableRegisters, 0, 5, "%0.4X", r.SP);
 }
 
+#include "opcode.hpp"
+
 void DbWindow::updateDisassembler(t_register& r, Memory& mem)
 {
 	int		i;
-	int		opcode;
+	uint8_t		opcode;
+	uint8_t		data1;
+	uint8_t		data2;
 
 	for (i = 0; i < tableDisassembler->rowCount(); ++i)
 	{
-		opcode = mem.read_byte(r.PC + i);
-		customSetItem(tableDisassembler, i, 0, "%0.2X", opcode);
+		char	buffer[32] = "%0.2X";
+
+		opcode				= mem.read_byte(r.PC + i);
+		t_opcode&	instr	= _opcodeMap[opcode];
+
+		if (instr.lengthData > 1) {
+			data1 = mem.read_byte(r.PC + i + 1);
+			sprintf(buffer, "%%0.2X %0.2X", data1);
+		}
+		if (instr.lengthData > 2) {
+			data2 = mem.read_byte(r.PC + i + 1);
+			sprintf(buffer, "%%0.2X %0.2X %0.2X", data1, data2);
+		}
+		customSetItem(tableDisassembler, i, 0, "%0.4X", r.PC + i);
+		customSetItem(tableDisassembler, i, 2, buffer , opcode);
 	}
 }
 
