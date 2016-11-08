@@ -7,7 +7,7 @@
 
 class Machine
 {
-	private:
+	protected:
 		Timer &_clock;
 		Cpu_z80 &_cpu;
 		Memory &_memory;
@@ -20,7 +20,9 @@ class Machine
 	public:
 		Machine(void);
 		virtual ~Machine(void) {};
-		void run(void);
+
+		void			step(void);
+		virtual void	run(void);
 
 };
 #endif
