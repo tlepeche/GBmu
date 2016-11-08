@@ -78,68 +78,68 @@ class Cpu_z80
 		void							init(void);
 
 		void							NOP();			//0x00
-		void							LD_BC_n();		//0x01     Not done yet
+		void							LD_BC_n();		//0x01
 		void							LD_BC_A();		//0x02
 		void							INC_BC();		//0x03
 		void							INC_B();		//0x04
 		void							DEC_B();		//0x05
-		void							INC_B_n();		//0x06     Not done yet
+		void							LD_B_n();		//0x06
 		void							RLCA();			//0x07
-		void							LD_n_SP();		//0x08     Not done yet
+		void							LD_n_SP();		//0x08   
 		void							ADD_HL_BC();	//0x09
 		void							LD_A_BC();		//0x0a
 		void							DEC_BC();		//0x0b
 		void							INC_C();		//0x0c
 		void							DEC_C();		//0x0d
-		void							LD_C_n();		//0x0e     Not done yet
+		void							LD_C_n();		//0x0e 
 		void							RRCA();			//0x0f
 		void							STOP();			//0x10     Not done yet
-		void							LD_DE_n();		//0x11     Not done yet
+		void							LD_DE_n();		//0x11
 		void							LD_DE_A();		//0x12
 		void							INC_DE();		//0x13
 		void							INC_D();		//0x14
 		void							DEC_D();		//0x15
-		void							LD_D_n();		//0x16     Not done yet
+		void							LD_D_n();		//0x16
 		void							RLA();			//0x17
-		void							JR_n();			//0x18     Not done yet
+		void							JR_n();			//0x18 
 		void							ADD_HL_DE();	//0x19
 		void							LD_A_DE();		//0x1a
 		void							DEC_DE();		//0x1b
 		void							INC_E();		//0x1c
 		void							DEC_E();		//0x1d
-		void							LD_E_n();		//0x1e     Not done yet
+		void							LD_E_n();		//0x1e
 		void							RRA();			//0x1f
-		void							JR_NZ_n();		//0x20     Not done yet
-		void							LD_HL_nn();		//0x21     Not done yet
+		void							JR_NZ_n();		//0x20
+		void							LD_HL_nn();		//0x21
 		void							LD_HLI_A();		//0x22
 		void							INC_HL();		//0x23
 		void							INC_H();		//0x24
 		void							DEC_H();		//0x25
-		void							LD_H_n();		//0x26     Not done yet
+		void							LD_H_n();		//0x26
 		void							DAA();			//0x27
-		void							JR_Z_n();		//0x28     Not done yet
+		void							JR_Z_n();		//0x28
 		void							ADD_HL_HL();	//0x29
 		void							LD_A_HLI();		//0x2a
 		void							DEC_HL();		//0x2b
 		void							INC_L();		//0x2c
 		void							DEC_L();		//0x2d
-		void							LD_L_n();		//0x2e     Not done yet
+		void							LD_L_n();		//0x2e
 		void							CPL();			//0x2f
-		void							JR_NC_n();		//0x30     Not done yet
-		void							LD_SP_n();		//0x31     Not done yet
+		void							JR_NC_n();		//0x30 
+		void							LD_SP_n();		//0x31 
 		void							LD_HLD_A();		//0x32
-		void							INC_SP();		//0x33     Not done yet
+		void							INC_SP();		//0x33 
 		void							INC_HLF();		//0x34
 		void							DEC_HLF();		//0x35
-		void							LD_HL_n();		//0x36     Not done yet
+		void							LD_HL_n();		//0x36
 		void							SCF();			//0x37
-		void							JR_C_n();		//0x38     Not done yet
-		void							ADD_HL_SP();	//0x39     Not done yet
+		void							JR_C_n();		//0x38
+		void							ADD_HL_SP();	//0x39
 		void							LD_A_HLD();		//0x3a
-		void							DEC_SP();		//0x3b     Not done yet
+		void							DEC_SP();		//0x3b 
 		void							INC_A();		//0x3c
 		void							DEC_A();		//0x3d
-		void							LD_A_n();		//0x3e     Not done yet
+		void							LD_A_n();		//0x3e
 		void							CCF();			//0x3f
 		void							LD_B_B();		//0x40
 		void							LD_B_C();		//0x41
@@ -195,8 +195,9 @@ class Cpu_z80
 		void							LD_HL_E();		//0x73
 		void							LD_HL_H();		//0x74
 		void							LD_HL_L();		//0x75
-		void							HALT();			//0x76     Not done yet
-		void							LD_HL_A();		//0x77
+		void							HALT();			//0x76 Not done yet
+	   	//HALT ==> TIMA = 1 dans memory ?  
+ 		void							LD_HL_A();		//0x77
 		void							LD_A_B();		//0x78
 		void							LD_A_C();		//0x79
 		void							LD_A_D();		//0x7a
@@ -269,60 +270,60 @@ class Cpu_z80
 		void							CP_L();			//0xbd
 		void							CP_HL();		//0xbe
 		void							CP_A();			//0xbf
-		void							RET_NZ();		//0xc0     Not done yet
-		void							POP_BC();		//0xc1     Not done yet
-		void							JP_NZ_n();		//0xc1     Not done yet
-		void							JP_n();			//0xc3     Not done yet
-		void							CALL_NZ_n();	//0xc4     Not done yet
-		void							PUSH_BC();		//0xc5     Not done yet
-		void							ADD_A_n();		//0xc6     Not done yet
-		void							RST_00H();		//0xc7     Not done yet
-		void							RET_Z();		//0xc8     Not done yet
-		void							RET();			//0xc9     Not done yet
-		void							JP_Z_n();		//0xca     Not done yet
+		void							RET_NZ();		//0xc0  
+		void							POP_BC();		//0xc1    
+		void							JP_NZ_n();		//0xc2
+		void							JP_n();			//0xc3
+		void							CALL_NZ_n();	//0xc4    
+		void							PUSH_BC();		//0xc5
+		void							ADD_A_n();		//0xc6    
+		void							RST_00H();		//0xc7    
+		void							RET_Z();		//0xc8   
+		void							RET();			//0xc9  
+		void							JP_Z_n();		//0xca   
 		void							PREFIX_CB();	//0xcb     Not done yet
-		void							CALL_Z_n();		//0xcc     Not done yet
-		void							CALL_n();		//0xcd     Not done yet
-		void							ADC_A_n();		//0xce     Not done yet
-		void							RST_08H();		//0xcf     Not done yet
-		void							RET_NC();		//0xd0     Not done yet
-		void							POP_DE();		//0xd1     Not done yet
-		void							JP_NC_n();		//0xd2     Not done yet
-		void							CALL_NC_n();	//0xd4     Not done yet
-		void							PUSH_DE();		//0xd5     Not done yet
-		void							SUB_n();		//0xd6     Not done yet
-		void							RST_10H();		//0xd7     Not done yet
-		void							RET_C();		//0xd8     Not done yet
-		void							RETI();			//0xd9     Not done yet
-		void							JP_C_n();		//0xda     Not done yet
-		void							CALL_C_n();		//0xdc     Not done yet
-		void							SBC_A_n();		//0xde     Not done yet
-		void							RST_18H();		//0xdf     Not done yet
-		void							LDH_n_A();		//0xe0     Not done yet
-		void							POP_HL();		//0xe1     Not done yet
-		void							LD_CC_A();		//0xe2     Not done yet
-		void							PUSH_HL();		//0xe5     Not done yet
-		void							AND_n();		//0xe6     Not done yet
-		void							RST_20H();		//0xe7     Not done yet
-		void							ADD_SP_n();		//0xe8     Not done yet
-		void							JP_HL();		//0xe9     Not done yet
-		void							LD_n_A();		//0xea     Not done yet
-		void							XOR_n();		//0xee     Not done yet
-		void							RST_28H();		//0xef     Not done yet
-		void							LDH_A_n();		//0xf0     Not done yet
-		void							POP_AF();		//0xf1     Not done yet
-		void							LD_A_CC();		//0xf2     Not done yet
+		void							CALL_Z_n();		//0xcc     
+		void							CALL_n();		//0xcd     
+		void							ADC_A_n();		//0xce
+		void							RST_08H();		//0xcf   
+		void							RET_NC();		//0xd0    
+		void							POP_DE();		//0xd1    
+		void							JP_NC_n();		//0xd2    
+		void							CALL_NC_n();	//0xd4  
+		void							PUSH_DE();		//0xd5
+		void							SUB_n();		//0xd6     
+		void							RST_10H();		//0xd7 
+		void							RET_C();		//0xd8     
+		void							RETI();			//0xd9     
+		void							JP_C_n();		//0xda 
+		void							CALL_C_n();		//0xdc     
+		void							SBC_A_n();		//0xde
+		void							RST_18H();		//0xdf   
+		void							LDH_n_A();		//0xe0
+		void							POP_HL();		//0xe1     
+		void							LD_CC_A();		//0xe2  
+		void							PUSH_HL();		//0xe5
+		void							AND_n();		//0xe6  
+		void							RST_20H();		//0xe7    
+		void							ADD_SP_n();		//0xe8 
+		void							JP_HL();		//0xe9
+		void							LD_n_A();		//0xea
+		void							XOR_n();		//0xee 
+		void							RST_28H();		//0xef
+		void							LDH_A_n();		//0xf0
+		void							POP_AF();		//0xf1
+		void							LD_A_CC();		//0xf2    
 		void							DI();			//0xf3     Not done yet
-		void							PUSH_AF();		//0xf5     Not done yet
-		void							OR_n();			//0xf6     Not done yet
-		void							RST_30H();		//0xf7     Not done yet
-		void							LD_HL_SP_n();	//0xf8     Not done yet
-		void							LD_SP_HL();		//0xf9     Not done yet
-		void							LD_A_b();		//0xfa     Not done yet
+		void							PUSH_AF();		//0xf5
+		void							OR_n();			//0xf6  
+		void							RST_30H();		//0xf7     
+		void							LD_HL_SP_n();	//0xf8  
+		void							LD_SP_HL();		//0xf9 
+		void							LD_A_b();		//0xfa
 		void							EI();			//0xfb     Not done yet
-		void							CP_n();			//0xfe     Not done yet
-		void							RST_38H();		//0xff     Not done yet
-
+		void							CP_n();			//0xfe 
+		void							RST_38H();		//0xff  		
+				
 	private:
 		void							_resetPtrAddr(void);
 		void							_nextPtr(void);
