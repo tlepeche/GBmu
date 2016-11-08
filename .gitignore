@@ -35,5 +35,10 @@ ui_*.h
 
 # Merde de mac
 *.DS_Store
+
+#spe project
 obj/
 GBmu
+
+Makefile
+
