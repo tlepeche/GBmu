@@ -1,4 +1,5 @@
 #include <iostream>
+#include <functional>
 
 #ifndef _OPCODE_HPP
 # define _OPCODE_HPP
