@@ -861,7 +861,7 @@
     <string>Add</string>
    </property>
   </widget>
-  <widget class="QListWidget" name="listWidget">
+  <widget class="QListWidget" name="listBreakpoint">
    <property name="geometry">
     <rect>
      <x>410</x>
@@ -896,21 +896,6 @@
    <property name="sortingEnabled">
     <bool>false</bool>
    </property>
-   <item>
-    <property name="text">
-     <string>0000</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>0111</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>1004</string>
-    </property>
-   </item>
   </widget>
   <widget class="QLabel" name="label_6">
    <property name="geometry">

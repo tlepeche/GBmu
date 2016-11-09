@@ -97,13 +97,14 @@ void	Gameboy::openRomSlot(std::string path)
 
 void	Gameboy::gbDbSlot()
 {
-	_windowDebug = new DbWindow(&_cpu._cpuRegister, &_memory);
+	_windowDebug = new DbWindow(&_cpu._cpuRegister, &_memory, &_breakpoints);
 	connect(_windowDebug, &DbWindow::stepPressedSign, this, &Gameboy::stepPressedSlot);
 	connect(_windowDebug, &DbWindow::runPressedSign, this, &Gameboy::switchStepModeSlot);
 	connect(_windowDebug, &DbWindow::resetPressedSign, this, &Gameboy::resetPressedSlot);
 	connect(_windowDebug, &DbWindow::openPressedSign, this, &Gameboy::openRomSlot);
 
 	connect(_windowDebug, &DbWindow::bpAddSign, this, &Gameboy::addBreakpointSlot);
+	connect(_windowDebug, &DbWindow::bpDelSign, this, &Gameboy::delBreakpointSlot);
 
 	_windowDebug->show();
 	_stepMode.store(true);
