@@ -48,7 +48,7 @@ void	Gameboy::run()
 		}
 		else
 		{
-			step();
+			if (!step()) step();
 		}
 		run();
 	}
@@ -75,7 +75,7 @@ void	Gameboy::reset()
 
 void	Gameboy::stepPressedSlot()
 {
-	step();
+	if (!step()) step();
 }
 
 void	Gameboy::resetPressedSlot()
