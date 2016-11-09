@@ -34,8 +34,8 @@ QMenuBar	*OpenGLWindow::genMenuBar()
 
 	connect(openAct, &QAction::triggered, this, &OpenGLWindow::openSlot);
 	connect(gbDbAct, &QAction::triggered, this, &OpenGLWindow::gbDbSlot);
-	menu->addAction(openAct);
-	menu->addAction(gbDbAct);
+	menu->addAction(openAct); openAct->setShortcut(tr("Ctrl+O"));
+	menu->addAction(gbDbAct); gbDbAct->setShortcut(tr("Ctrl+D"));
 	menuBar->addMenu(menu);
 
 	return menuBar;
