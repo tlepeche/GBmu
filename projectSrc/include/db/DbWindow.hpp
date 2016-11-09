@@ -38,8 +38,10 @@ public:
 
 	signals:
 		void	stepPressedSign();
+		void	resetPressedSign();
 	public slots:
 		void	stepPressedSlot();
+		void	resetPressedSlot();
 		void	updateAllSlot();
 		void	lineAddrEditedSlot();
 
