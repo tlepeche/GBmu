@@ -33,7 +33,7 @@ public:
 
 	QPushButton		*buttonReset;
 	QPushButton		*buttonStep;
-	QPushButton		*buttonFrame;
+	QPushButton		*buttonRun;
 	QPushButton		*buttonOpen;
 	QPushButton		*buttonBpAdd;
 
@@ -41,11 +41,13 @@ public:
 
 	signals:
 		void	stepPressedSign();
+		void	runPressedSign();
 		void	resetPressedSign();
 		void	openPressedSign(std::string path);
 		void	bpAddSign(uint16_t addr);
 	public slots:
 		void	stepPressedSlot();
+		void	runPressedSlot();
 		void	resetPressedSlot();
 		void	openPressedSlot();
 		void	bpAddPressedSlot();

@@ -22,7 +22,7 @@
      <height>31</height>
     </rect>
    </property>
-   <widget class="QPushButton" name="buttonFrame">
+   <widget class="QPushButton" name="buttonRun">
     <property name="geometry">
      <rect>
       <x>220</x>
@@ -32,7 +32,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Frame</string>
+     <string>Run</string>
     </property>
    </widget>
    <widget class="QPushButton" name="buttonStep">
