@@ -21,6 +21,7 @@ public:
     virtual	~DbWindow();
 
 	void 	updateRegister(t_register& r);
+	void	updateOtherRegister(Memory& mem);
 	void 	updateMemory(Memory& m);
 	void	updateDisassembler(t_register& r, Memory& mem);
 

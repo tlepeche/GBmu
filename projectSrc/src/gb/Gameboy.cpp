@@ -44,6 +44,7 @@ void	Gameboy::run()
 
 void	Gameboy::stepPressedSlot()
 {
+	for (int i = 0 ; i < 64 ; ++i)
 	step();
 }
 

@@ -3,9 +3,19 @@
 
 #include "register.hpp"
 #include "Memory.hpp"
+#include "registerAddr.hpp"
 
 #include <QTimer>
 QTimer timer;
+
+static inline
+void customSetItem(QTableWidget* table, int x, int y, const char *format, int value)
+{
+	char	buffer[32];
+
+	sprintf(buffer, format, value);
+	table->setItem(x, y, new QTableWidgetItem(buffer));
+}
 
 DbWindow::DbWindow(t_register* r, Memory* mem) :
     QDialog(nullptr),
@@ -34,15 +44,43 @@ DbWindow::DbWindow(t_register* r, Memory* mem) :
 
 	connect(&timer, &QTimer::timeout, this, &DbWindow::updateAllSlot);
 	timer.start(100);
-}
 
-static inline
-void customSetItem(QTableWidget* table, int x, int y, const char *format, int value)
-{
-	char	buffer[32];
 
-	sprintf(buffer, format, value);
-	table->setItem(x, y, new QTableWidgetItem(buffer));
+	customSetItem(tableOtherRegisters, 0, 0, "%.2X", REGISTER_P1);
+	customSetItem(tableOtherRegisters, 1, 0, "%.2X", REGISTER_SB);
+	customSetItem(tableOtherRegisters, 2, 0, "%.2X", REGISTER_SC);
+	customSetItem(tableOtherRegisters, 3, 0, "%.2X", REGISTER_DIV);
+	customSetItem(tableOtherRegisters, 4, 0, "%.2X", REGISTER_TIMA);
+	customSetItem(tableOtherRegisters, 5, 0, "%.2X", REGISTER_TMA);
+	customSetItem(tableOtherRegisters, 6, 0, "%.2X", REGISTER_TAC);
+	customSetItem(tableOtherRegisters, 7, 0, "%.2X", REGISTER_KEY1);
+	customSetItem(tableOtherRegisters, 8, 0, "%.2X", REGISTER_VBK);
+	customSetItem(tableOtherRegisters, 9, 0, "%.2X", REGISTER_HDMA1);
+	customSetItem(tableOtherRegisters, 10, 0, "%.2X", REGISTER_HDMA2);
+	customSetItem(tableOtherRegisters, 11, 0, "%.2X", REGISTER_HDMA3);
+	customSetItem(tableOtherRegisters, 12, 0, "%.2X", REGISTER_HDMA4);
+	customSetItem(tableOtherRegisters, 13, 0, "%.2X", REGISTER_HDMA5);
+	customSetItem(tableOtherRegisters, 14, 0, "%.2X", REGISTER_SVBK);
+	customSetItem(tableOtherRegisters, 15, 0, "%.2X", REGISTER_IF);
+	customSetItem(tableOtherRegisters, 16, 0, "%.2X", REGISTER_IE);
+
+	customSetItem(tableVideoRegisters, 0, 0, "%.2X", REGISTER_LCDC);
+	customSetItem(tableVideoRegisters, 1, 0, "%.2X", REGISTER_STAT);
+	customSetItem(tableVideoRegisters, 2, 0, "%.2X", REGISTER_SCY);
+	customSetItem(tableVideoRegisters, 3, 0, "%.2X", REGISTER_SCX);
+	customSetItem(tableVideoRegisters, 4, 0, "%.2X", REGISTER_LY);
+	customSetItem(tableVideoRegisters, 5, 0, "%.2X", REGISTER_LYC);
+	customSetItem(tableVideoRegisters, 6, 0, "%.2X", REGISTER_DMA);
+	customSetItem(tableVideoRegisters, 7, 0, "%.2X", REGISTER_BGP);
+	customSetItem(tableVideoRegisters, 8, 0, "%.2X", REGISTER_OBP0);
+	customSetItem(tableVideoRegisters, 9, 0, "%.2X", REGISTER_OBP1);
+	customSetItem(tableVideoRegisters, 10, 0, "%.2X", REGISTER_WY);
+	customSetItem(tableVideoRegisters, 11, 0, "%.2X", REGISTER_WX);
+	customSetItem(tableVideoRegisters, 12, 0, "%.2X", REGISTER_BCPS);
+	customSetItem(tableVideoRegisters, 13, 0, "%.2X", REGISTER_BCPD);
+	customSetItem(tableVideoRegisters, 14, 0, "%.2X", REGISTER_OCPS);
+	customSetItem(tableVideoRegisters, 15, 0, "%.2X", REGISTER_OCPD);
+
 }
 
 void DbWindow::updateRegister(t_register& r)
@@ -53,6 +91,44 @@ void DbWindow::updateRegister(t_register& r)
 	customSetItem(tableRegisters, 0, 3, "%.4X", r.DE);
 	customSetItem(tableRegisters, 0, 4, "%.4X", r.HL);
 	customSetItem(tableRegisters, 0, 5, "%.4X", r.SP);
+}
+
+void DbWindow::updateOtherRegister(Memory& mem)
+{
+	customSetItem(tableOtherRegisters, 0, 1, "%.2X", mem.read_byte(REGISTER_P1));
+	customSetItem(tableOtherRegisters, 1, 1, "%.2X", mem.read_byte(REGISTER_SB));
+	customSetItem(tableOtherRegisters, 2, 1, "%.2X", mem.read_byte(REGISTER_SC));
+	customSetItem(tableOtherRegisters, 3, 1, "%.2X", mem.read_byte(REGISTER_DIV));
+	customSetItem(tableOtherRegisters, 4, 1, "%.2X", mem.read_byte(REGISTER_TIMA));
+	customSetItem(tableOtherRegisters, 5, 1, "%.2X", mem.read_byte(REGISTER_TMA));
+	customSetItem(tableOtherRegisters, 6, 1, "%.2X", mem.read_byte(REGISTER_TAC));
+	customSetItem(tableOtherRegisters, 7, 1, "%.2X", mem.read_byte(REGISTER_KEY1));
+	customSetItem(tableOtherRegisters, 8, 1, "%.2X", mem.read_byte(REGISTER_VBK));
+	customSetItem(tableOtherRegisters, 9, 1, "%.2X", mem.read_byte(REGISTER_HDMA1));
+	customSetItem(tableOtherRegisters, 10, 1, "%.2X", mem.read_byte(REGISTER_HDMA2));
+	customSetItem(tableOtherRegisters, 11, 1, "%.2X", mem.read_byte(REGISTER_HDMA3));
+	customSetItem(tableOtherRegisters, 12, 1, "%.2X", mem.read_byte(REGISTER_HDMA4));
+	customSetItem(tableOtherRegisters, 13, 1, "%.2X", mem.read_byte(REGISTER_HDMA5));
+	customSetItem(tableOtherRegisters, 14, 1, "%.2X", mem.read_byte(REGISTER_SVBK));
+	customSetItem(tableOtherRegisters, 15, 1, "%.2X", mem.read_byte(REGISTER_IF));
+	customSetItem(tableOtherRegisters, 16, 1, "%.2X", mem.read_byte(REGISTER_IE));
+
+	customSetItem(tableVideoRegisters, 0, 1, "%.2X", mem.read_byte(REGISTER_LCDC));
+	customSetItem(tableVideoRegisters, 1, 1, "%.2X", mem.read_byte(REGISTER_STAT));
+	customSetItem(tableVideoRegisters, 2, 1, "%.2X", mem.read_byte(REGISTER_SCY));
+	customSetItem(tableVideoRegisters, 3, 1, "%.2X", mem.read_byte(REGISTER_SCX));
+	customSetItem(tableVideoRegisters, 4, 1, "%.2X", mem.read_byte(REGISTER_LY));
+	customSetItem(tableVideoRegisters, 5, 1, "%.2X", mem.read_byte(REGISTER_LYC));
+	customSetItem(tableVideoRegisters, 6, 1, "%.2X", mem.read_byte(REGISTER_DMA));
+	customSetItem(tableVideoRegisters, 7, 1, "%.2X", mem.read_byte(REGISTER_BGP));
+	customSetItem(tableVideoRegisters, 8, 1, "%.2X", mem.read_byte(REGISTER_OBP0));
+	customSetItem(tableVideoRegisters, 9, 1, "%.2X", mem.read_byte(REGISTER_OBP1));
+	customSetItem(tableVideoRegisters, 10, 1, "%.2X", mem.read_byte(REGISTER_WY));
+	customSetItem(tableVideoRegisters, 11, 1, "%.2X", mem.read_byte(REGISTER_WX));
+	customSetItem(tableVideoRegisters, 12, 1, "%.2X", mem.read_byte(REGISTER_BCPS));
+	customSetItem(tableVideoRegisters, 13, 1, "%.2X", mem.read_byte(REGISTER_BCPD));
+	customSetItem(tableVideoRegisters, 14, 1, "%.2X", mem.read_byte(REGISTER_OCPS));
+	customSetItem(tableVideoRegisters, 15, 1, "%.2X", mem.read_byte(REGISTER_OCPD));
 }
 
 #include "opcode.hpp"
@@ -121,6 +197,7 @@ void	DbWindow::stepPressedSlot()
 void	DbWindow::updateAllSlot()
 {
 	updateRegister(*_r);
+	updateOtherRegister(*_mem);
 	updateMemory(*_mem);
 	updateDisassembler(*_r, *_mem);
 }
