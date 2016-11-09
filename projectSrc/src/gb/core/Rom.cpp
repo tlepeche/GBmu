@@ -45,7 +45,7 @@ void		Rom::init(void)
 	this->_write_protect = 0;
 }
 
-int			Rom::load(char *file)
+int			Rom::load(const char *file)
 {
 	std::ifstream	romFile;
 	uint32_t		rom_size;

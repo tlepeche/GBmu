@@ -2,6 +2,9 @@
 moc_*.cpp
 ui_*.h
 
+Makefile
+tags
+
 # Compiled Object files
 *.slo
 *.lo

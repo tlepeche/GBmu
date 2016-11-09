@@ -76,7 +76,7 @@ void DbWindow::updateDisassembler(t_register& r, Memory& mem)
 			sprintf(buffer, "%%.2X %.2X", data1);
 		}
 		if (instr.lengthData > 2) {
-			data2 = mem.read_byte(r.PC + i + 1);
+			data2 = mem.read_byte(r.PC + i + 2);
 			sprintf(buffer, "%%.2X %.2X %.2X", data1, data2);
 		}
 		customSetItem(tableDisassembler, i, 0, "%.4X", r.PC + i);
