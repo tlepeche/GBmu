@@ -40,6 +40,7 @@ DbWindow::DbWindow(t_register* r, Memory* mem) :
 	tableMemory->resizeColumnsToContents();
 
 	connect(buttonStep, &QPushButton::pressed, this, &DbWindow::stepPressedSlot);
+	connect(buttonReset, &QPushButton::pressed, this, &DbWindow::resetPressedSlot);
 	connect(lineAddr, &QLineEdit::editingFinished, this, &DbWindow::lineAddrEditedSlot);
 
 	connect(&timer, &QTimer::timeout, this, &DbWindow::updateAllSlot);
@@ -191,6 +192,11 @@ void	DbWindow::lineAddrEditedSlot()
 void	DbWindow::stepPressedSlot()
 {
 	emit	stepPressedSign();
+}
+
+void	DbWindow::resetPressedSlot()
+{
+	emit	resetPressedSign();
 }
 
 // This function il call every 100ms see _timer 
