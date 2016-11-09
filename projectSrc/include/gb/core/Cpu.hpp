@@ -7,11 +7,6 @@
 #include "register.hpp"
 #include "opcode.hpp"
 
-#define REGISTER_TIMA	0xFF05
-#define REGISTER_TMA	0xFF06
-#define REGISTER_TAC	0xFF07
-#define REGISTER_IF		0xFF0F //TODO timer overflow??? je peut le bypasser par le timer de base
-
 #define NB_OPCODE 255
 #define NOP_OPCODE 0
 

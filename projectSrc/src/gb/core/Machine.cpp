@@ -1,5 +1,6 @@
 #include "Machine.hpp"
 #include <unistd.h>
+#include "registerAddr.hpp"
 
 #define DEBUG_LOOP 1
 #define DEBUG_ROM 1

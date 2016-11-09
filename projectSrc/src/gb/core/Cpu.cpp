@@ -93,6 +93,8 @@ uint8_t Cpu_z80::executeNextOpcode(void)
 	return cycle;
 }
 
+#include "registerAddr.hpp"
+
 void Cpu_z80::init(void)
 {
 	printf("INITIALIZING\n");
@@ -114,37 +116,62 @@ void Cpu_z80::init(void)
 	this->_cpuRegister.SP = 0xFFFE;
 
 	//init register memory
-	this->_memory.write_byte(0xFF05, 0x00); // ; TIMA
-	this->_memory.write_byte(0xFF06, 0x00); // ; TMA
-	this->_memory.write_byte(0xFF07, 0x00); // ; TAC
-	this->_memory.write_byte(0xFF10, 0x80); // ; NR10
-	this->_memory.write_byte(0xFF11, 0xBF); // ; NR11
-	this->_memory.write_byte(0xFF12, 0xF3); // ; NR12
-	this->_memory.write_byte(0xFF14, 0xBF); // ; NR14
-	this->_memory.write_byte(0xFF16, 0x3F); // ; NR21
-	this->_memory.write_byte(0xFF17, 0x00); // ; NR22
-	this->_memory.write_byte(0xFF19, 0xBF); // ; NR24
-	this->_memory.write_byte(0xFF1A, 0x7F); // ; NR30
-	this->_memory.write_byte(0xFF1B, 0xFF); // ; NR31
-	this->_memory.write_byte(0xFF1C, 0x9F); // ; NR32
-	this->_memory.write_byte(0xFF1E, 0xBF); // ; NR33
-	this->_memory.write_byte(0xFF20, 0xFF); // ; NR41
-	this->_memory.write_byte(0xFF21, 0x00); // ; NR42
-	this->_memory.write_byte(0xFF22, 0x00); // ; NR43
-	this->_memory.write_byte(0xFF23, 0xBF); // ; NR30
-	this->_memory.write_byte(0xFF24, 0x77); // ; NR50
-	this->_memory.write_byte(0xFF25, 0xF3); // ; NR51
-	this->_memory.write_byte(0xFF26, 0xF1); // ; NR52
-	this->_memory.write_byte(0xFF40, 0x91); // ; LCDC
-	this->_memory.write_byte(0xFF42, 0x00); // ; SCY
-	this->_memory.write_byte(0xFF43, 0x00); // ; SCX
-	this->_memory.write_byte(0xFF45, 0x00); // ; LYC
-	this->_memory.write_byte(0xFF47, 0xFC); // ; BGP
-	this->_memory.write_byte(0xFF48, 0xFF); // ; OBP0
-	this->_memory.write_byte(0xFF49, 0xFF); // ; OBP1
-	this->_memory.write_byte(0xFF4A, 0x00); // ; WY
-	this->_memory.write_byte(0xFF4B, 0x00); // ; WX
-	this->_memory.write_byte(0xFFFF, 0x00); // ; IE
+	this->_memory.write_byte(REGISTER_NR10, 0x80);
+	this->_memory.write_byte(REGISTER_NR11, 0xBF);
+	this->_memory.write_byte(REGISTER_NR12, 0xF3);
+	this->_memory.write_byte(REGISTER_NR14, 0xBF);
+	this->_memory.write_byte(REGISTER_NR21, 0x3F);
+	this->_memory.write_byte(REGISTER_NR22, 0x00);
+	this->_memory.write_byte(REGISTER_NR24, 0xBF);
+	this->_memory.write_byte(REGISTER_NR30, 0x7F);
+	this->_memory.write_byte(REGISTER_NR31, 0xFF);
+	this->_memory.write_byte(REGISTER_NR32, 0x9F);
+	this->_memory.write_byte(REGISTER_NR33, 0xBF);
+	this->_memory.write_byte(REGISTER_NR41, 0xFF);
+	this->_memory.write_byte(REGISTER_NR42, 0x00);
+	this->_memory.write_byte(REGISTER_NR43, 0x00);
+	this->_memory.write_byte(REGISTER_NR30_, 0xBF);
+	this->_memory.write_byte(REGISTER_NR50, 0x77);
+	this->_memory.write_byte(REGISTER_NR51, 0xF3);
+	this->_memory.write_byte(REGISTER_NR52, 0xF1);
+
+	// Other register
+	this->_memory.write_byte(REGISTER_P1, 0xCF);
+	this->_memory.write_byte(REGISTER_SB, 0x00);
+	this->_memory.write_byte(REGISTER_SC, 0x7E);
+	this->_memory.write_byte(REGISTER_DIV, 0xD3); // bios: 0xD3 start: 0x81
+	this->_memory.write_byte(REGISTER_TIMA, 0x00);
+	this->_memory.write_byte(REGISTER_TMA, 0x00);
+	this->_memory.write_byte(REGISTER_TAC, 0x00);
+	this->_memory.write_byte(REGISTER_KEY1, 0xFF);
+	this->_memory.write_byte(REGISTER_VBK, 0xFF);
+	this->_memory.write_byte(REGISTER_HDMA1, 0xFF);
+	this->_memory.write_byte(REGISTER_HDMA2, 0xFF);
+	this->_memory.write_byte(REGISTER_HDMA3, 0xFF);
+	this->_memory.write_byte(REGISTER_HDMA4, 0xFF);
+	this->_memory.write_byte(REGISTER_HDMA5, 0xFF);
+	this->_memory.write_byte(REGISTER_SVBK, 0xFF);
+	this->_memory.write_byte(REGISTER_IF, 0xE1);
+	this->_memory.write_byte(REGISTER_IE, 0x00);
+	
+
+	this->_memory.write_byte(REGISTER_LCDC, 0x91);
+	this->_memory.write_byte(REGISTER_STAT, 0x81); // bios: 0x80 start: 0x81
+	this->_memory.write_byte(REGISTER_SCY, 0x00);
+	this->_memory.write_byte(REGISTER_SCX, 0x00);
+	this->_memory.write_byte(REGISTER_LY, 0x00); // bios: 0x00 start: 0x81
+	this->_memory.write_byte(REGISTER_LYC, 0x00);
+	this->_memory.write_byte(REGISTER_DMA, 0xFF);
+	this->_memory.write_byte(REGISTER_BGP, 0xFC);
+	this->_memory.write_byte(REGISTER_OBP0, 0xFF);
+	this->_memory.write_byte(REGISTER_OBP1, 0xFF);
+	this->_memory.write_byte(REGISTER_WY, 0x00);
+	this->_memory.write_byte(REGISTER_WX, 0x00);
+	/* TODO: WTF ? I dont see then in doc */
+	this->_memory.write_byte(REGISTER_BCPS, 0xFF);
+	this->_memory.write_byte(REGISTER_BCPD, 0xFF);
+	this->_memory.write_byte(REGISTER_OCPS, 0xFF);
+	this->_memory.write_byte(REGISTER_OCPD, 0xFF);
 
 	this->_opcodeInProgress = this->_getOpcode(this->_memory.read_byte(this->_cpuRegister.PC));
 	this->_setDataOpcode();
