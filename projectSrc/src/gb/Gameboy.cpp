@@ -94,6 +94,7 @@ void	Gameboy::gbDbSlot()
 	_windowDebug = new DbWindow(&_cpu._cpuRegister, &_memory);
 	connect(_windowDebug, &DbWindow::stepPressedSign, this, &Gameboy::stepPressedSlot);
 	connect(_windowDebug, &DbWindow::resetPressedSign, this, &Gameboy::resetPressedSlot);
+	connect(_windowDebug, &DbWindow::openPressedSign, this, &Gameboy::openRomSlot);
 
 	_windowDebug->show();
 	_debugMode.store(true);

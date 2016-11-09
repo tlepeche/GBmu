@@ -8,6 +8,8 @@
 #include <QTimer>
 QTimer timer;
 
+#include <QFileDialog>
+
 static inline
 void customSetItem(QTableWidget* table, int x, int y, const char *format, int value)
 {
@@ -35,12 +37,14 @@ DbWindow::DbWindow(t_register* r, Memory* mem) :
 	buttonReset			= this->findChild<QPushButton*>("buttonReset");
 	buttonStep			= this->findChild<QPushButton*>("buttonStep");
 	buttonFrame			= this->findChild<QPushButton*>("buttonFrame");
+	buttonOpen			= this->findChild<QPushButton*>("buttonOpen");
 
 	lineAddr			= this->findChild<QLineEdit*>("lineAddr");
 	tableMemory->resizeColumnsToContents();
 
 	connect(buttonStep, &QPushButton::pressed, this, &DbWindow::stepPressedSlot);
 	connect(buttonReset, &QPushButton::pressed, this, &DbWindow::resetPressedSlot);
+	connect(buttonOpen, &QPushButton::pressed, this, &DbWindow::openPressedSlot);
 	connect(lineAddr, &QLineEdit::editingFinished, this, &DbWindow::lineAddrEditedSlot);
 
 	connect(&timer, &QTimer::timeout, this, &DbWindow::updateAllSlot);
@@ -197,6 +201,13 @@ void	DbWindow::stepPressedSlot()
 void	DbWindow::resetPressedSlot()
 {
 	emit	resetPressedSign();
+}
+
+void	DbWindow::openPressedSlot()
+{
+	QString path = QFileDialog::getOpenFileName(NULL, tr("Open XML File 1"), "/home", tr("XML Files (*.xml, *)"));
+
+	emit	openPressedSign(path.toStdString());
 }
 
 // This function il call every 100ms see _timer 
