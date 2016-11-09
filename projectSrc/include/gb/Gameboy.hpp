@@ -10,6 +10,9 @@ class DbWindow;
 // QWidget for signals 
 #include <QWidget>
 
+// TODO: DEBUG MOD active ! Remove me on release
+#define DEBUG
+
 class Gameboy : public Machine, public QWidget
 {
 	private:
