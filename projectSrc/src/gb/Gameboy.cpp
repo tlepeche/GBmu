@@ -51,6 +51,7 @@ void	Gameboy::openRomSlot(std::string path)
 {
 	std::cout << "Gameboy path: " << path << std::endl;
 	_willRun.store(true);
+	Rom::Instance().load(path.c_str());
 	_thread = new std::thread(&Gameboy::run, this);
 }
 
