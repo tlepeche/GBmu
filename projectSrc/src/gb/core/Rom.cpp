@@ -40,7 +40,6 @@ void		Rom::init(void)
 	if (this->_nrambanks > 0)
 		this->_eram = new uint8_t [this->_nrambanks * 8192];
 	this->_bank = 0;
-	this->_u_bank = 0;
 	this->_rambank = 0;
 	this->_write_protect = 0;
 }
@@ -77,7 +76,7 @@ uint8_t		Rom::read(uint16_t addr)
 	if (addr < 0x4000)
 		return this->_rom[addr];
 	else if (addr < 0x8000)
-		return this->_rom[addr + ((this->_bank + (this->_u_bank * 0x20)) * 0x4000)];
+		return this->_rom[(addr - 0x4000) + (this->_bank * 0x4000)];
 	else if (addr >= 0xA000 && addr < 0xC000)
 		return this->_eram[addr + (this->_rambank * 0x2000)];
 	return 0;
@@ -95,17 +94,11 @@ void		Rom::write(uint16_t addr, uint8_t val)
 		case 0x2000:
 		case 0x3000:
 			// Rom bank code
-			if (this->_tbank)
+			if (val >= 0x01 && val <= 0x1f)
 			{
-				// eram
-				if (val >= 0x01 && val <= 0x1f)
-					this->_rambank = val;
-			}
-			else
-			{
-				// rom
-				if (val >= 0x01 && val <= 0x1f)
-					this->_bank = val;
+				val &= 0x1F;
+				this->_bank &= 0xE0;
+				this->_bank |= val;
 			}
 			break;
 		case 0x4000:
@@ -114,7 +107,18 @@ void		Rom::write(uint16_t addr, uint8_t val)
 			if (val <= 0x03)
 			{
 				if (this->_tbank == 0)
-					this->_u_bank = val;
+				{
+					// ROM
+					val <<= 5;
+					this->_bank &= 0x1F;
+					val &= 0xE0;
+					this->_bank |= val;
+				}
+				else
+				{
+					// ERAM
+					this->_rambank = val;
+				}
 			}
 			break;
 		case 0x6000:

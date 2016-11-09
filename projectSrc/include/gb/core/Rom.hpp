@@ -30,7 +30,6 @@ class Rom {
 		uint8_t			_nbanks;
 		uint8_t			_nrambanks;
 		uint8_t			_bank;
-		uint8_t			_u_bank;
 		uint8_t			_rambank;
 		uint8_t			_tbank;
 		uint8_t			_write_protect;
