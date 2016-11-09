@@ -59,28 +59,31 @@ void DbWindow::updateRegister(t_register& r)
 
 void DbWindow::updateDisassembler(t_register& r, Memory& mem)
 {
-	int		i;
 	uint8_t		opcode;
 	uint8_t		data1;
 	uint8_t		data2;
+	uint16_t	pc;
 
-	for (i = 0; i < tableDisassembler->rowCount(); ++i)
+	pc = r.PC;
+	for (int i = 0; i < tableDisassembler->rowCount(); ++i)
 	{
 		char	buffer[32] = "%.2X";
 
-		opcode				= mem.read_byte(r.PC + i);
+		opcode				= mem.read_byte(pc);
 		t_opcode&	instr	= _opcodeMap[opcode];
 
 		if (instr.lengthData > 1) {
-			data1 = mem.read_byte(r.PC + i + 1);
+			data1 = mem.read_byte(pc + 1);
 			sprintf(buffer, "%%.2X %.2X", data1);
 		}
 		if (instr.lengthData > 2) {
-			data2 = mem.read_byte(r.PC + i + 2);
+			data2 = mem.read_byte(pc + 2);
 			sprintf(buffer, "%%.2X %.2X %.2X", data1, data2);
 		}
-		customSetItem(tableDisassembler, i, 0, "%.4X", r.PC + i);
+		customSetItem(tableDisassembler, i, 0, "%.4X", pc);
+		customSetItem(tableDisassembler, i, 1, instr.instructionName.c_str(), 0);
 		customSetItem(tableDisassembler, i, 2, buffer , opcode);
+		pc += instr.lengthData;
 	}
 }
 
