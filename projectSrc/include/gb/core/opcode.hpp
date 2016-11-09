@@ -16,6 +16,7 @@ typedef struct	s_opcode
 	uint8_t		cycleOpcodeNoFlag;
 	uint8_t		lengthData;
 	opcodeFct	functionOpcode;
+	std::string	instructionName;
 	uint16_t	data;
 }				t_opcode;
 

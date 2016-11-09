@@ -5,6 +5,14 @@ void	Cpu_z80::NOP() //0x00
 	std::cout << "NOP" << std::endl;
 }
 
+void	Cpu_z80::LD_BC_n() //0x01
+{
+	uint16_t	nn;
+
+	nn = _memory.read_word(_cpuRegister.PC + 1); 
+	_memory.write_word(_cpuRegister.BC, nn);
+}
+
 void	Cpu_z80::LD_BC_A() //0x02
 {
 	_memory.write_byte(_cpuRegister.BC, _cpuRegister.A);
@@ -31,6 +39,11 @@ void	Cpu_z80::DEC_B() //0x05
 	_cpuRegister.z = (_cpuRegister.B == 0) ? 1 : 0;
 }
 
+void	Cpu_z80::LD_B_n() //0x06
+{
+	_memory.write_byte(_cpuRegister.PC + 1, _cpuRegister.B);
+}
+
 void	Cpu_z80::RLCA() //0x07
 {
 	_cpuRegister.c = _cpuRegister.A & 0x80;
@@ -40,6 +53,11 @@ void	Cpu_z80::RLCA() //0x07
 	_cpuRegister.h = 0;
 	_cpuRegister.n = 0;
 	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
+}
+
+void	Cpu_z80::LD_n_SP() //0x08
+{
+	_memory.write_word(_memory.read_word(_cpuRegister.PC + 1), _cpuRegister.SP);
 }
 
 void	Cpu_z80::ADD_HL_BC() //0x09
@@ -75,6 +93,11 @@ void	Cpu_z80::DEC_C() //0x0d
 	_cpuRegister.z = (_cpuRegister.C == 0) ? 1 : 0;
 }
 
+void	Cpu_z80::LD_C_n() //0x0e
+{
+	_memory.write_byte(_cpuRegister.PC + 1, _cpuRegister.C);
+}
+
 void	Cpu_z80::RRCA() //0x0f
 {
 	_cpuRegister.c = _cpuRegister.A & 0x80;
@@ -84,6 +107,14 @@ void	Cpu_z80::RRCA() //0x0f
 	_cpuRegister.h = 0;
 	_cpuRegister.n = 0;
 	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
+}
+
+void	Cpu_z80::LD_DE_n() //0x11
+{
+	uint16_t	nn;
+
+	nn = _memory.read_word(_cpuRegister.PC + 1); 
+	_memory.write_word(_cpuRegister.DE, nn);
 }
 
 void	Cpu_z80::LD_DE_A() //0x12
@@ -111,6 +142,11 @@ void	Cpu_z80::DEC_D() //0x15
 	_cpuRegister.z = (_cpuRegister.D == 0) ? 1 : 0;
 }
 
+void	Cpu_z80::LD_D_n() //0x16
+{
+	_memory.write_byte(_cpuRegister.PC + 1, _cpuRegister.D);
+}
+
 void	Cpu_z80::RLA() //0x17
 {
 	int	carry;
@@ -122,6 +158,16 @@ void	Cpu_z80::RLA() //0x17
 	_cpuRegister.n = 0;
 	_cpuRegister.h = 0;
 	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
+}
+
+void	Cpu_z80::JR_n() //0x18
+{
+	int8_t	n;
+	uint8_t a = _memory.read_byte(_cpuRegister.PC + 1);
+	a = 0x00;
+	n = 0;
+	n |= a;
+	_cpuRegister.PC = _memory.read_byte(_cpuRegister.PC) + n;
 }
 
 void	Cpu_z80::ADD_HL_DE() //0x19
@@ -157,6 +203,11 @@ void	Cpu_z80::DEC_E() //0x1d
 	_cpuRegister.z = (_cpuRegister.E == 0) ? 1 : 0;
 }
 
+void	Cpu_z80::LD_E_n() //0x1e
+{
+	_memory.write_byte(_cpuRegister.PC + 1, _cpuRegister.E);
+}
+
 void	Cpu_z80::RRA() //0x1f
 {
 	int	carry;
@@ -168,6 +219,20 @@ void	Cpu_z80::RRA() //0x1f
 	_cpuRegister.n = 0;
 	_cpuRegister.h = 0;
 	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
+}
+
+void	Cpu_z80::JR_NZ_n() //0x20
+{
+	if (_cpuRegister.z == 0)
+		JR_n();
+}
+
+void	Cpu_z80::LD_HL_nn() //0x21
+{
+	uint16_t	nn;
+
+	nn = _memory.read_word(_cpuRegister.PC + 1); 
+	_memory.write_word(_cpuRegister.HL, nn);
 }
 
 void	Cpu_z80::LD_HLI_A() //0x22
@@ -196,6 +261,12 @@ void	Cpu_z80::DEC_H() //0x25
 	_cpuRegister.z = (_cpuRegister.H == 0) ? 1 : 0;
 }
 
+void	Cpu_z80::LD_H_n() //0x26
+{
+
+	_memory.write_byte(_cpuRegister.PC + 1, _cpuRegister.H);
+}
+
 void	Cpu_z80::DAA() //0x27
 {
 	if (_cpuRegister.n == 0)
@@ -215,6 +286,12 @@ void	Cpu_z80::DAA() //0x27
 	}
 	_cpuRegister.c = (_cpuRegister.A & 0xff00) ? 1 : 0;
 	_cpuRegister.z = _cpuRegister.A == 0 ? 1 : 0;
+}
+
+void	Cpu_z80::JR_Z_n() //0x28
+{
+	if (_cpuRegister.z == 1)
+		JR_n();
 }
 
 void	Cpu_z80::ADD_HL_HL() //0x29
@@ -251,6 +328,11 @@ void	Cpu_z80::DEC_L() //0x2d
 	_cpuRegister.z = (_cpuRegister.L == 0) ? 1 : 0;
 }
 
+void	Cpu_z80::LD_L_n() //0x2e
+{
+	_memory.write_byte(_cpuRegister.PC + 1, _cpuRegister.L);
+}
+
 void	Cpu_z80::CPL() //0x2f
 {
 	_cpuRegister.A = ~_cpuRegister.A;
@@ -258,10 +340,29 @@ void	Cpu_z80::CPL() //0x2f
 	_cpuRegister.h = 1;
 }
 
+void	Cpu_z80::JR_NC_n() //0x30
+{
+	if (_cpuRegister.c == 0)
+		JR_n();
+}
+
+void	Cpu_z80::LD_SP_n() //0x31
+{
+	uint16_t	nn;
+
+	nn = _memory.read_word(_cpuRegister.PC + 1); 
+	_memory.write_word(_cpuRegister.SP, nn);
+}
+
 void	Cpu_z80::LD_HLD_A() //0x32
 {
 	LD_HL_A();
 	DEC_HLF();
+}
+
+void	Cpu_z80::INC_SP() //0x33
+{
+	_cpuRegister.SP++;
 }
 
 void	Cpu_z80::INC_HLF() //0x34
@@ -285,6 +386,13 @@ void	Cpu_z80::DEC_HLF() //0x35
 	_memory.write_word(_cpuRegister.HL, (tmp - 1));
 	_cpuRegister.z = (_memory.read_word(_cpuRegister.HL) == 0) ? 1 : 0;
 }
+void	Cpu_z80::LD_HL_n() //0x36
+{
+	uint8_t n;
+
+	n = _memory.read_byte(_cpuRegister.HL);
+	_memory.write_byte(_cpuRegister.PC + 1, n);
+}
 
 void	Cpu_z80::SCF() //0x37
 {
@@ -293,10 +401,29 @@ void	Cpu_z80::SCF() //0x37
 	_cpuRegister.n = 0;
 }
 
+void	Cpu_z80::JR_C_n() //0x38
+{
+	if (_cpuRegister.c == 1)
+		JR_n();
+}
+
+void	Cpu_z80::ADD_HL_SP() //0x39
+{
+	_cpuRegister.h = static_cast<int>(testAdd(_cpuRegister.HL, _cpuRegister.SP, 0xf000));
+	_cpuRegister.n = 0;
+	_cpuRegister.c = static_cast<int>(testAdd(_cpuRegister.HL, _cpuRegister.SP, 0xffff0000));
+	_cpuRegister.HL += _cpuRegister.SP;
+}
+
 void	Cpu_z80::LD_A_HLD() //0x3a
 {
 	LD_A_HL();
 	DEC_HLF();
+}
+
+void	Cpu_z80::DEC_SP() //0x3b
+{
+	_cpuRegister.SP--;
 }
 
 void	Cpu_z80::INC_A() //0x3c
@@ -313,6 +440,12 @@ void	Cpu_z80::DEC_A() //0x3d
 	_cpuRegister.h = static_cast<int>(testSub(_cpuRegister.A, 1, 0x0f));
 	_cpuRegister.A--;
 	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
+}
+
+
+void	Cpu_z80::LD_A_n() //0x3e
+{
+	_memory.write_byte(_cpuRegister.PC + 1, _cpuRegister.A);
 }
 
 void	Cpu_z80::CCF() //0x3f
@@ -1262,157 +1395,389 @@ void	Cpu_z80::CP_A() //0xbf
 {
 	_cpuRegister.n = 1;
 	_cpuRegister.h = (testSub(_cpuRegister.A, _cpuRegister.A, 0xf0)) ? 1 : 0;
-	_cpuRegister.c = (_cpuRegister.A > _cpuRegister.A) ? 1 : 0;
-	_cpuRegister.z = (_cpuRegister.A == _cpuRegister.A) ? 1 : 0;
+	_cpuRegister.c = 0;
+	_cpuRegister.z = 1;
 }
 
-void	Cpu_z80::LD_BC_n()		//0x01     Not done yet
-{}
-void	Cpu_z80::INC_B_n()		//0x06     Not done yet
-{}
-void	Cpu_z80::LD_n_SP()		//0x08     Not done yet
-{}
-void	Cpu_z80::LD_C_n()		//0x0e     Not done yet
-{}
+void	Cpu_z80::RET_NZ() //0xc0
+{
+	if (_cpuRegister.z == 0)
+		RET();
+}
+
+void	Cpu_z80::POP_BC() //0xc1 
+{
+	_cpuRegister.BC = _memory.read_word(_cpuRegister.SP);
+	_cpuRegister.SP += 2;
+}
+
+void	Cpu_z80::JP_NZ_n() //0xc2
+{
+	if (_cpuRegister.z == 0)
+		JP_n();
+}
+
+void	Cpu_z80::JP_n()		//0xc3
+{
+	_cpuRegister.PC = _memory.read_word(_cpuRegister.PC + 1);
+}
+
+void	Cpu_z80::CALL_NZ_n() //0xc4
+{
+	if (_cpuRegister.z == 0)
+		CALL_n();
+}
+
+void	Cpu_z80::PUSH_BC() //0xc5
+{
+	_cpuRegister.SP -= 2;
+	_memory.write_word(_cpuRegister.SP, _cpuRegister.BC);
+}
+
+void	Cpu_z80::ADD_A_n() //0xc6
+{
+	uint8_t n;
+
+	n = _memory.read_byte(_cpuRegister.PC + 1);
+	_cpuRegister.n = 0;
+	_cpuRegister.h = static_cast<int>(testAdd(_cpuRegister.A, n, 0xf0));
+	_cpuRegister.c = static_cast<int>(testAdd(_cpuRegister.A, n, 0xff00));
+	_cpuRegister.A += n;
+	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
+
+}
+
+void	Cpu_z80::RST_00H()		//0xc7
+{
+	_cpuRegister.SP -= 2;
+	_memory.write_word(_cpuRegister.SP, _memory.read_word(_cpuRegister.PC));
+	_cpuRegister.PC = 0x0000;
+}
+
+void	Cpu_z80::RET_Z() //0xc9
+{
+	if (_cpuRegister.z == 1)
+		RET();
+}
+
+void	Cpu_z80::RET() //0xc9
+{
+	_cpuRegister.PC = _memory.read_word(_cpuRegister.SP);
+	_cpuRegister.SP += 2;
+}
+
+void	Cpu_z80::JP_Z_n() //0xca
+{
+	if (_cpuRegister.z == 1)
+		JP_n();
+}
+
+void	Cpu_z80::CALL_Z_n() //0xcc
+{
+	if (_cpuRegister.z == 1)
+		CALL_n();
+}
+
+void	Cpu_z80::CALL_n() //0xcd
+{
+	  uint16_t nn;
+
+	 nn = _memory.read_word(_cpuRegister.PC + 1);
+	 _memory.write_word(_cpuRegister.SP, nn);
+	 JP_n();
+}
+
+void	Cpu_z80::ADC_A_n() //0xce
+{
+	uint8_t tmp;
+
+	tmp = _memory.read_byte(_cpuRegister.PC + 1) + _cpuRegister.c;
+	_cpuRegister.n = 0;
+	_cpuRegister.h = static_cast<int>(testAdd(_cpuRegister.A, tmp, 0xf0));
+	_cpuRegister.c = static_cast<int>(testAdd(_cpuRegister.A, tmp, 0xff00));
+	_cpuRegister.A += tmp;
+	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
+
+}
+
+void	Cpu_z80::RST_08H() //0xcf
+{
+	_cpuRegister.SP -= 2;
+	_memory.write_word(_cpuRegister.SP, _memory.read_word(_cpuRegister.PC));
+	_cpuRegister.PC = 0x0008;
+}
+
+void	Cpu_z80::RET_NC() //0xd0
+{
+	if (_cpuRegister.c == 0)
+		RET();
+}
+
+void	Cpu_z80::POP_DE() //0xd1 
+{
+	_cpuRegister.DE = _memory.read_word(_cpuRegister.SP);
+	_cpuRegister.SP += 2;
+}
+
+void	Cpu_z80::JP_NC_n() //0xd2
+{
+	if (_cpuRegister.c == 0)
+		JP_n();
+}
+
+void	Cpu_z80::CALL_NC_n() //0xd4
+{
+	if (_cpuRegister.c == 0)
+		CALL_n();
+}
+
+void	Cpu_z80::PUSH_DE() //0xd5
+{
+	_cpuRegister.SP -= 2;
+	_memory.write_word(_cpuRegister.SP, _cpuRegister.DE);
+}
+
+void	Cpu_z80::SUB_n() //0xd6
+{
+	uint8_t n;
+
+	n =  _memory.read_byte(_cpuRegister.PC + 1);
+	_cpuRegister.n = 1;
+	_cpuRegister.h = static_cast<int>(testSub(_cpuRegister.A, n, 0x0f));
+	_cpuRegister.c = static_cast<int>(testSub(_cpuRegister.A, n, 0xff00));
+	_cpuRegister.A -= _cpuRegister.B;
+	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
+}
+
+void	Cpu_z80::RST_10H() //0xd7
+{
+	_cpuRegister.SP -= 2;
+	_memory.write_word(_cpuRegister.SP, _memory.read_word(_cpuRegister.PC));
+	_cpuRegister.PC = 0x0010;
+}
+
+void	Cpu_z80::RET_C() //0xd8
+{
+	if (_cpuRegister.c == 1)
+		RET();
+}
+
+void	Cpu_z80::RETI() //0xd9
+{
+	RET();
+	//TODO: ADD BOOL TO ALLOW INTERUPTS
+}
+
+void	Cpu_z80::JP_C_n() //0xda
+{
+	if (_cpuRegister.c == 1)
+		JP_n();
+}
+
+void	Cpu_z80::CALL_C_n() //0xdc
+{
+	if (_cpuRegister.c == 1)
+		CALL_n();
+}
+
+void	Cpu_z80::SBC_A_n()	//0xde
+{
+	uint8_t	tmp;
+
+	tmp = _memory.read_byte(_cpuRegister.PC + 1) + _cpuRegister.c;
+	_cpuRegister.n = 1;
+	_cpuRegister.h = static_cast<int>(testSub(_cpuRegister.A, tmp, 0x0f));
+	_cpuRegister.c = static_cast<int>(testSub(_cpuRegister.A, tmp, 0xff00));
+	_cpuRegister.A -= tmp;
+	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
+
+}
+
+void	Cpu_z80::RST_18H() //0xdf
+{
+	_cpuRegister.SP -= 2;
+	_memory.write_word(_cpuRegister.SP, _memory.read_word(_cpuRegister.PC));
+	_cpuRegister.PC = 0x0018;
+}
+
+void	Cpu_z80::LDH_n_A() //0xe0
+{
+	uint8_t n;
+
+	n = _memory.read_byte(_cpuRegister.PC + 1);
+	_memory.write_byte(0xff00 + n, _cpuRegister.A);
+}
+
+void	Cpu_z80::POP_HL() //0xe1 
+{
+	_cpuRegister.HL = _memory.read_word(_cpuRegister.SP);
+	_cpuRegister.SP += 2;
+}
+
+void	Cpu_z80::LD_CC_A()	//0xe2
+{
+	_memory.write_word((0x0000 + _cpuRegister.c), _cpuRegister.A);
+}
+
+void	Cpu_z80::PUSH_HL() //0xe5
+{
+	_cpuRegister.SP -= 2;
+	_memory.write_word(_cpuRegister.SP, _cpuRegister.HL);
+}
+
+void	Cpu_z80::AND_n()	//0xe6
+{
+	_cpuRegister.n = 0;
+	_cpuRegister.h = 1;
+	_cpuRegister.c = 0;
+	_cpuRegister.A = (_cpuRegister.A & _memory.read_byte(_cpuRegister.PC + 1));
+	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
+}
+
+void	Cpu_z80::RST_20H() //0xe7
+{
+	_cpuRegister.SP -= 2;
+	_memory.write_word(_cpuRegister.SP, _memory.read_word(_cpuRegister.PC));
+	_cpuRegister.PC = 0x0020;
+}
+
+void	Cpu_z80::ADD_SP_n()	//0xe8
+{
+	int8_t	n;
+	uint8_t a = _memory.read_byte(_cpuRegister.PC + 1);
+	a = 0x00;
+	n = 0;
+	n |= a;
+	_cpuRegister.h = static_cast<int>(testAdd(_cpuRegister.SP, n, 0xf000));
+	_cpuRegister.c = static_cast<int>(testAdd(_cpuRegister.SP, n, 0xffff0000));
+	_cpuRegister.SP += n;
+}
+
+void	Cpu_z80::JP_HL() //0xe9
+{
+	_cpuRegister.PC = _memory.read_word(_cpuRegister.HL);
+}
+
+void	Cpu_z80::LD_n_A() //0xea
+{
+	uint8_t nn;
+
+	nn = _memory.read_word(_cpuRegister.PC + 1);
+	_memory.write_byte(nn, _cpuRegister.A);
+}
+
+void	Cpu_z80::XOR_n() //0xee
+{
+	uint8_t n;
+
+	n = _memory.read_byte(_cpuRegister.PC + 1);
+	_cpuRegister.n = 0;
+	_cpuRegister.h = 0;
+	_cpuRegister.c = 0;
+	_cpuRegister.A = (_cpuRegister.A ^ n);
+	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
+}
+
+void	Cpu_z80::RST_28H() //0xef
+{
+	_cpuRegister.SP -= 2;
+	_memory.write_word(_cpuRegister.SP, _memory.read_word(_cpuRegister.PC));
+	_cpuRegister.PC = 0x0028;
+}
+
+void	Cpu_z80::LDH_A_n() //0xf0
+{
+	uint8_t n;
+
+	n = _memory.read_byte(_cpuRegister.PC + 1);
+	_cpuRegister.A = n;
+}
+
+void	Cpu_z80::POP_AF() //0xf1 
+{
+	_cpuRegister.AF = _memory.read_word(_cpuRegister.SP);
+	_cpuRegister.SP += 2;
+}
+
+void	Cpu_z80::LD_A_CC()	//0xf2
+{
+	_cpuRegister.A = _memory.read_byte(0x0000 + _cpuRegister.c);
+}
+
+void	Cpu_z80::PUSH_AF() //0xf5
+{
+	_cpuRegister.SP -= 2;
+	_memory.write_word(_cpuRegister.SP, _cpuRegister.AF);
+}
+
+void	Cpu_z80::OR_n() //0xf6
+{
+	uint8_t n;
+
+	n = _memory.read_byte(_cpuRegister.PC + 1);
+	_cpuRegister.n = 0;
+	_cpuRegister.h = 0;
+	_cpuRegister.c = 0;
+	_cpuRegister.A = (_cpuRegister.A | n);
+	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
+}
+
+void	Cpu_z80::RST_30H() //0xf7
+{
+	_cpuRegister.SP -= 2;
+	_memory.write_word(_cpuRegister.SP, _memory.read_word(_cpuRegister.PC));
+	_cpuRegister.PC = 0x0030;
+}
+
+void	Cpu_z80::LD_HL_SP_n()	//0xf8
+{
+	int8_t	n;
+	uint8_t a = _memory.read_byte(_cpuRegister.PC + 1);
+	a = 0x00;
+	n = 0;
+	n |= a;
+	_cpuRegister.h = static_cast<int>(testAdd(_cpuRegister.SP, n, 0xf000));
+	_cpuRegister.c = static_cast<int>(testAdd(_cpuRegister.SP, n, 0xffff0000));
+	_cpuRegister.HL = _cpuRegister.SP + n;
+}
+
+void	Cpu_z80::LD_SP_HL()	//0xf9
+{
+	_memory.write_word(_cpuRegister.SP, _cpuRegister.HL);
+}
+
+void	Cpu_z80::LD_A_b() //0xfa
+{
+	uint8_t nn;
+
+	nn = _memory.read_word(_cpuRegister.PC + 1);
+	_cpuRegister.A = nn;
+}
+
+void	Cpu_z80::CP_n()	//0xfe
+{
+	uint8_t n;
+
+	n = _memory.read_byte(_cpuRegister.PC + 1);
+	_cpuRegister.n = 1;
+	_cpuRegister.h = (testSub(_cpuRegister.A, n, 0xf0)) ? 1 : 0;
+	_cpuRegister.c = (_cpuRegister.A > n) ? 1 : 0;
+	_cpuRegister.z = (_cpuRegister.A == n) ? 1 : 0;
+}
+
+void	Cpu_z80::RST_38H() //0xff
+{
+	_cpuRegister.SP -= 2;
+	_memory.write_word(_cpuRegister.SP, _memory.read_word(_cpuRegister.PC));
+	_cpuRegister.PC = 0x0038;
+}
+
+
 void	Cpu_z80::STOP()			//0x10     Not done yet
-{}
-void	Cpu_z80::LD_DE_n()		//0x11     Not done yet
-{}
-void	Cpu_z80::LD_D_n()		//0x16     Not done yet
-{}
-void	Cpu_z80::JR_n()			//0x18     Not done yet
-{}
-void	Cpu_z80::LD_E_n()		//0x1e     Not done yet
-{}
-void	Cpu_z80::JR_NZ_n()		//0x20     Not done yet
-{}
-void	Cpu_z80::LD_HL_nn()		//0x21     Not done yet
-{}
-void	Cpu_z80::LD_H_n()		//0x26     Not done yet
-{}
-void	Cpu_z80::JR_Z_n()		//0x28     Not done yet
-{}
-void	Cpu_z80::LD_L_n()		//0x2e     Not done yet
-{}
-void	Cpu_z80::JR_NC_n()		//0x30     Not done yet
-{}
-void	Cpu_z80::LD_SP_n()		//0x31     Not done yet
-{}
-void	Cpu_z80::INC_SP()		//0x33     Not done yet
-{}
-void	Cpu_z80::LD_HL_n()		//0x36     Not done yet
-{}
-void	Cpu_z80::JR_C_n()		//0x38     Not done yet
-{}
-void	Cpu_z80::ADD_HL_SP()	//0x39     Not done yet
-{}
-void	Cpu_z80::DEC_SP()		//0x3b     Not done yet
-{}
-void	Cpu_z80::LD_A_n()		//0x3e     Not done yet
-{}
-void	Cpu_z80::RET_NZ()		//0xc0     Not done yet
-{}
-void	Cpu_z80::POP_BC()		//0xc1     Not done yet
-{}
-void	Cpu_z80::JP_NZ_n()		//0xc1     Not done yet
-{}
-void	Cpu_z80::JP_n()		//0xc3     Not done yet
-{}
-void	Cpu_z80::CALL_NZ_n()	//0xc4     Not done yet
-{}
-void	Cpu_z80::PUSH_BC()		//0xc5     Not done yet
-{}
-void	Cpu_z80::ADD_A_n()		//0xc6     Not done yet
-{}
-void	Cpu_z80::RST_00H()		//0xc7     Not done yet
-{}
-void	Cpu_z80::RET_Z()		//0xc8     Not done yet
-{}
-void	Cpu_z80::RET()			//0xc9     Not done yet
-{}
-void	Cpu_z80::JP_Z_n()		//0xca     Not done yet
 {}
 void	Cpu_z80::PREFIX_CB()	//0xcb     Not done yet
 {}
-void	Cpu_z80::CALL_Z_n()	//0xcc     Not done yet
-{}
-void	Cpu_z80::CALL_n()		//0xcd     Not done yet
-{}
-void	Cpu_z80::ADC_A_n()		//0xce     Not done yet
-{}
-void	Cpu_z80::RST_08H()		//0xcf     Not done yet
-{}
-void	Cpu_z80::RET_NC()		//0xd0     Not done yet
-{}
-void	Cpu_z80::POP_DE()		//0xd1     Not done yet
-{}
-void	Cpu_z80::JP_NC_n()		//0xd2     Not done yet
-{}
-void	Cpu_z80::CALL_NC_n()	//0xd4     Not done yet
-{}
-void	Cpu_z80::PUSH_DE()		//0xd5     Not done yet
-{}
-void	Cpu_z80::SUB_n()		//0xd6     Not done yet
-{}
-void	Cpu_z80::RST_10H()		//0xd7     Not done yet
-{}
-void	Cpu_z80::RET_C()		//0xd8     Not done yet
-{}
-void	Cpu_z80::RETI()		//0xd9     Not done yet
-{}
-void	Cpu_z80::JP_C_n()		//0xda     Not done yet
-{}
-void	Cpu_z80::CALL_C_n()	//0xdc     Not done yet
-{}
-void	Cpu_z80::SBC_A_n()	//0xde     Not done yet
-{}
-void	Cpu_z80::RST_18H()	//0xdf     Not done yet
-{}
-void	Cpu_z80::LDH_n_A()	//0xe0     Not done yet
-{}
-void	Cpu_z80::POP_HL()	//0xe1     Not done yet
-{}
-void	Cpu_z80::LD_CC_A()	//0xe2     Not done yet
-{}
-void	Cpu_z80::PUSH_HL()	//0xe5     Not done yet
-{}
-void	Cpu_z80::AND_n()	//0xe6     Not done yet
-{}
-void	Cpu_z80::RST_20H()	//0xe7     Not done yet
-{}
-void	Cpu_z80::ADD_SP_n()	//0xe8     Not done yet
-{}
-void	Cpu_z80::JP_HL()	//0xe9     Not done yet
-{}
-void	Cpu_z80::LD_n_A()	//0xea     Not done yet
-{}
-void	Cpu_z80::XOR_n()//0xee     Not done yet
-{}
-void	Cpu_z80::RST_28H()	//0xef     Not done yet
-{}
-void	Cpu_z80::LDH_A_n()	//0xf0     Not done yet
-{}
-void	Cpu_z80::POP_AF()	//0xf1     Not done yet
-{}
-void	Cpu_z80::LD_A_CC()	//0xf2     Not done yet
-{}
 void	Cpu_z80::DI()	//0xf3     Not done yet
 {}
-void	Cpu_z80::PUSH_AF()	//0xf5     Not done yet
-{}
-void	Cpu_z80::OR_n()	//0xf6     Not done yet
-{}
-void	Cpu_z80::RST_30H()	//0xf7     Not done yet
-{}
-void	Cpu_z80::LD_HL_SP_n()	//0xf8     Not done yet
-{}
-void	Cpu_z80::LD_SP_HL()	//0xf9     Not done yet
-{}
-void	Cpu_z80::LD_A_b()	//0xfa     Not done yet
-{}
 void	Cpu_z80::EI()	//0xfb
-{}
-void	Cpu_z80::CP_n()	//0xfe
-{}
-void	Cpu_z80::RST_38H()	//0xff
 {}
