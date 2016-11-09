@@ -34,15 +34,18 @@ public:
 	QPushButton		*buttonReset;
 	QPushButton		*buttonStep;
 	QPushButton		*buttonFrame;
+	QPushButton		*buttonOpen;
 
 	QLineEdit		*lineAddr;
 
 	signals:
 		void	stepPressedSign();
 		void	resetPressedSign();
+		void	openPressedSign(std::string path);
 	public slots:
 		void	stepPressedSlot();
 		void	resetPressedSlot();
+		void	openPressedSlot();
 		void	updateAllSlot();
 		void	lineAddrEditedSlot();
 
