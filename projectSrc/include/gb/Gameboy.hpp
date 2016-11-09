@@ -21,16 +21,20 @@ class Gameboy : public Machine, public QWidget
 		std::atomic<bool>	_debugMode;
 		std::atomic<bool>	_willRun;
 
+		std::string			_romPath;
+
 		Gameboy();
 		virtual	~Gameboy();
 
 		virtual void	run();
 		void			updateGbDb();
-
+		void			reset();
+		void			stopThread();
 	protected slots:
 		void	openRomSlot(std::string path);
 		void	gbDbSlot();
 		void	stepPressedSlot();
+		void	resetPressedSlot();
 };
 
 #endif

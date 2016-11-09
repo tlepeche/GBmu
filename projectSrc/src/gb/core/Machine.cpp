@@ -13,12 +13,12 @@
 Machine::Machine(void) : _memory(Memory::Instance()), _clock(Timer::Instance()), _cpu(Cpu_z80::Instance())
 {
 	this->_cpu.init();
-	this->_clock.setFrequency(this->_cpu.getArrayFrequency());
-	this->_clock.setCycleTotal(this->_getCycleOpcode());
 }
 
 void Machine::step(void)
 {
+	this->_clock.setFrequency(this->_cpu.getArrayFrequency());
+	this->_clock.setCycleTotal(this->_getCycleOpcode());
 	if (((this->_memory.read_byte(REGISTER_TAC) & 0x4) == 0x4))
 	{
 		if (this->_cpu.nbCycleNextOpCode() < this->_clock.getCycleAcc())
