@@ -17,6 +17,10 @@ Gameboy::Gameboy() :
 	connect(_window, &OpenGLWindow::gbDbSign, this, &Gameboy::gbDbSlot);
 
 	_window->show();
+#ifdef DEBUG
+	gbDbSlot(); // Open Debug window
+	openRomSlot("/sgoinfre/goinfre/Misc/roms/Tetris.gb"); // Run Roms
+#endif
 }
 
 Gameboy::~Gameboy()
