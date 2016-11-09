@@ -15,7 +15,7 @@ class Rom {
 
 	public:
 		static Rom		&Instance(void);
-		int				load(char *file);
+		int				load(const char *file);
 		bool			isLoaded(void);
 		uint8_t			read(uint16_t addr);
 		void			write(uint16_t addr, uint8_t val);
