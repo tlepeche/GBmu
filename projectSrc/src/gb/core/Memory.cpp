@@ -6,7 +6,6 @@ Memory		Memory::_instance = Memory();
 
 Memory::Memory(void) : _rom(Rom::Instance())
 {
-	this->reset();
 }
 
 Memory::~Memory(void) {}

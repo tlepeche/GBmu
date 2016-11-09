@@ -50,8 +50,11 @@ void	Gameboy::stepPressedSlot()
 void	Gameboy::openRomSlot(std::string path)
 {
 	std::cout << "Gameboy path: " << path << std::endl;
+
 	_willRun.store(true);
+	this->_memory.reset();
 	Rom::Instance().load(path.c_str());
+	this->_cpu.init();
 	_thread = new std::thread(&Gameboy::run, this);
 }
 

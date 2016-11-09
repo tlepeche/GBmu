@@ -97,7 +97,6 @@ void Cpu_z80::init(void)
 {
 	printf("INITIALIZING\n");
 	htype typeRom;
-	this->_memory.reset();
 
 	//init register cpu
 	//if (this->_rom.isLoaded()) //TODO: when david PR his code
@@ -172,7 +171,6 @@ void Cpu_z80::_setHightBit(uint16_t addr, uint8_t bit)
 
 void Cpu_z80::interrupt(void)
 {
-	std::cout << "interrupt cpu" << std::endl;
 }
 
 std::array<uint32_t, 4> Cpu_z80::getArrayFrequency()
@@ -187,7 +185,6 @@ void Cpu_z80::_resetPtrAddr(void)
 
 void Cpu_z80::_setOpcodeMap()
 {
-	std::cout << "salut" << std::endl;
 	_opcodeMap = {
 		(t_opcode){0x00, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::NOP, this),		"NOP",			0x0000},
 		(t_opcode){0x01, 0x00, 12, 12, 3, std::bind(&Cpu_z80::LD_BC_n, this),	"LD BC, nn",	0x0000},
