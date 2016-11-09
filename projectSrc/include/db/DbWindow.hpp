@@ -35,6 +35,7 @@ public:
 	QPushButton		*buttonStep;
 	QPushButton		*buttonFrame;
 	QPushButton		*buttonOpen;
+	QPushButton		*buttonBpAdd;
 
 	QLineEdit		*lineAddr;
 
@@ -42,10 +43,12 @@ public:
 		void	stepPressedSign();
 		void	resetPressedSign();
 		void	openPressedSign(std::string path);
+		void	bpAddSign(uint16_t addr);
 	public slots:
 		void	stepPressedSlot();
 		void	resetPressedSlot();
 		void	openPressedSlot();
+		void	bpAddPressedSlot();
 		void	updateAllSlot();
 		void	lineAddrEditedSlot();
 
