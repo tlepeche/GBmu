@@ -61,6 +61,16 @@ void Cpu_z80::_setDataOpcode(void)
 	}
 }
 
+void Cpu_z80::setStepState(bool state)
+{
+	_stepState = state;
+}
+
+bool Cpu_z80::getStepState()
+{
+	return (this->_stepState);
+}
+
 uint16_t Cpu_z80::_getDataOpcode(void)
 {
 	return this->_opcodeInProgress.data;
@@ -72,7 +82,8 @@ uint8_t Cpu_z80::_getLengthDataOpcode(void)
 }
 
 void Cpu_z80::_nextPtr(void) {
-	this->_cpuRegister.PC = this->_cpuRegister.PC + this->_opcodeInProgress.lengthData;
+	if (!(getStepState()))
+		this->_cpuRegister.PC = this->_cpuRegister.PC + this->_opcodeInProgress.lengthData;
 	this->_opcodeInProgress = this->_getOpcode(this->_memory.read_byte(this->_cpuRegister.PC));
 	this->_setDataOpcode();
 }
@@ -90,6 +101,7 @@ uint8_t Cpu_z80::executeNextOpcode(void)
 		this->_opcodeInProgress.functionOpcode();
 	uint8_t cycle = this->_getCycleOpcode();
 	this->_nextPtr();
+	setStepState(true);
 	return cycle;
 }
 
@@ -97,6 +109,7 @@ uint8_t Cpu_z80::executeNextOpcode(void)
 
 void Cpu_z80::init(void)
 {
+	setStepState(true);
 	printf("INITIALIZING\n");
 	htype typeRom;
 
@@ -198,6 +211,7 @@ void Cpu_z80::_setHightBit(uint16_t addr, uint8_t bit)
 
 void Cpu_z80::interrupt(void)
 {
+	std::cout << "interrupt cpu" << std::endl;
 }
 
 std::array<uint32_t, 4> Cpu_z80::getArrayFrequency()
@@ -212,6 +226,7 @@ void Cpu_z80::_resetPtrAddr(void)
 
 void Cpu_z80::_setOpcodeMap()
 {
+	std::cout << "salut" << std::endl;
 	_opcodeMap = {
 		(t_opcode){0x00, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::NOP, this),		"NOP",			0x0000},
 		(t_opcode){0x01, 0x00, 12, 12, 3, std::bind(&Cpu_z80::LD_BC_n, this),	"LD BC, nn",	0x0000},
@@ -263,7 +278,7 @@ void Cpu_z80::_setOpcodeMap()
 		(t_opcode){0x2f, 0x00, 4 , 4 , 3, std::bind(&Cpu_z80::CPL, this),    	"CPL",			0x0000},
 		(t_opcode){0x30, 0x70, 12, 8 , 2, std::bind(&Cpu_z80::JR_NC_n, this),   "JR NZ, n",		0x0000},
 		(t_opcode){0x31, 0x00, 12, 12, 3, std::bind(&Cpu_z80::LD_SP_n, this),   "LD SP, nn",	0x0000},
-		(t_opcode){0x32, 0x00, 12, 12, 3, std::bind(&Cpu_z80::LD_HLD_A, this),  "LD (HL-), A",	0x0000},
+		(t_opcode){0x32, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_HLD_A, this),  "LD (HL-), A",	0x0000},
 		(t_opcode){0x33, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::INC_SP, this),    "INC SP",		0x0000},
 		(t_opcode){0x34, 0x00, 12, 12, 1, std::bind(&Cpu_z80::INC_HLF, this),   "INC (HL)",		0x0000},
 		(t_opcode){0x35, 0x00, 12, 12, 1, std::bind(&Cpu_z80::DEC_HLF, this),   "DEC (HL)",		0x0000},

@@ -24,12 +24,13 @@ template <typename T1, typename T2, typename T3>
 inline bool testSub(T1 op1, T2 op2, T3 mask)
 {
 	if ((op1 - op2) & mask)
-		return false;
-	return true;
+		return true;
+	return false;
 }
 
 class Cpu_z80
 {
+	bool _tmp;
 	/*
 	** ################################################################
 	** CREATE Singleton
@@ -52,6 +53,8 @@ class Cpu_z80
 	public:
 		uint8_t							nbCycleNextOpCode(void);
 		uint8_t							executeNextOpcode(void);
+		void							setStepState(bool state);
+		bool							getStepState(void);
 
 	private:
 		t_opcode						_getOpcode(uint8_t opcode);
@@ -71,6 +74,21 @@ class Cpu_z80
 		std::array<uint32_t, 4>			getArrayFrequency();
 		void							interrupt(void);
 		void							init(void);
+
+
+		void							XOR(uint8_t val);
+		void							AND(uint8_t val);
+		void							OR(uint8_t val);
+		void							CP(uint8_t val);
+		void							LD_x_y(uint16_t *dst, uint16_t src);
+		void							LD_x_y(uint8_t *dst, uint8_t src);
+		void							inc(uint8_t *val);
+		void							dec(uint8_t *val);
+		void							add(uint8_t val);
+		void							adc(uint8_t val);
+		void							sub(uint8_t val);
+		void							sbc(uint8_t val);
+
 
 		void							NOP();			//0x00
 		void							LD_BC_n();		//0x01
@@ -191,7 +209,6 @@ class Cpu_z80
 		void							LD_HL_H();		//0x74
 		void							LD_HL_L();		//0x75
 		void							HALT();			//0x76 Not done yet
-	   	//HALT ==> TIMA = 1 dans memory ?  
  		void							LD_HL_A();		//0x77
 		void							LD_A_B();		//0x78
 		void							LD_A_C();		//0x79
@@ -355,6 +372,7 @@ class Cpu_z80
 		Memory							&_memory;
 		std::array<uint32_t, 4>			_arrayFrequency {{static_cast<uint32_t>(4096), static_cast<uint32_t>(16385), static_cast<uint32_t>(65536), static_cast<uint32_t>(262144) }};
 		t_opcode						_opcodeInProgress;
+		bool							_stepState;
 
 	public:
 		unsigned int					_addrLength;
