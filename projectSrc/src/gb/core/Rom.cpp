@@ -233,6 +233,8 @@ void		Rom::_writeMbc1(uint16_t addr, uint8_t val)
 		case 0x3000:
 			// Rom bank code
 			val &= 0x1F;
+			if (val == 0x00)
+				++val;
 			this->_bank &= 0xE0;
 			this->_bank |= val;
 			break;
@@ -285,6 +287,8 @@ void		Rom::_writeMbc2(uint16_t addr, uint8_t val)
 			if ((addr & 0x0F00) == 0x0100)
 			{
 				val &= 0x0F;
+				if (val == 0x00)
+					++val;
 				this->_bank &= 0xF0;
 				this->_bank |= val;
 			}
@@ -315,6 +319,8 @@ void		Rom::_writeMbc5(uint16_t addr, uint8_t val)
 		case 0x2000:
 			// ROMB 0
 			val &= 0xFF;
+			if (val == 0x00)
+				++val;
 			this->_bank &= 0x0100;
 			this->_bank |= val;
 			break;
