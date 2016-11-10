@@ -9,6 +9,7 @@ typedef	enum	s_gpuMode
 	VBLANK
 }				t_gpuMode;
 
+class OpenGLWindow;
 
 class Gpu
 {
@@ -16,7 +17,7 @@ class Gpu
 		unsigned int	_clock;
 		t_gpuMode		_mode;
 		unsigned int	_line;
-
+		OpenGLWindow	*_window;
 	private:
 		Gpu();
 		~Gpu();
@@ -26,5 +27,6 @@ class Gpu
 		static Gpu		&Instance();
 
 		void	step();
+		void	init();
 		void	accClock(unsigned int clock);
 };

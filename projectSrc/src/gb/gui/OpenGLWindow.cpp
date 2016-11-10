@@ -12,13 +12,15 @@
 
 // GOOD tuto
 // http://doc.qt.io/qt-5/qtwidgets-mainwindows-menus-example.html
+#define WIN_WIDTH 160
+#define WIN_HEIGHT 144
 
 OpenGLWindow::OpenGLWindow(QWindow *parent)
 	: QWindow(parent)
 	, m_update_pending(false)
 	, m_animating(false)
 	, _menuBar(this->genMenuBar())
-	, frameBuffer(new QImage(160, 140, QImage::Format_RGB32))
+	, frameBuffer(new QImage(WIN_WIDTH, WIN_HEIGHT, QImage::Format_RGB32))
 	, m_context(0)
 	, m_device(0)
 {
@@ -101,6 +103,12 @@ void OpenGLWindow::render(QPainter *painter)
 
 void OpenGLWindow::initialize()
 {
+	unsigned int defaultColor = 0x00000000;
+
+	for (int y = 0 ; y < WIN_HEIGHT; ++y)
+		for (int x = 0 ; x < WIN_WIDTH; ++x)
+			drawPixel(y * WIN_WIDTH + x, defaultColor);
+	renderLater();
 }
 
 void OpenGLWindow::render()
@@ -108,7 +116,6 @@ void OpenGLWindow::render()
 	if (!m_device)
 		m_device = new QOpenGLPaintDevice;
 
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	m_device->setSize(size());
 	QPainter painter(m_device);

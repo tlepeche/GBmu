@@ -71,6 +71,7 @@ void	Gameboy::reset()
 		this->_memory.reset();
 		Rom::Instance().load(_romPath.c_str());
 		this->_cpu.init();
+		this->_gpu.init();
 		_thread = new std::thread(&Gameboy::run, this);
 	}
 	else

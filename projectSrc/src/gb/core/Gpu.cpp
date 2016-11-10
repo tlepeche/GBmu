@@ -1,5 +1,6 @@
 
 #include "Gpu.hpp"
+#include "OpenGLWindow.hpp"
 
 Gpu		Gpu::_gpuInstance = Gpu();
 
@@ -11,9 +12,9 @@ Gpu		&Gpu::Instance()
 Gpu::Gpu() :
 	_clock(0),
 	_mode(OAM_READ),
-	_line(0)
+	_line(0),
+	_window(nullptr)
 {
-
 }
 
 Gpu::~Gpu()
@@ -41,7 +42,7 @@ void	Gpu::step()
 				_clock = 0;
 				_mode = HBLANK;
 
-				// _renderScan(); // write line on buffer
+				_window->drawPixel(_line * 2, 0x00FFFFFF);
 			}
 			break ;
 		case HBLANK:
@@ -54,7 +55,7 @@ void	Gpu::step()
 				if (_line == 143)
 				{
 					_mode = VBLANK;
-					// _refreshScren() // put buffer on screen
+					_window->renderLater();
 				}
 				else
 				{
@@ -79,6 +80,15 @@ void	Gpu::step()
 		default:
 			break ;
 	}
+}
+
+void	Gpu::init()
+{
+	_mode = OAM_READ;
+	_clock = 0;
+	_line = 0;
+	_window = OpenGLWindow::Instance();
+	_window->initialize();
 }
 
 void	Gpu::accClock(unsigned int clock)
