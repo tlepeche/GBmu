@@ -8,7 +8,12 @@
 #include <QTimer>
 QTimer timer;
 
+#include <QListWidget>
 #include <QFileDialog>
+#include <QInputDialog>
+
+#include <iostream>
+#include <sstream>
 
 static inline
 void customSetItem(QTableWidget* table, int x, int y, const char *format, int value)
@@ -19,11 +24,24 @@ void customSetItem(QTableWidget* table, int x, int y, const char *format, int va
 	table->setItem(x, y, new QTableWidgetItem(buffer));
 }
 
-DbWindow::DbWindow(t_register* r, Memory* mem) :
+static
+template <typename T>
+T	QStringToHexInt(QString& s)
+{
+	std::stringstream	ss;
+	T					res;
+
+	ss << std::hex << s.toStdString();
+	ss >> res;
+	return (res);
+}
+
+DbWindow::DbWindow(t_register* r, Memory* mem, std::list<uint16_t> *breakpoint) :
     QDialog(nullptr),
     ui(new Ui::DbWindow),
 	_r(r),
 	_mem(mem),
+	_breakpoints(breakpoint),
 	_start(0xD000)
 {
     ui->setupUi(this);
@@ -34,17 +52,23 @@ DbWindow::DbWindow(t_register* r, Memory* mem) :
 	tableDisassembler	= this->findChild<QTableWidget*>("tableDisassembler");
 	tableMemory			= this->findChild<QTableWidget*>("tableMemory");
 
+	listBreakpoint		= this->findChild<QListWidget*>("listBreakpoint");
+
 	buttonReset			= this->findChild<QPushButton*>("buttonReset");
 	buttonStep			= this->findChild<QPushButton*>("buttonStep");
-	buttonFrame			= this->findChild<QPushButton*>("buttonFrame");
+	buttonRun			= this->findChild<QPushButton*>("buttonRun");
 	buttonOpen			= this->findChild<QPushButton*>("buttonOpen");
+	buttonBpAdd			= this->findChild<QPushButton*>("buttonBpAdd");
 
 	lineAddr			= this->findChild<QLineEdit*>("lineAddr");
 	tableMemory->resizeColumnsToContents();
 
 	connect(buttonStep, &QPushButton::pressed, this, &DbWindow::stepPressedSlot);
+	connect(buttonRun, &QPushButton::pressed, this, &DbWindow::runPressedSlot);
 	connect(buttonReset, &QPushButton::pressed, this, &DbWindow::resetPressedSlot);
 	connect(buttonOpen, &QPushButton::pressed, this, &DbWindow::openPressedSlot);
+	connect(buttonBpAdd, &QPushButton::pressed, this, &DbWindow::bpAddPressedSlot);
+	connect(listBreakpoint, &QListWidget::itemDoubleClicked, this, &DbWindow::bpDoubleClikedSlot);
 	connect(lineAddr, &QLineEdit::editingFinished, this, &DbWindow::lineAddrEditedSlot);
 
 	connect(&timer, &QTimer::timeout, this, &DbWindow::updateAllSlot);
@@ -86,6 +110,15 @@ DbWindow::DbWindow(t_register* r, Memory* mem) :
 	customSetItem(tableVideoRegisters, 14, 0, "%.2X", REGISTER_OCPS);
 	customSetItem(tableVideoRegisters, 15, 0, "%.2X", REGISTER_OCPD);
 
+
+	for (auto i : *_breakpoints) {
+		std::stringstream	ss;
+		std::string			s;
+
+		ss << std::hex << i;
+		ss >> s;
+		listBreakpoint->addItem(new QListWidgetItem(tr(s.c_str())));
+	}
 }
 
 void DbWindow::updateRegister(t_register& r)
@@ -180,15 +213,11 @@ void DbWindow::updateMemory(Memory& m)
 	}
 }
 
-#include <sstream>
-
 void	DbWindow::lineAddrEditedSlot()
 {
-	std::stringstream	ss;
 	unsigned int		max = 0xFFFF - 8 * 0x10;
-	ss << std::hex << lineAddr->text().toStdString();
-	ss >> _start;
-
+	QString				text = lineAddr->text();
+	_start = QStringToHexInt<unsigned int>(text);
 	if (_start >= max)
 		_start = max;
 }
@@ -196,6 +225,11 @@ void	DbWindow::lineAddrEditedSlot()
 void	DbWindow::stepPressedSlot()
 {
 	emit	stepPressedSign();
+}
+
+void	DbWindow::runPressedSlot()
+{
+	emit	runPressedSign();
 }
 
 void	DbWindow::resetPressedSlot()
@@ -208,6 +242,41 @@ void	DbWindow::openPressedSlot()
 	QString path = QFileDialog::getOpenFileName(NULL, tr("Open XML File 1"), "/home", tr("XML Files (*.xml, *)"));
 
 	emit	openPressedSign(path.toStdString());
+}
+
+void	DbWindow::bpAddPressedSlot()
+{
+	bool				ok;
+	uint16_t			addr;
+
+	QString text = QInputDialog::getText(this, tr("Breakpoint add"),
+			                                   tr("Breakpoint addr:"), QLineEdit::Normal,
+											   "0000", &ok);
+
+	if (ok)
+	{
+		addr = QStringToHexInt<uint16_t>(text);
+
+		listBreakpoint->addItem(new QListWidgetItem(text));
+		emit	bpAddSign(addr);
+	}
+}
+
+void	DbWindow::bpDel(QListWidgetItem *item)
+{
+	QString		text = item->text();
+	uint16_t	addr;
+
+	addr = QStringToHexInt<uint16_t>(text);
+
+	listBreakpoint->removeItemWidget(item);
+	delete item;
+	emit bpDelSign(addr);
+}
+
+void	DbWindow::bpDoubleClikedSlot(QListWidgetItem *item)
+{
+	bpDel(item);
 }
 
 // This function il call every 100ms see _timer 

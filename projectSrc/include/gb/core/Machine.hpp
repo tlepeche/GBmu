@@ -23,7 +23,7 @@ class Machine
 		Machine(void);
 		virtual ~Machine(void) {};
 
-		void			step(void);
+		bool			step(void);
 		virtual void	run(void);
 
 };

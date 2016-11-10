@@ -10,7 +10,7 @@ Gameboy::Gameboy() :
 	, _thread(nullptr)
 	, _romPath("")
 {
-	_debugMode.store(false);
+	_stepMode.store(false);
 	_willRun.store(false);
 
 	connect(_window, &OpenGLWindow::openRomSign, this, &Gameboy::openRomSlot);
@@ -37,18 +37,23 @@ void	Gameboy::stopThread()
 	delete _thread;
 }
 
+void	Gameboy::gstep()
+{
+	if (!step()) step();
+	if (isBreakpoint(_cpu._cpuRegister.PC))
+		_stepMode.store(true);
+}
+
 void	Gameboy::run()
 {
 	if (_willRun)
 	{
-		if (_debugMode && _windowDebug)
+		if (_stepMode)
 		{
-			// if freeRun
-			// 	step();
 		}
 		else
 		{
-			step();
+			gstep();
 		}
 		run();
 	}
@@ -60,7 +65,7 @@ void	Gameboy::reset()
 	{
 		stopThread();
 	}
-
+	
 	if (_romPath.length())
 	{
 		_willRun.store(true);
@@ -75,7 +80,8 @@ void	Gameboy::reset()
 
 void	Gameboy::stepPressedSlot()
 {
-	step();
+	_stepMode.store(true);
+	gstep();
 }
 
 void	Gameboy::resetPressedSlot()
@@ -91,11 +97,40 @@ void	Gameboy::openRomSlot(std::string path)
 
 void	Gameboy::gbDbSlot()
 {
-	_windowDebug = new DbWindow(&_cpu._cpuRegister, &_memory);
+	_windowDebug = new DbWindow(&_cpu._cpuRegister, &_memory, &_breakpoints);
 	connect(_windowDebug, &DbWindow::stepPressedSign, this, &Gameboy::stepPressedSlot);
+	connect(_windowDebug, &DbWindow::runPressedSign, this, &Gameboy::switchStepModeSlot);
 	connect(_windowDebug, &DbWindow::resetPressedSign, this, &Gameboy::resetPressedSlot);
 	connect(_windowDebug, &DbWindow::openPressedSign, this, &Gameboy::openRomSlot);
 
+	connect(_windowDebug, &DbWindow::bpAddSign, this, &Gameboy::addBreakpointSlot);
+	connect(_windowDebug, &DbWindow::bpDelSign, this, &Gameboy::delBreakpointSlot);
+
 	_windowDebug->show();
-	_debugMode.store(true);
+	_stepMode.store(true);
+}
+
+void	Gameboy::switchStepModeSlot(void)
+{
+	_stepMode.store(!_stepMode.load());
+}
+
+void	Gameboy::addBreakpointSlot(uint16_t addr)
+{
+	auto it = std::find(_breakpoints.begin(), _breakpoints.end(), addr);
+
+	if (it == _breakpoints.end())
+		_breakpoints.push_back(addr);
+}
+
+void	Gameboy::delBreakpointSlot(uint16_t addr)
+{
+	_breakpoints.remove(addr);
+}
+
+bool	Gameboy::isBreakpoint(uint16_t addr)
+{
+	auto it = std::find(_breakpoints.begin(), _breakpoints.end(), addr);
+
+	return (it != _breakpoints.end());
 }

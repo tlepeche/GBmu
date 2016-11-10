@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>892</width>
+    <width>840</width>
     <height>502</height>
    </rect>
   </property>
@@ -22,7 +22,7 @@
      <height>31</height>
     </rect>
    </property>
-   <widget class="QPushButton" name="buttonFrame">
+   <widget class="QPushButton" name="buttonRun">
     <property name="geometry">
      <rect>
       <x>220</x>
@@ -32,7 +32,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Frame</string>
+     <string>Run</string>
     </property>
    </widget>
    <widget class="QPushButton" name="buttonStep">
@@ -65,8 +65,8 @@
   <widget class="QTableWidget" name="tableVideoRegisters">
    <property name="geometry">
     <rect>
-     <x>550</x>
-     <y>60</y>
+     <x>530</x>
+     <y>70</y>
      <width>131</width>
      <height>341</height>
     </rect>
@@ -185,8 +185,8 @@
   <widget class="QTableWidget" name="tableOtherRegisters">
    <property name="geometry">
     <rect>
-     <x>690</x>
-     <y>60</y>
+     <x>670</x>
+     <y>70</y>
      <width>151</width>
      <height>361</height>
     </rect>
@@ -799,8 +799,8 @@
   <widget class="QLabel" name="label_3">
    <property name="geometry">
     <rect>
-     <x>560</x>
-     <y>40</y>
+     <x>530</x>
+     <y>50</y>
      <width>121</width>
      <height>16</height>
     </rect>
@@ -812,8 +812,8 @@
   <widget class="QLabel" name="label_4">
    <property name="geometry">
     <rect>
-     <x>690</x>
-     <y>40</y>
+     <x>670</x>
+     <y>50</y>
      <width>121</width>
      <height>16</height>
     </rect>
@@ -846,6 +846,68 @@
    </property>
    <property name="text">
     <string>Open</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="buttonBpAdd">
+   <property name="geometry">
+    <rect>
+     <x>460</x>
+     <y>80</y>
+     <width>41</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Add</string>
+   </property>
+  </widget>
+  <widget class="QListWidget" name="listBreakpoint">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>70</y>
+     <width>41</width>
+     <height>151</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="layoutDirection">
+    <enum>Qt::LeftToRight</enum>
+   </property>
+   <property name="lineWidth">
+    <number>1</number>
+   </property>
+   <property name="midLineWidth">
+    <number>0</number>
+   </property>
+   <property name="flow">
+    <enum>QListView::TopToBottom</enum>
+   </property>
+   <property name="viewMode">
+    <enum>QListView::ListMode</enum>
+   </property>
+   <property name="currentRow">
+    <number>-1</number>
+   </property>
+   <property name="sortingEnabled">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_6">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>50</y>
+     <width>81</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Breakpoints</string>
    </property>
   </widget>
  </widget>
