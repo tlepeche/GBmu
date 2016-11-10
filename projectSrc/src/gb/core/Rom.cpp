@@ -8,6 +8,20 @@ Rom::Rom(void)
 {
 	this->_eram = NULL;
 	this->_rom = NULL;
+	this->_mbcPtrRead = {
+		std::bind(&Rom::_readRom, this, std::placeholders::_1),
+		std::bind(&Rom::_readMbc1, this, std::placeholders::_1),
+		std::bind(&Rom::_readMbc2, this, std::placeholders::_1),
+		std::bind(&Rom::_readMbc3, this, std::placeholders::_1),
+		std::bind(&Rom::_readMbc5, this, std::placeholders::_1)
+		};
+	this->_mbcPtrWrite = {
+		std::bind(&Rom::_writeRom, this, std::placeholders::_1, std::placeholders::_2),
+		std::bind(&Rom::_writeMbc1, this, std::placeholders::_1, std::placeholders::_2),
+		std::bind(&Rom::_writeMbc2, this, std::placeholders::_1, std::placeholders::_2),
+		std::bind(&Rom::_writeMbc3, this, std::placeholders::_1, std::placeholders::_2),
+		std::bind(&Rom::_writeMbc5, this, std::placeholders::_1, std::placeholders::_2)
+		};
 }
 
 Rom::~Rom(void)
@@ -37,6 +51,7 @@ void		Rom::init(void)
 	this->_bank = 0;
 	this->_rambank = 0;
 	this->_write_protect = 0;
+	this->_mbc = this->getMbc(this->_rom[CARTRIDGE]);
 }
 
 int			Rom::load(const char *file)
@@ -59,9 +74,12 @@ int			Rom::load(const char *file)
 		romFile.read(this->_rom, rom_size);
 		romFile.close();
 		this->init();
+		// TODO check if ROM valide (nitendo logo, checksum, ...)
+		if (this->_mbc == 0xFF)
+			return -2;
 		return 0;
 	}
-	return 1;
+	return -1;
 }
 
 htype		Rom::getHardware(void)
@@ -71,8 +89,89 @@ htype		Rom::getHardware(void)
 
 uint8_t		Rom::read(uint16_t addr)
 {
-	if (this->_rom == NULL)
+	if (this->_rom == NULL || this->_mbc == 0xFF)
 		return -1;
+	return this->_mbcPtrRead[this->_mbc](addr);
+}
+
+void		Rom::write(uint16_t addr, uint8_t val)
+{
+	if (this->_rom == NULL || this->_mbc == 0xFF)
+		return ;
+	this->_mbcPtrWrite[this->_mbc](addr, val);
+}
+
+void		Rom::reset(void)
+{
+}
+
+uint8_t		Rom::getBankEram(uint8_t octet)
+{
+	if (octet == 1 || octet == 2)
+		return 1;
+	else if (octet == 3)
+		return 4;
+	else if (octet == 4)
+		return 16;
+	return 0;
+}
+
+bool		Rom::isLoaded(void)
+{
+	if (this->_rom == NULL)
+		return false;
+	return true;
+}
+
+uint8_t		Rom::getMbc(uint8_t octet)
+{
+	switch (octet)
+	{
+		case 0x00:
+		case 0x08:
+		case 0x09:
+			return ROM;
+			break;
+		case 0x01:
+		case 0x02:
+		case 0x03:
+			return MBC1;
+			break;
+		case 0x05:
+		case 0x06:
+			return MBC2;
+			break ;
+		case 0x0F:
+		case 0x10:
+		case 0x11:
+		case 0x12:
+		case 0x13:
+			return MBC3;
+			break ;
+		case 0x19:
+		case 0x1A:
+		case 0x1B:
+		case 0x1C:
+		case 0x1D:
+		case 0x1E:
+			return MBC5;
+			break;
+		default:
+			return -1;
+			break;
+	}
+	return -1;
+}
+
+uint8_t		Rom::_readRom(uint16_t addr)
+{
+	if (addr < 0x8000)
+		return this->_rom[addr];
+	return 0;
+}
+
+uint8_t		Rom::_readMbc1(uint16_t addr)
+{
 	if (addr < 0x4000)
 		return this->_rom[addr];
 	else if (addr < 0x8000)
@@ -82,7 +181,27 @@ uint8_t		Rom::read(uint16_t addr)
 	return 0;
 }
 
-void		Rom::write(uint16_t addr, uint8_t val)
+uint8_t		Rom::_readMbc2(uint16_t addr)
+{
+	return 0;
+}
+
+uint8_t		Rom::_readMbc3(uint16_t addr)
+{
+	return 0;
+}
+
+uint8_t		Rom::_readMbc5(uint16_t addr)
+{
+	return 0;
+}
+
+void		Rom::_writeRom(uint16_t addr, uint8_t val)
+{
+	return ;
+}
+
+void		Rom::_writeMbc1(uint16_t addr, uint8_t val)
 {
 	switch (addr & 0xF000){
 		case 0x0000:
@@ -136,24 +255,6 @@ void		Rom::write(uint16_t addr, uint8_t val)
 	}
 }
 
-void		Rom::reset(void)
-{
-}
-
-uint8_t		Rom::getBankEram(uint8_t octet)
-{
-	if (octet == 1 || octet == 2)
-		return 1;
-	else if (octet == 3)
-		return 4;
-	else if (octet == 4)
-		return 16;
-	return 0;
-}
-
-bool		Rom::isLoaded(void)
-{
-	if (this->_rom == NULL)
-		return false;
-	return true;
-}
+void		Rom::_writeMbc2(uint16_t addr, uint8_t val) {}
+void		Rom::_writeMbc3(uint16_t addr, uint8_t val) {}
+void		Rom::_writeMbc5(uint16_t addr, uint8_t val) {}
