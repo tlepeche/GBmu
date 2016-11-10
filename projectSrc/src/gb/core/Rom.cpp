@@ -123,6 +123,13 @@ bool		Rom::isLoaded(void)
 	return true;
 }
 
+bool		Rom::_mbcRamAccess(void)
+{
+	if (this->_write_protect == 0x0A)
+		return true;
+	return false;
+}
+
 uint8_t		Rom::getMbc(uint8_t octet)
 {
 	switch (octet)
@@ -176,7 +183,7 @@ uint8_t		Rom::_readMbc1(uint16_t addr)
 		return this->_rom[addr];
 	else if (addr < 0x8000)
 		return this->_rom[(addr - 0x4000) + (this->_bank * 0x4000)];
-	else if (addr >= 0xA000 && addr < 0xC000)
+	else if (addr >= 0xA000 && addr < 0xC000 && this->_mbcRamAccess())
 		return this->_eram[addr + (this->_rambank * 0x2000)];
 	return 0;
 }
@@ -187,7 +194,7 @@ uint8_t		Rom::_readMbc2(uint16_t addr)
 		return this->_rom[addr];
 	else if (addr < 0x8000)
 		return this->_rom[(addr - 0x4000) + (this->_bank * 0x4000)];
-	else if (addr >= 0xA000 && addr < 0xA200)
+	else if (addr >= 0xA000 && addr < 0xA200 && this->_mbcRamAccess())
 		return this->_eram[addr];
 	return 0;
 }
@@ -203,7 +210,7 @@ uint8_t		Rom::_readMbc5(uint16_t addr)
 		return this->_rom[addr];
 	else if (addr < 0x8000)
 		return this->_rom[(addr - 0x4000) + (this->_bank * 0x4000)];
-	else if (addr >= 0xA000 && addr < 0xC000)
+	else if (addr >= 0xA000 && addr < 0xC000 && this->_mbcRamAccess())
 		return this->_eram[addr + (this->_rambank * 0x2000)];
 	return 0;
 }
@@ -258,7 +265,7 @@ void		Rom::_writeMbc1(uint16_t addr, uint8_t val)
 		case 0xA000:
 		case 0xB000:
 			// ERAM
-			if (this->_write_protect == 0x0A)
+			if (this->_mbcRamAccess())
 				this->_eram[addr + (this->_rambank * 0x2000)] = val;
 			break;
 		default:
@@ -286,7 +293,7 @@ void		Rom::_writeMbc2(uint16_t addr, uint8_t val)
 			// ERAM
 			if ((addr & 0x0F00) <= 0x01)
 			{
-				if (this->_write_protect == 0x0A)
+				if (this->_mbcRamAccess())
 					this->_eram[addr] = val;
 			}
 			break;
@@ -330,7 +337,7 @@ void		Rom::_writeMbc5(uint16_t addr, uint8_t val)
 		case 0xA000:
 		case 0xB000:
 			// ERAM
-			if (this->_write_protect == 0x0A)
+			if (this->_mbcRamAccess())
 				this->_eram[addr + (this->_rambank * 0x2000)] = val;
 			break;
 		default:
