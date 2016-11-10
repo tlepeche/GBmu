@@ -69,13 +69,10 @@ void	Gameboy::reset()
 	{
 		_willRun.store(true);
 		this->_memory.reset();
-		if (Rom::Instance().load(_romPath.c_str()))
-			_willRun.store(false);
-		else
-		{
-			this->_cpu.init();
-			_thread = new std::thread(&Gameboy::run, this);
-		}
+		Rom::Instance().load(_romPath.c_str());
+		this->_cpu.init();
+		this->_gpu.init();
+		_thread = new std::thread(&Gameboy::run, this);
 	}
 	else
 		std::cerr << "Gameboy: No rom path defined" << std::endl;
