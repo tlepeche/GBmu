@@ -21,6 +21,7 @@ SOURCES  += src/main.cpp \
 		    src/gb/core/Rom.cpp \
 			src/gb/core/Machine.cpp \
 			src/gb/core/Cpu.cpp \
+			src/gb/core/Gpu.cpp \
 			src/gb/core/Timer.cpp \
 			src/gb/Gameboy.cpp \
 			src/gb/core/CpuOpcode.cpp

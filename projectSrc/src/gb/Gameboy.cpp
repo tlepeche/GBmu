@@ -5,7 +5,7 @@
 #include "Gameboy.hpp"
 
 Gameboy::Gameboy() :
-	_window(new OpenGLWindow())
+	_window(OpenGLWindow::Instance())
 	, _windowDebug(nullptr)
 	, _thread(nullptr)
 	, _romPath("")
@@ -26,7 +26,6 @@ Gameboy::Gameboy() :
 Gameboy::~Gameboy()
 {
 	delete this->_windowDebug;
-	delete this->_window;
 	this->stopThread();
 }
 
@@ -72,6 +71,7 @@ void	Gameboy::reset()
 		this->_memory.reset();
 		Rom::Instance().load(_romPath.c_str());
 		this->_cpu.init();
+		this->_gpu.init();
 		_thread = new std::thread(&Gameboy::run, this);
 	}
 	else

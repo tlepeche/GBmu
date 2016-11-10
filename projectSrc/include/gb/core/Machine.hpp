@@ -2,6 +2,7 @@
 #define _MACHINE_HPP
 
 #include "Cpu.hpp"
+#include "Gpu.hpp"
 #include "Memory.hpp"
 #include "Timer.hpp"
 
@@ -11,6 +12,7 @@ class Machine
 		Memory &_memory;
 		Timer &_clock;
 		Cpu_z80 &_cpu;
+		Gpu		&_gpu;
 		//Gpu::Gpu &_gpu;
 
 
