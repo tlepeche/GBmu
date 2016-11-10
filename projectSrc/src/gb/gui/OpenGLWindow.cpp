@@ -25,6 +25,15 @@ OpenGLWindow::OpenGLWindow(QWindow *parent)
 	setSurfaceType(QWindow::OpenGLSurface);
 }
 
+OpenGLWindow	*OpenGLWindow::Instance()
+{
+	static OpenGLWindow	*_instance = nullptr;
+
+	if (!_instance)
+		_instance = new OpenGLWindow();
+	return (_instance);
+}
+
 QMenuBar	*OpenGLWindow::genMenuBar()
 {
 	QMenuBar*	menuBar	= new QMenuBar();

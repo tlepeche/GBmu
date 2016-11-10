@@ -12,9 +12,12 @@ class QMenuBar;
 class OpenGLWindow : public QWindow, protected QOpenGLFunctions
 {
 	Q_OBJECT
-	public:
+	private:
 		explicit OpenGLWindow(QWindow *parent = 0);
 		~OpenGLWindow();
+
+	public:
+		static OpenGLWindow	*Instance();
 
 		virtual void render(QPainter *painter);
 		virtual void render();
