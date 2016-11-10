@@ -183,6 +183,12 @@ uint8_t		Rom::_readMbc1(uint16_t addr)
 
 uint8_t		Rom::_readMbc2(uint16_t addr)
 {
+	if (addr < 0x4000)
+		return this->_rom[addr];
+	else if (addr < 0x8000)
+		return this->_rom[(addr - 0x4000) + (this->_bank * 0x4000)];
+	else if (addr >= 0xA000 && addr < 0xA200)
+		return this->_eram[addr];
 	return 0;
 }
 
@@ -255,6 +261,35 @@ void		Rom::_writeMbc1(uint16_t addr, uint8_t val)
 	}
 }
 
-void		Rom::_writeMbc2(uint16_t addr, uint8_t val) {}
+void		Rom::_writeMbc2(uint16_t addr, uint8_t val)
+{
+	switch (addr & 0xF000){
+		case 0x0000:
+			// RAMCS
+			this->_write_protect = val;
+			break;
+		case 0x2000:
+			// Rom bank code
+			if ((addr & 0x0F00) == 0x0100)
+			{
+				if (val >= 0x01 && val <= 0x0F)
+				{
+					val &= 0x0F;
+					this->_bank &= 0xF0;
+					this->_bank |= val;
+				}
+			}
+			break;
+		case 0xA000:
+			// ERAM
+			if ((addr & 0x0F00) == 0x00 || (addr & 0x0F00) == 0x01)
+			{
+				if (this->_write_protect == 0x0A)
+					this->_eram[addr] = val;
+			}
+			break;
+	}
+}
+
 void		Rom::_writeMbc3(uint16_t addr, uint8_t val) {}
 void		Rom::_writeMbc5(uint16_t addr, uint8_t val) {}
