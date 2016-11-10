@@ -18,7 +18,6 @@ class Gpu
 	protected:
 		unsigned int	_clock;
 		t_gpuMode		_mode;
-		unsigned int	_line;
 		OpenGLWindow	*_window;
 		Memory			&_memory;
 
@@ -35,5 +34,5 @@ class Gpu
 		void	init();
 		void	accClock(unsigned int clock);
 		void	scanActLine();
-		unsigned int	scanPixel(unsigned int x);
+		unsigned int	scanPixel(uint8_t line, unsigned int x);
 };

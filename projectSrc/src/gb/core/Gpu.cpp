@@ -1,4 +1,5 @@
 
+#include "registerAddr.hpp"
 #include "Gpu.hpp"
 #include "OpenGLWindow.hpp"
 #include "Memory.hpp"
@@ -13,7 +14,6 @@ Gpu		&Gpu::Instance()
 Gpu::Gpu() :
 	_clock(0),
 	_mode(OAM_READ),
-	_line(0),
 	_window(nullptr),
 	_memory(Memory::Instance())
 {
@@ -39,22 +39,39 @@ Gpu::~Gpu()
 #define MAP1_ADDR 0x9C00 // 32*32 tile
 
 #include <iostream>
-unsigned int	Gpu::scanPixel(unsigned int x)
+unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 {
 	unsigned int pixel = 0xFFFFFF;
-	/*
 	unsigned int tileMapAddr = _activeTile ? MAP1_ADDR : MAP0_ADDR;
 	unsigned int tileSetAddr = _activeTile ? TILES1_ADDR : TILES0_ADDR;
-	std::cout << std::hex << (tileMapAddr + _line * MAP_W + x) << std::endl;
-	unsigned int tileId = _memory.read_byte(tileMapAddr + _line * MAP_W + x); // TODO: use scroll X / Y here
+	unsigned int tileId = _memory.read_byte(tileMapAddr + (line / MAP_W) + x); // TODO: use scroll X / Y here
 	unsigned int tileAddr = tileSetAddr + tileId;
 
-	unsigned int sy = _line % TILE_W;
+	unsigned int sy = line % TILE_W;
 	unsigned int sx = x % TILE_W;
 
 	uint8_t	sdata = 0; //_memory.read_byte(tileAddr + (sy * TILE_LINE_SIZE) + (x / PIXEL_BY_BYTE));
-	pixel = sdata >> (2 * (x % PIXEL_BY_BYTE));
-	*/
+	unsigned int colorId = (sdata >> (2 * (x % PIXEL_BY_BYTE))) & 0x3;
+
+	switch (colorId)
+	{
+		case 0:
+			pixel = 0x00FFFFFF;
+			break ;
+		case 1:
+			pixel = 0x00C0C0C0;
+			break ;
+		case 2:
+			pixel = 0x00606060;
+			break ;
+		case 3:
+			pixel = 0x00000000;
+			break;
+		default:
+			pixel = 0x00FF0000; // TODO: impossible case !
+			break ;
+	}
+	
 	return pixel;
 }
 
@@ -62,22 +79,24 @@ void	Gpu::scanActLine()
 {
 	uint16_t		addrLine;
 	unsigned int	pixel;
+	uint8_t			line = _memory.read_byte(REGISTER_LY);
 
 	for (int x = 0 ; x < WIN_WIDTH ; ++x) {
-		addrLine = _line * WIN_WIDTH + x;
-		pixel = scanPixel(x);
+		addrLine = line * WIN_WIDTH + x;
+		pixel = scanPixel(line, x);
 		_window->drawPixel(addrLine, pixel);
 	}
 }
 
 void	Gpu::step()
 {
+	uint8_t	line = _memory.read_byte(REGISTER_LY);
+
 	switch (_mode)
 	{
 		case OAM_READ:
 			if (_clock >= 80)
 			{
-				std::cout << "OAM_READ" << std::endl;
 				_clock = 0;
 				_mode = VRAM_READ;
 			}
@@ -85,7 +104,6 @@ void	Gpu::step()
 		case VRAM_READ:
 			if (_clock >= 172)
 			{
-				std::cout << "VRAM_READ" << std::endl;
 				_clock = 0;
 				_mode = HBLANK;
 
@@ -96,10 +114,9 @@ void	Gpu::step()
 			if (_clock >= 204)
 			{
 				_clock = 0;
-				++_line;
+				_memory.write_byte(REGISTER_LY, ++line);
 
-				std::cout << "HBLANK" << std::endl;
-				if (_line == 143)
+				if (line == 143)
 				{
 					_mode = VBLANK;
 					_window->renderLater();
@@ -114,13 +131,12 @@ void	Gpu::step()
 				if (_clock >= 456)
 				{
 					_clock = 0;
-					++_line;
+					_memory.write_byte(REGISTER_LY, ++line);
 
-				std::cout << "VBLANK" << std::endl;
-					if (_line > 153)
+					if (line > 153)
 					{
 						_mode = OAM_READ;
-						_line = 0;
+						_memory.write_byte(REGISTER_LY, 0);
 					}
 				}
 			break ;
@@ -133,7 +149,6 @@ void	Gpu::init()
 {
 	_mode = OAM_READ;
 	_clock = 0;
-	_line = 0;
 	_window = OpenGLWindow::Instance();
 	_window->initialize();
 }
