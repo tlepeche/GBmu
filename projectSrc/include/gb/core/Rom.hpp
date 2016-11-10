@@ -53,6 +53,7 @@ class Rom {
 		void							init(void);
 		uint8_t							getMbc(uint8_t octet);
 		uint8_t							getBankEram(uint8_t octet);
+		bool							_mbcRamAccess(void);
 
 		uint8_t							_readRom(uint16_t addr);
 		uint8_t							_readMbc1(uint16_t addr);
