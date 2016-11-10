@@ -82,7 +82,7 @@ uint8_t Cpu_z80::_getLengthDataOpcode(void)
 }
 
 void Cpu_z80::_nextPtr(void) {
-	if (!(getStepState()))
+	if (getStepState())
 		this->_cpuRegister.PC = this->_cpuRegister.PC + this->_opcodeInProgress.lengthData;
 	this->_opcodeInProgress = this->_getOpcode(this->_memory.read_byte(this->_cpuRegister.PC));
 	this->_setDataOpcode();
