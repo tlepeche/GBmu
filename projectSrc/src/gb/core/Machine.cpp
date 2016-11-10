@@ -16,7 +16,7 @@ Machine::Machine(void) : _memory(Memory::Instance()), _clock(Timer::Instance()),
 	this->_cpu.init();
 }
 
-void Machine::step(void)
+bool Machine::step(void)
 {
 	this->_clock.setFrequency(this->_cpu.getArrayFrequency());
 	this->_clock.setCycleTotal(this->_getCycleOpcode());
@@ -24,9 +24,11 @@ void Machine::step(void)
 	{
 		if (this->_cpu.nbCycleNextOpCode() < this->_clock.getCycleAcc()) {
 			unsigned int clock = this->_cpu.executeNextOpcode();
+
 			this->_clock.setCycleAcc(clock);
 			this->_gpu.step();
 			this->_gpu.accClock(clock);
+			return (true);
 		}
 		else
 		{
@@ -34,6 +36,7 @@ void Machine::step(void)
 			this->_clock.sleep(this->_getFrequencyFrameTimeGpu());
 			this->_clock.reset();
 			this->_cpu.interrupt();
+			return (false);
 		}
 	}
 }
