@@ -39,6 +39,7 @@ bool Machine::step(void)
 			return (false);
 		}
 	}
+	return (true);
 }
 
 void Machine::run(void)

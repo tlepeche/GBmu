@@ -24,7 +24,6 @@ void customSetItem(QTableWidget* table, int x, int y, const char *format, int va
 	table->setItem(x, y, new QTableWidgetItem(buffer));
 }
 
-static
 template <typename T>
 T	QStringToHexInt(QString& s)
 {
