@@ -11,7 +11,7 @@
 ** PUBLIC Function
 ** ############################################################################
 */
-Machine::Machine(void) : _memory(Memory::Instance()), _clock(Timer::Instance()), _cpu(Cpu_z80::Instance())
+Machine::Machine(void) : _memory(Memory::Instance()), _clock(Timer::Instance()), _cpu(Cpu_z80::Instance()), _gpu(Gpu::Instance())
 {
 	this->_cpu.init();
 }
@@ -22,8 +22,12 @@ void Machine::step(void)
 	this->_clock.setCycleTotal(this->_getCycleOpcode());
 	if (((this->_memory.read_byte(REGISTER_TAC) & 0x4) == 0x4))
 	{
-		if (this->_cpu.nbCycleNextOpCode() < this->_clock.getCycleAcc())
-			this->_clock.setCycleAcc(this->_cpu.executeNextOpcode());
+		if (this->_cpu.nbCycleNextOpCode() < this->_clock.getCycleAcc()) {
+			unsigned int clock = this->_cpu.executeNextOpcode();
+			this->_clock.setCycleAcc(clock);
+			this->_gpu.step();
+			this->_gpu.accClock(clock);
+		}
 		else
 		{
 			//this->_gpu.render();
