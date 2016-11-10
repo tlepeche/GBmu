@@ -27,18 +27,13 @@ void		Rom::init(void)
 {
 	uint8_t	flag_cgb;
 
-	flag_cgb = (this->_rom[0x0143] & 0xFF);
+	flag_cgb = (this->_rom[CGBFLAG] & 0xFF);
 	if (flag_cgb == 0x00 || flag_cgb == 0x80)
-		this->_info.type = GB;
+		this->_hardware = GB;
 	else if (flag_cgb == 0xC0)
-		this->_info.type = GBC;
-	this->_info.cartridge = this->_rom[0x0147];
-	this->_info.romSize = this->_rom[0x0148];
-	this->_info.eramSize = this->_rom[0x0149];
-	this->_nbanks = getBankRom(this->_info.romSize);
-	this->_nrambanks = getBankEram(this->_info.eramSize);
-	if (this->_nrambanks > 0)
-		this->_eram = new uint8_t [this->_nrambanks * 8192];
+		this->_hardware = GBC;
+	if (this->getBankEram(this->_rom[RAMSIZE]) > 0)
+		this->_eram = new uint8_t [this->getBankEram(this->_rom[RAMSIZE]) * 8192];
 	this->_bank = 0;
 	this->_rambank = 0;
 	this->_write_protect = 0;
@@ -69,6 +64,11 @@ int			Rom::load(const char *file)
 	return 1;
 }
 
+htype		Rom::getHardware(void)
+{
+	return this->_hardware;
+}
+
 uint8_t		Rom::read(uint16_t addr)
 {
 	if (this->_rom == NULL)
@@ -94,7 +94,7 @@ void		Rom::write(uint16_t addr, uint8_t val)
 		case 0x2000:
 		case 0x3000:
 			// Rom bank code
-			if (val >= 0x01 && val <= 0x1f)
+			if (val >= 0x01 && val <= 0x1F)
 			{
 				val &= 0x1F;
 				this->_bank &= 0xE0;
@@ -138,34 +138,6 @@ void		Rom::write(uint16_t addr, uint8_t val)
 
 void		Rom::reset(void)
 {
-}
-
-irom		Rom::getType(void)
-{
-	return this->_info;
-}
-
-uint8_t		Rom::getBankRom(uint8_t octet)
-{
-	if (octet == 1)
-		return 4;
-	else if (octet == 2)
-		return 8;
-	else if (octet == 3)
-		return 16;
-	else if (octet == 4)
-		return 32;
-	else if (octet == 5)
-		return 64;
-	else if (octet == 6)
-		return 128;
-	else if (octet == 52)
-		return 72;
-	else if (octet == 53)
-		return 80;
-	else if (octet == 54)
-		return 96;
-	return 2;
 }
 
 uint8_t		Rom::getBankEram(uint8_t octet)
