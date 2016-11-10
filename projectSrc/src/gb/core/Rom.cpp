@@ -225,12 +225,9 @@ void		Rom::_writeMbc1(uint16_t addr, uint8_t val)
 		case 0x2000:
 		case 0x3000:
 			// Rom bank code
-			if (val >= 0x01 && val <= 0x1F)
-			{
-				val &= 0x1F;
-				this->_bank &= 0xE0;
-				this->_bank |= val;
-			}
+			val &= 0x1F;
+			this->_bank &= 0xE0;
+			this->_bank |= val;
 			break;
 		case 0x4000:
 		case 0x5000:
@@ -255,7 +252,7 @@ void		Rom::_writeMbc1(uint16_t addr, uint8_t val)
 		case 0x6000:
 		case 0x7000:
 			// Rom/Ram change
-			if (val == 0x00 || val == 0x01)
+			if (val <= 0x01)
 				this->_tbank = val;
 			break;
 		case 0xA000:
@@ -263,6 +260,8 @@ void		Rom::_writeMbc1(uint16_t addr, uint8_t val)
 			// ERAM
 			if (this->_write_protect == 0x0A)
 				this->_eram[addr + (this->_rambank * 0x2000)] = val;
+			break;
+		default:
 			break;
 	}
 }
@@ -278,21 +277,20 @@ void		Rom::_writeMbc2(uint16_t addr, uint8_t val)
 			// Rom bank code
 			if ((addr & 0x0F00) == 0x0100)
 			{
-				if (val >= 0x01 && val <= 0x0F)
-				{
-					val &= 0x0F;
-					this->_bank &= 0xF0;
-					this->_bank |= val;
-				}
+				val &= 0x0F;
+				this->_bank &= 0xF0;
+				this->_bank |= val;
 			}
 			break;
 		case 0xA000:
 			// ERAM
-			if ((addr & 0x0F00) == 0x00 || (addr & 0x0F00) == 0x01)
+			if ((addr & 0x0F00) <= 0x01)
 			{
 				if (this->_write_protect == 0x0A)
 					this->_eram[addr] = val;
 			}
+			break;
+		default:
 			break;
 	}
 }
@@ -326,7 +324,7 @@ void		Rom::_writeMbc5(uint16_t addr, uint8_t val)
 		case 0x4000:
 		case 0x5000:
 			// RAMB
-			if (val >= 0x00 && val <= 0x0F)
+			if (val <= 0x0F)
 				this->_rambank = val;
 			break;
 		case 0xA000:
@@ -334,6 +332,8 @@ void		Rom::_writeMbc5(uint16_t addr, uint8_t val)
 			// ERAM
 			if (this->_write_protect == 0x0A)
 				this->_eram[addr + (this->_rambank * 0x2000)] = val;
+			break;
+		default:
 			break;
 	}
 }
