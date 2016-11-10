@@ -50,7 +50,7 @@ unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 	unsigned int sy = line % TILE_W;
 	unsigned int sx = x % TILE_W;
 
-	uint8_t	sdata = _memory.read_byte(tileAddr + (sy * TILE_LINE_SIZE) + (x / PIXEL_BY_BYTE));
+	uint8_t	sdata = _memory.read_byte(tileAddr + (sy * TILE_LINE_SIZE) + (sx / PIXEL_BY_BYTE));
 	unsigned int colorId = (sdata >> (2 * (x % PIXEL_BY_BYTE))) & 0x3;
 
 	switch (colorId)
