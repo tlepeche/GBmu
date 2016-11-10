@@ -4,6 +4,9 @@
 #include <QWindow>
 #include <QOpenGLFunctions>
 
+#define WIN_WIDTH 160
+#define WIN_HEIGHT 144
+
 class QPainter;
 class QOpenGLContext;
 class QOpenGLPaintDevice;

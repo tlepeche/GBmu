@@ -1,6 +1,7 @@
 #ifndef MEMORY_HPP
 #define MEMORY_HPP
 
+#include <stdint.h>
 #include "Rom.hpp"
 // Define I/O Register Address
 

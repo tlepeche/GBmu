@@ -10,6 +10,8 @@ typedef	enum	s_gpuMode
 }				t_gpuMode;
 
 class OpenGLWindow;
+#include <stdint.h>
+#include "Memory.hpp"
 
 class Gpu
 {
@@ -18,6 +20,9 @@ class Gpu
 		t_gpuMode		_mode;
 		unsigned int	_line;
 		OpenGLWindow	*_window;
+		Memory			&_memory;
+
+		unsigned int	_activeTile; // TODO: check 
 	private:
 		Gpu();
 		~Gpu();
@@ -29,4 +34,6 @@ class Gpu
 		void	step();
 		void	init();
 		void	accClock(unsigned int clock);
+		void	scanActLine();
+		unsigned int	scanPixel(unsigned int x);
 };

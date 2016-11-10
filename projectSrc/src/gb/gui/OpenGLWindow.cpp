@@ -12,8 +12,6 @@
 
 // GOOD tuto
 // http://doc.qt.io/qt-5/qtwidgets-mainwindows-menus-example.html
-#define WIN_WIDTH 160
-#define WIN_HEIGHT 144
 
 OpenGLWindow::OpenGLWindow(QWindow *parent)
 	: QWindow(parent)
