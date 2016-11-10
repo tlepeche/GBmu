@@ -16,20 +16,23 @@ Machine::Machine(void) : _memory(Memory::Instance()), _clock(Timer::Instance()),
 	this->_cpu.init();
 }
 
-void Machine::step(void)
+bool Machine::step(void)
 {
 	this->_clock.setFrequency(this->_cpu.getArrayFrequency());
 	this->_clock.setCycleTotal(this->_getCycleOpcode());
 	if (((this->_memory.read_byte(REGISTER_TAC) & 0x4) == 0x4))
 	{
-		if (this->_cpu.nbCycleNextOpCode() < this->_clock.getCycleAcc())
+		if (this->_cpu.nbCycleNextOpCode() < this->_clock.getCycleAcc()) {
 			this->_clock.setCycleAcc(this->_cpu.executeNextOpcode());
+			return (true);
+		}
 		else
 		{
 			//this->_gpu.render();
 			this->_clock.sleep(this->_getFrequencyFrameTimeGpu());
 			this->_clock.reset();
 			this->_cpu.interrupt();
+			return (false);
 		}
 	}
 }
