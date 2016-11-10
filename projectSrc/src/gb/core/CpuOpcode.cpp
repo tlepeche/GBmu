@@ -1220,14 +1220,14 @@ void	Cpu_z80::ADD_A_n() //0xc6
 	add(_memory.read_byte(_cpuRegister.PC + 1));
 }
 
-void	Cpu_z80::RST_00H()		//0xc7
+void	Cpu_z80::RST_00H() //0xc7
 {
 	_cpuRegister.SP -= 2;
 	_memory.write_word(_cpuRegister.SP, _memory.read_word(_cpuRegister.PC));
 	_cpuRegister.PC = 0x0000;
 }
 
-void	Cpu_z80::RET_Z() //0xc9
+void	Cpu_z80::RET_Z() //0xc8
 {
 	if (_cpuRegister.z == 1)
 		RET();
@@ -1237,6 +1237,7 @@ void	Cpu_z80::RET() //0xc9
 {
 	_cpuRegister.PC = _memory.read_word(_cpuRegister.SP);
 	_cpuRegister.SP += 2;
+	setStepState(false);
 }
 
 void	Cpu_z80::JP_Z_n() //0xca
@@ -1253,11 +1254,10 @@ void	Cpu_z80::CALL_Z_n() //0xcc
 
 void	Cpu_z80::CALL_n() //0xcd
 {
-	uint16_t nn;
-
-	nn = _memory.read_word(_cpuRegister.PC + 1);
-	_memory.write_word(_cpuRegister.SP, nn);
+	_cpuRegister.SP -= 2;
+	_memory.write_word(_cpuRegister.SP, _cpuRegister.PC + this->_opcodeInProgress.lengthData);
 	JP_n();
+	setStepState(false);
 }
 
 void	Cpu_z80::ADC_A_n() //0xce
