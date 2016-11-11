@@ -90,6 +90,8 @@ uint8_t		Rom::read(uint16_t addr)
 {
 	if (this->_rom == NULL || this->_mbc == 0xFF)
 		return -1;
+	if (this->_bank == 0)
+		this->_bank = 1;
 	return this->_mbcPtrRead[this->_mbc](addr);
 }
 
