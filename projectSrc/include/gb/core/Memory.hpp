@@ -66,6 +66,7 @@ class Memory {
 		uint8_t				_m_vram[2][8192];
 		uint8_t				_m_oam[160];
 		uint8_t				_m_io[127];
+		uint8_t				_m_zp[127];
 
 		Memory(void);
 		~Memory(void);
