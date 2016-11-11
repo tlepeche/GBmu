@@ -13,7 +13,7 @@
 #define ROMSIZE			0x0148
 #define RAMSIZE			0x0149
 #define HEADERCHECKSUM	0x014D
-#define GLOBALCHECKSUM	0x014D
+#define GLOBALCHECKSUM	0x014E
 
 #define ROM		0x00
 #define MBC1	0x01
@@ -54,6 +54,7 @@ class Rom {
 		uint8_t							getMbc(uint8_t octet);
 		uint8_t							getBankEram(uint8_t octet);
 		bool							_mbcRamAccess(void);
+		bool							_checkHeader(void);
 
 		uint8_t							_readRom(uint16_t addr);
 		uint8_t							_readMbc1(uint16_t addr);
