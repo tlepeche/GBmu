@@ -1255,7 +1255,7 @@ void	Cpu_z80::CALL_Z_n() //0xcc
 void	Cpu_z80::CALL_n() //0xcd
 {
 	_cpuRegister.SP -= 2;
-	_memory.write_word(_cpuRegister.SP, _cpuRegister.PC + this->_opcodeInProgress.lengthData);
+	_memory.write_word(_cpuRegister.SP, _cpuRegister.PC + _opcodeInProgress.lengthData);
 	JP_n();
 	setStepState(false);
 }
