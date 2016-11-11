@@ -221,6 +221,8 @@ uint8_t		Rom::_readMbc2(uint16_t addr)
 
 uint8_t		Rom::_readMbc3(uint16_t addr)
 {
+	// DON'T PANIC, IN PROGRESS
+	(void)addr;
 	return 0;
 }
 
@@ -237,6 +239,8 @@ uint8_t		Rom::_readMbc5(uint16_t addr)
 
 void		Rom::_writeRom(uint16_t addr, uint8_t val)
 {
+	(void)addr;
+	(void)val;
 	return ;
 }
 
@@ -322,7 +326,12 @@ void		Rom::_writeMbc2(uint16_t addr, uint8_t val)
 	}
 }
 
-void		Rom::_writeMbc3(uint16_t addr, uint8_t val) {}
+void		Rom::_writeMbc3(uint16_t addr, uint8_t val)
+{
+	// DON'T PANIC, IN PROGRESS
+	(void)addr;
+	(void)val;
+}
 
 void		Rom::_writeMbc5(uint16_t addr, uint8_t val)
 {
