@@ -2,8 +2,6 @@
 #include <cstring>
 #include "Memory.hpp"
 
-Memory		Memory::_instance = Memory();
-
 Memory::Memory(void) : _rom(Rom::Instance())
 {
 }
@@ -12,7 +10,9 @@ Memory::~Memory(void) {}
 
 Memory			&Memory::Instance(void)
 {
-	return Memory::_instance;
+	static Memory	*_mem = nullptr;
+	if (!_mem) _mem = new Memory();
+	return *_mem;
 }
 
 void			Memory::Init(void)
