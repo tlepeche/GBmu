@@ -55,6 +55,7 @@ DbWindow::DbWindow(t_register* r, Memory* mem, std::list<uint16_t> *breakpoint) 
 
 	buttonReset			= this->findChild<QPushButton*>("buttonReset");
 	buttonStep			= this->findChild<QPushButton*>("buttonStep");
+	buttonFrame			= this->findChild<QPushButton*>("buttonFrame");
 	buttonRun			= this->findChild<QPushButton*>("buttonRun");
 	buttonOpen			= this->findChild<QPushButton*>("buttonOpen");
 	buttonBpAdd			= this->findChild<QPushButton*>("buttonBpAdd");
@@ -63,6 +64,7 @@ DbWindow::DbWindow(t_register* r, Memory* mem, std::list<uint16_t> *breakpoint) 
 	tableMemory->resizeColumnsToContents();
 
 	connect(buttonStep, &QPushButton::pressed, this, &DbWindow::stepPressedSlot);
+	connect(buttonFrame, &QPushButton::pressed, this, &DbWindow::framePressedSlot);
 	connect(buttonRun, &QPushButton::pressed, this, &DbWindow::runPressedSlot);
 	connect(buttonReset, &QPushButton::pressed, this, &DbWindow::resetPressedSlot);
 	connect(buttonOpen, &QPushButton::pressed, this, &DbWindow::openPressedSlot);
@@ -224,6 +226,11 @@ void	DbWindow::lineAddrEditedSlot()
 void	DbWindow::stepPressedSlot()
 {
 	emit	stepPressedSign();
+}
+
+void	DbWindow::framePressedSlot()
+{
+	emit	framePressedSign();
 }
 
 void	DbWindow::runPressedSlot()
