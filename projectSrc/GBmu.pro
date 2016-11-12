@@ -6,6 +6,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = GBmu
 TEMPLATE = app
 
+QMAKE_CXXFLAGS += -std=c++17
+
 OBJECTS_DIR   = obj
 
 INCPATH  += include/gb/gui \
