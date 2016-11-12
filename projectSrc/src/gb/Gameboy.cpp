@@ -88,6 +88,19 @@ void	Gameboy::stepPressedSlot()
 	gstep();
 }
 
+#include "registerAddr.hpp"
+void	Gameboy::framePressedSlot()
+{
+	_stepMode.store(true);
+
+	uint16_t	start;
+	start = _memory.read_byte(REGISTER_LY);
+	while (start == _memory.read_byte(REGISTER_LY))
+		gstep();
+	while (start != _memory.read_byte(REGISTER_LY))
+		gstep();
+}
+
 void	Gameboy::resetPressedSlot()
 {
 	reset();
@@ -103,6 +116,7 @@ void	Gameboy::gbDbSlot()
 {
 	_windowDebug = new DbWindow(&_cpu._cpuRegister, &_memory, &_breakpoints);
 	connect(_windowDebug, &DbWindow::stepPressedSign, this, &Gameboy::stepPressedSlot);
+	connect(_windowDebug, &DbWindow::framePressedSign, this, &Gameboy::framePressedSlot);
 	connect(_windowDebug, &DbWindow::runPressedSign, this, &Gameboy::switchStepModeSlot);
 	connect(_windowDebug, &DbWindow::resetPressedSign, this, &Gameboy::resetPressedSlot);
 	connect(_windowDebug, &DbWindow::openPressedSign, this, &Gameboy::openRomSlot);
