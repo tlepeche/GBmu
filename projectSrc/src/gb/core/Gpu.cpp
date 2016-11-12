@@ -63,11 +63,17 @@ std::string	Gpu::toString()
 
 unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 {
-	unsigned int pixel = 0xFFFFFF;
 	t_gpuControl	gpuC = (t_gpuControl){_memory.read_byte(REGISTER_LCDC)};
+	uint8_t			scy = _memory.read_byte(REGISTER_SCY);
+	uint8_t			scx = _memory.read_byte(REGISTER_SCX);
+
+	unsigned int pixel = 0xFFFFFF;
 	unsigned int tileMapAddr = gpuC.tile_map ? MAP1_ADDR : MAP0_ADDR;
 	unsigned int tileSetAddr = gpuC.tile_set ? TILES1_ADDR : TILES0_ADDR;
-	unsigned int tileId = _memory.read_byte(tileMapAddr + (line / TILE_W * MAP_W) + (x / TILE_W)); // TODO: use scroll X / Y here
+	unsigned int tileId = _memory.read_byte(
+			tileMapAddr
+			+ (((line / TILE_W) + scy) * MAP_W)
+			+ (x / TILE_W) + scx); // TODO: use scroll X / Y here
 	unsigned int tileAddr = tileSetAddr + tileId;
 
 	unsigned int sy = line % TILE_W;
