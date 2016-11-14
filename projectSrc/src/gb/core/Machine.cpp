@@ -20,7 +20,13 @@ bool Machine::step(void)
 {
 	this->_clock.setFrequency(this->_cpu.getArrayFrequency());
 	this->_clock.setCycleTotal(this->_getCycleOpcode());
-	if (((this->_memory.read_byte(REGISTER_TAC) & 0x4) == 0x4))
+	//on test si on est en halt, si oui on attend juste une nouvelle interruption afin de continuer.
+	if (this->_cpu.getHoldIME() && this->_cpu.isInterrupt())
+	{
+		this->_cpu.execInterrupt();
+		this->_cpu.setHoldIME(this->_cpu.getIME());
+	}
+	if (!this->_cpu.getHalt() && !this->_cpu.getStop() && ((this->_memory.read_byte(REGISTER_TAC) & 0x4) == 0x4))
 	{
 		if (this->_cpu.nbCycleNextOpCode() < this->_clock.getCycleAcc()) {
 			unsigned int clock = this->_cpu.executeNextOpcode();
@@ -35,7 +41,6 @@ bool Machine::step(void)
 			//this->_gpu.render();
 			this->_clock.sleep(this->_getFrequencyFrameTimeGpu());
 			this->_clock.reset();
-			this->_cpu.interrupt();
 			return (false);
 		}
 	}
