@@ -3,6 +3,7 @@
 #include "Gpu.hpp"
 #include "OpenGLWindow.hpp"
 #include "Memory.hpp"
+#include "GpuControl.hpp"
 
 Gpu		Gpu::_gpuInstance = Gpu();
 
@@ -17,7 +18,6 @@ Gpu::Gpu() :
 	_window(nullptr),
 	_memory(Memory::Instance())
 {
-	_activeTile = 0; // TODO: CHECK how to get it
 }
 
 Gpu::~Gpu()
@@ -31,28 +31,56 @@ Gpu::~Gpu()
 #define TILE_W 8 // bits
 #define TILE_PIXEL_SIZE 2 // bits on Gb
 #define BYTE_SIZE 8 // byte size 0000 0000 ;)
-#define PIXEL_BY_BYTE (BYTE_SIZE / TILE_PIXEL_SIZE)
-#define TILE_LINE_SIZE (TILE_W / PIXEL_BY_BYTE)
 
 #define MAP_W 32 
 #define MAP0_ADDR 0x9800 // 32*32 tile
 #define MAP1_ADDR 0x9C00 // 32*32 tile
 
 #include <iostream>
+
+std::string	Gpu::toString()
+{
+	t_gpuControl	gpuC = (t_gpuControl){_memory.read_byte(REGISTER_LCDC)};
+	char			buf[32];
+
+	std::string			s;
+	
+	sprintf(buf, "[%d, %d, %d, %d, %d, %d, %d, %d]",
+		gpuC.background ,
+		gpuC.sprite ,
+		gpuC.sprite_size ,
+		gpuC.tile_map ,
+		gpuC.tile_set ,
+		gpuC.window ,
+		gpuC.wtile_map ,
+		gpuC.display
+			);
+	s = std::string(buf);
+	return (s);
+}
+
 unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 {
+	t_gpuControl	gpuC = (t_gpuControl){_memory.read_byte(REGISTER_LCDC)};
+	uint8_t			scy = _memory.read_byte(REGISTER_SCY);
+	uint8_t			scx = _memory.read_byte(REGISTER_SCX);
+
 	unsigned int pixel = 0xFFFFFF;
-	unsigned int tileMapAddr = _activeTile ? MAP1_ADDR : MAP0_ADDR;
-	unsigned int tileSetAddr = _activeTile ? TILES1_ADDR : TILES0_ADDR;
-	unsigned int tileId = _memory.read_byte(tileMapAddr + (line / TILE_W * MAP_W) + (x / TILE_W)); // TODO: use scroll X / Y here
+	unsigned int tileMapAddr = gpuC.tile_map ? MAP1_ADDR : MAP0_ADDR;
+	unsigned int tileSetAddr = gpuC.tile_set ? TILES1_ADDR : TILES0_ADDR;
+	unsigned int tileId = _memory.read_byte(
+			tileMapAddr
+			+ (((line / TILE_W) + scy) * MAP_W)
+			+ (x / TILE_W) + scx); // TODO: use scroll X / Y here
 	unsigned int tileAddr = tileSetAddr + tileId;
 
-	
 	unsigned int sy = line % TILE_W;
 	unsigned int sx = x % TILE_W;
+	unsigned int rsx = BYTE_SIZE - sx - 1;
 
-	uint8_t	sdata = _memory.read_byte(tileAddr + (sy * TILE_LINE_SIZE) + (sx / PIXEL_BY_BYTE));
-	unsigned int colorId = (sdata >> (2 * (x % PIXEL_BY_BYTE))) & 0x3;
+	uint8_t	sdata1 = _memory.read_byte(tileAddr + (sy * 2));
+	uint8_t	sdata2 = _memory.read_byte(tileAddr + (sy * 2) + 1);
+	unsigned int colorId = ((sdata1 >> rsx) & 1) | (((sdata2 >> rsx) & 1) << 1);
 
 	switch (colorId)
 	{
