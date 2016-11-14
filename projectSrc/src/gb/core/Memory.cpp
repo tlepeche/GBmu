@@ -2,8 +2,6 @@
 #include <cstring>
 #include "Memory.hpp"
 
-Memory		Memory::_instance = Memory();
-
 Memory::Memory(void) : _rom(Rom::Instance())
 {
 }
@@ -12,7 +10,9 @@ Memory::~Memory(void) {}
 
 Memory			&Memory::Instance(void)
 {
-	return Memory::_instance;
+	static Memory	*_mem = nullptr;
+	if (!_mem) _mem = new Memory();
+	return *_mem;
 }
 
 void			Memory::Init(void)
@@ -26,6 +26,7 @@ void			Memory::reset(void)
 	memset(this->_m_vram, 0, 16384);
 	memset(this->_m_oam, 0, 160);
 	memset(this->_m_io, 0, 127);
+	memset(this->_m_zp, 0, 127);
 }
 
 uint8_t			Memory::read_byte(uint16_t addr)
@@ -74,6 +75,11 @@ uint8_t			Memory::read_byte(uint16_t addr)
 					{
 						// I/O
 						return this->_m_io[(addr & 0xFF)];
+					}
+					else
+					{
+						// Zero page
+						return this->_m_zp[(addr & 0xFF)];
 					}
 					break;
 			}
@@ -128,6 +134,11 @@ void			Memory::write_byte(uint16_t addr, uint8_t val)
 					{
 						// I/O
 						this->_m_io[(addr & 0xFF)] = val;
+					}
+					else
+					{
+						// Zero page
+						this->_m_zp[(addr & 0xFF)] = val;
 					}
 					break;
 			}

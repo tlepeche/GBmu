@@ -69,10 +69,14 @@ void	Gameboy::reset()
 	{
 		_willRun.store(true);
 		this->_memory.reset();
-		Rom::Instance().load(_romPath.c_str());
-		this->_cpu.init();
-		this->_gpu.init();
-		_thread = new std::thread(&Gameboy::run, this);
+		if (Rom::Instance().load(_romPath.c_str()))
+			_willRun.store(false);
+		else
+		{
+			this->_cpu.init();
+			this->_gpu.init();
+			_thread = new std::thread(&Gameboy::run, this);
+		}
 	}
 	else
 		std::cerr << "Gameboy: No rom path defined" << std::endl;
@@ -82,6 +86,19 @@ void	Gameboy::stepPressedSlot()
 {
 	_stepMode.store(true);
 	gstep();
+}
+
+#include "registerAddr.hpp"
+void	Gameboy::framePressedSlot()
+{
+	_stepMode.store(true);
+
+	uint16_t	start;
+	start = _memory.read_byte(REGISTER_LY);
+	while (start == _memory.read_byte(REGISTER_LY))
+		gstep();
+	while (start != _memory.read_byte(REGISTER_LY))
+		gstep();
 }
 
 void	Gameboy::resetPressedSlot()
@@ -99,6 +116,7 @@ void	Gameboy::gbDbSlot()
 {
 	_windowDebug = new DbWindow(&_cpu._cpuRegister, &_memory, &_breakpoints);
 	connect(_windowDebug, &DbWindow::stepPressedSign, this, &Gameboy::stepPressedSlot);
+	connect(_windowDebug, &DbWindow::framePressedSign, this, &Gameboy::framePressedSlot);
 	connect(_windowDebug, &DbWindow::runPressedSign, this, &Gameboy::switchStepModeSlot);
 	connect(_windowDebug, &DbWindow::resetPressedSign, this, &Gameboy::resetPressedSlot);
 	connect(_windowDebug, &DbWindow::openPressedSign, this, &Gameboy::openRomSlot);

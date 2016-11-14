@@ -21,7 +21,6 @@ class Gpu
 		OpenGLWindow	*_window;
 		Memory			&_memory;
 
-		unsigned int	_activeTile; // TODO: check 
 	private:
 		Gpu();
 		~Gpu();
@@ -35,4 +34,6 @@ class Gpu
 		void	accClock(unsigned int clock);
 		void	scanActLine();
 		unsigned int	scanPixel(uint8_t line, unsigned int x);
+
+		std::string		toString();
 };

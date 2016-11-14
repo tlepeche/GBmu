@@ -763,32 +763,32 @@ void	Cpu_z80::LD_L_A() //0x6f
 
 void	Cpu_z80::LD_HL_B() //0x70
 {
-	_memory.write_word(_cpuRegister.HL, _cpuRegister.B);
+	_memory.write_byte(_cpuRegister.HL, _cpuRegister.B);
 }
 
 void	Cpu_z80::LD_HL_C() //0x71
 {
-	_memory.write_word(_cpuRegister.HL, _cpuRegister.C);
+	_memory.write_byte(_cpuRegister.HL, _cpuRegister.C);
 }
 
 void	Cpu_z80::LD_HL_D() //0x72
 {
-	_memory.write_word(_cpuRegister.HL, _cpuRegister.D);
+	_memory.write_byte(_cpuRegister.HL, _cpuRegister.D);
 }
 
 void	Cpu_z80::LD_HL_E() //0x73
 {
-	_memory.write_word(_cpuRegister.HL, _cpuRegister.E);
+	_memory.write_byte(_cpuRegister.HL, _cpuRegister.E);
 }
 
 void	Cpu_z80::LD_HL_H() //0x74
 {
-	_memory.write_word(_cpuRegister.HL, _cpuRegister.H);
+	_memory.write_byte(_cpuRegister.HL, _cpuRegister.H);
 }
 
 void	Cpu_z80::LD_HL_L() //0x75
 {
-	_memory.write_word(_cpuRegister.HL, _cpuRegister.L);
+	_memory.write_byte(_cpuRegister.HL, _cpuRegister.L);
 }
 
 void	Cpu_z80::HALT()	//0x76
@@ -796,7 +796,7 @@ void	Cpu_z80::HALT()	//0x76
 
 void	Cpu_z80::LD_HL_A() //0x77
 {
-	_memory.write_word(_cpuRegister.HL, _cpuRegister.A);
+	_memory.write_byte(_cpuRegister.HL, _cpuRegister.A);
 }
 
 void	Cpu_z80::LD_A_B() //0x78
