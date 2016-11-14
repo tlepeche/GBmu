@@ -62,7 +62,7 @@ class Memory {
 
 		Rom					_rom;
 	private:
-		uint8_t				_m_wram[8][4095];
+		uint8_t				_m_wram[8][4096];
 		uint8_t				_m_vram[2][8192];
 		uint8_t				_m_oam[160];
 		uint8_t				_m_io[127];
