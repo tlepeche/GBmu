@@ -60,7 +60,6 @@ class Memory {
 		void				write_word(uint16_t addr, uint16_t val);
 
 	private:
-		static Memory		_instance;
 		Rom					&_rom;
 		uint8_t				_m_wram[8][4095];
 		uint8_t				_m_vram[2][8192];
