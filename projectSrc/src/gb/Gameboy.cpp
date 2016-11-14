@@ -39,7 +39,7 @@ void	Gameboy::stopThread()
 void	Gameboy::gstep()
 {
 	if (!step()) step();
-	if (isBreakpoint(_cpu._cpuRegister.PC))
+	if (isBreakpoint(_cpu->_cpuRegister.PC))
 		_stepMode.store(true);
 }
 
@@ -68,13 +68,13 @@ void	Gameboy::reset()
 	if (_romPath.length())
 	{
 		_willRun.store(true);
-		this->_memory.reset();
-		if (Rom::Instance().load(_romPath.c_str()))
+		this->_memory->reset();
+		if (_memory->_rom.load(_romPath.c_str()))
 			_willRun.store(false);
 		else
 		{
-			this->_cpu.init();
-			this->_gpu.init();
+			this->_cpu->init();
+			this->_gpu->init();
 			_thread = new std::thread(&Gameboy::run, this);
 		}
 	}
@@ -94,10 +94,10 @@ void	Gameboy::framePressedSlot()
 	_stepMode.store(true);
 
 	uint16_t	start;
-	start = _memory.read_byte(REGISTER_LY);
-	while (start == _memory.read_byte(REGISTER_LY))
+	start = _memory->read_byte(REGISTER_LY);
+	while (start == _memory->read_byte(REGISTER_LY))
 		gstep();
-	while (start != _memory.read_byte(REGISTER_LY))
+	while (start != _memory->read_byte(REGISTER_LY))
 		gstep();
 }
 
@@ -114,7 +114,7 @@ void	Gameboy::openRomSlot(std::string path)
 
 void	Gameboy::gbDbSlot()
 {
-	_windowDebug = new DbWindow(&_cpu._cpuRegister, &_memory, &_breakpoints);
+	_windowDebug = new DbWindow(&_cpu->_cpuRegister, _memory, &_breakpoints);
 	connect(_windowDebug, &DbWindow::stepPressedSign, this, &Gameboy::stepPressedSlot);
 	connect(_windowDebug, &DbWindow::framePressedSign, this, &Gameboy::framePressedSlot);
 	connect(_windowDebug, &DbWindow::runPressedSign, this, &Gameboy::switchStepModeSlot);

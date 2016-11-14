@@ -48,10 +48,11 @@
 #define OCPS	0xFF6A
 #define OCPD	0xFF6B
 
-class Memory {
+class Machine;
 
+class Memory {
+	friend		Machine;
 	public:
-		static Memory		&Instance(void);
 		void				Init(void);
 		void				reset(void);
 		uint8_t				read_byte(uint16_t addr);
@@ -59,12 +60,12 @@ class Memory {
 		uint16_t			read_word(uint16_t addr);
 		void				write_word(uint16_t addr, uint16_t val);
 
+		Rom					_rom;
 	private:
-		Rom					&_rom;
-		uint8_t				_m_wram[8][4095];
+		uint8_t				_m_wram[8][4096];
 		uint8_t				_m_vram[2][8192];
 		uint8_t				_m_oam[160];
-		uint8_t				_m_io[127];
+		uint8_t				_m_io[128];
 		uint8_t				_m_zp[127];
 
 		Memory(void);

@@ -7,13 +7,6 @@
 ** ############################################################################
 */
 
-Timer		Timer::_instance = Timer();
-
-Timer &Timer::Instance(void)
-{
-	return Timer::_instance;
-}
-
 Timer::Timer(void)
 {
 	this->reset();

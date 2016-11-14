@@ -13,22 +13,22 @@ class OpenGLWindow;
 #include <stdint.h>
 #include "Memory.hpp"
 
+class Machine;
+
 class Gpu
 {
+	friend Machine;
 	protected:
 		unsigned int	_clock;
 		t_gpuMode		_mode;
 		OpenGLWindow	*_window;
-		Memory			&_memory;
+		Memory			*_memory;
 
 	private:
-		Gpu();
+		Gpu(Memory *memory);
 		~Gpu();
 
 	public:
-		static Gpu		_gpuInstance;
-		static Gpu		&Instance();
-
 		void	step();
 		void	init();
 		void	accClock(unsigned int clock);

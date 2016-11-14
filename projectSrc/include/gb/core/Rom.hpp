@@ -24,10 +24,11 @@
 typedef std::function<uint8_t(uint16_t)> FnReadRom;
 typedef std::function<void(uint16_t,uint8_t)> FnWriteRom;
 
-class Rom {
+class Memory;
 
+class Rom {
+	friend	Memory;
 	public:
-		static Rom						&Instance(void);
 		int								load(const char *file);
 		htype							getHardware(void);
 		bool							isLoaded(void);
@@ -36,7 +37,6 @@ class Rom {
 		void							reset(void);
 
 	private:
-		static Rom						_instance;
 		char							*_rom;
 		uint8_t							*_eram;
 		htype							_hardware;
