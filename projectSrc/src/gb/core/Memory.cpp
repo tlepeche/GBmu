@@ -2,18 +2,12 @@
 #include <cstring>
 #include "Memory.hpp"
 
-Memory::Memory(void) : _rom(Rom::Instance())
+Memory::Memory(void)
 {
 }
 
 Memory::~Memory(void) {}
 
-Memory			&Memory::Instance(void)
-{
-	static Memory	*_mem = nullptr;
-	if (!_mem) _mem = new Memory();
-	return *_mem;
-}
 
 void			Memory::Init(void)
 {

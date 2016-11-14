@@ -4,16 +4,16 @@
 #include <iostream>
 #include <array>
 
+class Machine;
+
 class Timer
 {
+	friend	Machine;
 	/*
 	** ################################################################
 	** CREATE Singleton
 	** ################################################################
 	*/
-	public:
-		static Timer &Instance();
-
 	private:
 		Timer(void);
 		virtual ~Timer(void) {};

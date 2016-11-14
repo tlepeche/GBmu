@@ -7,13 +7,6 @@
 ** ############################################################################
 */
 
-Timer &Timer::Instance(void)
-{
-	static Timer	*toto = nullptr;
-	if (!toto) toto = new Timer();
-	return *toto;
-}
-
 Timer::Timer(void)
 {
 	this->reset();

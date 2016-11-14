@@ -9,12 +9,10 @@
 class Machine
 {
 	protected:
-		Memory &_memory;
-		Timer &_clock;
-		Cpu_z80 &_cpu;
-		Gpu		&_gpu;
-		//Gpu::Gpu &_gpu;
-
+		Memory	*_memory;
+		Timer	*_clock;
+		Cpu_z80	*_cpu;
+		Gpu		*_gpu;
 
 		uint8_t _getFrequencyFrameTimeGpu(void);
 		uint8_t _getCycleOpcode(void);

@@ -30,13 +30,6 @@ Rom::~Rom(void)
 		delete[] this->_eram;
 }
 
-Rom			&Rom::Instance(void)
-{
-	static Rom*		toto = nullptr;
-	if (!toto) toto = new Rom();
-	return *toto;
-}
-
 void		Rom::init(void)
 {
 	uint8_t	flag_cgb;
