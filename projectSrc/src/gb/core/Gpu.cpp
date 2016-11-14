@@ -31,8 +31,6 @@ Gpu::~Gpu()
 #define TILE_W 8 // bits
 #define TILE_PIXEL_SIZE 2 // bits on Gb
 #define BYTE_SIZE 8 // byte size 0000 0000 ;)
-#define PIXEL_BY_BYTE (BYTE_SIZE / TILE_PIXEL_SIZE)
-#define TILE_LINE_SIZE (TILE_W / PIXEL_BY_BYTE)
 
 #define MAP_W 32 
 #define MAP0_ADDR 0x9800 // 32*32 tile
@@ -78,9 +76,11 @@ unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 
 	unsigned int sy = line % TILE_W;
 	unsigned int sx = x % TILE_W;
+	unsigned int rsx = BYTE_SIZE - sx - 1;
 
-	uint8_t	sdata = _memory.read_byte(tileAddr + (sy * TILE_LINE_SIZE) + (sx / PIXEL_BY_BYTE));
-	unsigned int colorId = (sdata >> (2 * (x % PIXEL_BY_BYTE))) & 0x3;
+	uint8_t	sdata1 = _memory.read_byte(tileAddr + (sy * 2));
+	uint8_t	sdata2 = _memory.read_byte(tileAddr + (sy * 2) + 1);
+	unsigned int colorId = ((sdata1 >> rsx) & 1) | (((sdata2 >> rsx) & 1) << 1);
 
 	switch (colorId)
 	{
