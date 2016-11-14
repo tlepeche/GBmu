@@ -15,6 +15,8 @@ Gameboy::Gameboy() :
 
 	connect(_window, &OpenGLWindow::openRomSign, this, &Gameboy::openRomSlot);
 	connect(_window, &OpenGLWindow::gbDbSign, this, &Gameboy::gbDbSlot);
+	connect(_window, &OpenGLWindow::keyPressSign, this, &Gameboy::KeyPress);
+	connect(_window, &OpenGLWindow::keyReleaseSign, this, &Gameboy::KeyRelease);
 
 	_window->show();
 #ifdef DEBUG
@@ -152,3 +154,15 @@ bool	Gameboy::isBreakpoint(uint16_t addr)
 
 	return (it != _breakpoints.end());
 }
+
+
+void	Gameboy::KeyPress(int key)
+{
+	printf("key = 0x%02x\n\n", key);
+}
+
+void	Gameboy::KeyRelease(int key)
+{
+	printf("key = 0x%02x\n\n", key);
+}
+

@@ -15,6 +15,17 @@ class DbWindow;
 // TODO: DEBUG MOD active ! Remove me on release
 #define DEBUG
 
+#define START Qt::Key_Return
+#define	Select Qt::Key_Shift
+#define B_BUTTON Qt::Key_C
+#define A_BUTTON Qt::Key_V
+#define UP Qt::Key_Up
+#define DOWN Qt::Key_Down
+#define LEFT Qt::Key_Left
+#define RIGHT Qt::Key_Right
+
+
+
 class Gameboy : public Machine, public QWidget
 {
 	private:
@@ -39,6 +50,8 @@ class Gameboy : public Machine, public QWidget
 		void			stopThread();
 
 		bool			isBreakpoint(uint16_t addr);
+		void			KeyPress(int key);
+		void			KeyRelease(int key);
 	protected slots:
 		void	openRomSlot(std::string path);
 		void	gbDbSlot();
