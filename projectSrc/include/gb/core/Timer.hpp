@@ -17,7 +17,6 @@ class Timer
 	private:
 		Timer(void);
 		virtual ~Timer(void) {};
-		static Timer			_instance;
 
 	/*
 	** ############################################################

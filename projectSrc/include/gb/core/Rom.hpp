@@ -36,7 +36,6 @@ class Rom {
 		void							reset(void);
 
 	private:
-		static Rom						_instance;
 		char							*_rom;
 		uint8_t							*_eram;
 		htype							_hardware;

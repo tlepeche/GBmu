@@ -2,8 +2,6 @@
 #include <iostream>
 #include "Rom.hpp"
 
-Rom			Rom::_instance = Rom();
-
 Rom::Rom(void)
 {
 	this->_eram = NULL;
@@ -34,7 +32,9 @@ Rom::~Rom(void)
 
 Rom			&Rom::Instance(void)
 {
-	return Rom::_instance;
+	static Rom*		toto = nullptr;
+	if (!toto) toto = new Rom();
+	return *toto;
 }
 
 void		Rom::init(void)

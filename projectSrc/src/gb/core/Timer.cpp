@@ -7,11 +7,11 @@
 ** ############################################################################
 */
 
-Timer		Timer::_instance = Timer();
-
 Timer &Timer::Instance(void)
 {
-	return Timer::_instance;
+	static Timer	*toto = nullptr;
+	if (!toto) toto = new Timer();
+	return *toto;
 }
 
 Timer::Timer(void)
