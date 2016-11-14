@@ -175,7 +175,7 @@ void Cpu_z80::init(void)
 	this->_memory.write_byte(REGISTER_LY, 0x00); // bios: 0x00 start: 0x81
 	this->_memory.write_byte(REGISTER_LYC, 0x00);
 	this->_memory.write_byte(REGISTER_DMA, 0xFF);
-	this->_memory.write_byte(REGISTER_BGP, 0xFC);
+	this->_memory.write_byte(REGISTER_BGP, 0xFC); // edelangh: this is bullshit !!
 	this->_memory.write_byte(REGISTER_OBP0, 0xFF);
 	this->_memory.write_byte(REGISTER_OBP1, 0xFF);
 	this->_memory.write_byte(REGISTER_WY, 0x00);
