@@ -6,8 +6,9 @@
  ** CREATE Singleton
  ** ################################################################
  */
-std::array<t_opcode, 256>	_opcodeMap;
-std::array<t_opcode, 256>	_CBopcodeMap;
+// See opcode.hpp
+std::array<t_opcode, 256>		_opcodeMap;
+std::array<t_opcode, 256>		_CBopcodeMap;
 
 Cpu_z80::Cpu_z80(Memory *memory) :
 	_memory(memory)
@@ -89,7 +90,7 @@ uint8_t Cpu_z80::nbCycleNextOpCode(void)
 uint8_t Cpu_z80::executeNextOpcode(void)
 {
 	if (this->_opcodeInProgress.functionOpcode == NULL)
-		printf("Function not yet implemented\n");
+		printf("Function not yet implemented: opcode(%.2X)\n", this->_opcodeInProgress.opcode);
 	else
 		this->_opcodeInProgress.functionOpcode();
 	uint8_t cycle = this->_getCycleOpcode();
@@ -204,7 +205,6 @@ void Cpu_z80::_setHightBit(uint16_t addr, uint8_t bit)
 
 void Cpu_z80::interrupt(void)
 {
-	std::cout << "interrupt cpu" << std::endl;
 }
 
 std::array<uint32_t, 4> Cpu_z80::getArrayFrequency()
@@ -219,7 +219,6 @@ void Cpu_z80::_resetPtrAddr(void)
 
 void Cpu_z80::_setOpcodeMap()
 {
-	std::cout << "salut" << std::endl;
 	_opcodeMap = {
 		(t_opcode){0x00, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::NOP, this),		"NOP",			0x0000},
 		(t_opcode){0x01, 0x00, 12, 12, 3, std::bind(&Cpu_z80::LD_BC_n, this),	"LD BC, nn",	0x0000},

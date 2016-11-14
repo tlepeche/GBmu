@@ -73,7 +73,7 @@ uint8_t			Memory::read_byte(uint16_t addr)
 					else
 					{
 						// Zero page
-						return this->_m_zp[(addr & 0xFF)];
+						return this->_m_zp[(addr & 0xFF) - 0x7F];
 					}
 					break;
 			}
@@ -132,7 +132,7 @@ void			Memory::write_byte(uint16_t addr, uint8_t val)
 					else
 					{
 						// Zero page
-						this->_m_zp[(addr & 0xFF)] = val;
+						this->_m_zp[(addr & 0xFF) - 0x7F] = val;
 					}
 					break;
 			}
