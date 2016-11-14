@@ -43,6 +43,7 @@ class Gameboy : public Machine, public QWidget
 		void	openRomSlot(std::string path);
 		void	gbDbSlot();
 		void	stepPressedSlot();
+		void	framePressedSlot();
 		void	switchStepModeSlot();
 		void	addBreakpointSlot(uint16_t addr);
 		void	delBreakpointSlot(uint16_t addr);
