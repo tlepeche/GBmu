@@ -2,8 +2,6 @@
 #include <iostream>
 #include "Rom.hpp"
 
-Rom			Rom::_instance = Rom();
-
 Rom::Rom(void)
 {
 	this->_eram = NULL;
@@ -30,11 +28,6 @@ Rom::~Rom(void)
 		delete[] this->_rom;
 	if (this->_eram != NULL)
 		delete[] this->_eram;
-}
-
-Rom			&Rom::Instance(void)
-{
-	return Rom::_instance;
 }
 
 void		Rom::init(void)
