@@ -118,12 +118,12 @@ bool Cpu_z80::getIME(void)
 
 bool Cpu_z80::isInterrupt(void)
 {
-	return (this->_memory.read_byte(REGISTER_IF) > 0x00);
+	return (this->_memory->read_byte(REGISTER_IF) > 0x00);
 }
 
 bool Cpu_z80::_getInterrupt(uint8_t interrupt)
 {
-	return ((this->_memory.read_byte(0xFF0F) & interrupt) >= 0x1);
+	return ((this->_memory->read_byte(0xFF0F) & interrupt) >= 0x1);
 }
 
 void Cpu_z80::_nextPtr(void) {
