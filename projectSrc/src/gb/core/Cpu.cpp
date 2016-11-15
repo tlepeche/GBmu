@@ -32,7 +32,7 @@ t_opcode Cpu_z80::_getOpcode(uint8_t opcode)
 {
 	if (opcode == 0xCB)
 	{
-		this->_cpuRegister.PC += LENGTH_ADDR;
+//		this->_cpuRegister.PC += LENGTH_ADDR;
 		uint8_t cbopcode = this->_memory->read_byte(this->_cpuRegister.PC);
 		return _CBopcodeMap[cbopcode];
 	}
@@ -136,7 +136,7 @@ void Cpu_z80::execInterrupt(void)
 	{
 		// push PC on stack
 		this->_cpuRegister.SP -= 2;
-		this->_memory->write_word(_cpuRegister.SP, _cpuRegister.BC);
+		this->_memory->write_word(_cpuRegister.SP, _cpuRegister.PC);
 		// set low INTER_VBLANK
 		this->_memory->write_byte(REGISTER_IF,
 				_memory->read_byte(REGISTER_IF) & (INTER_MASK ^ INTER_VBLANK));
