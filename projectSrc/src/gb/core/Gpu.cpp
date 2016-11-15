@@ -52,13 +52,14 @@ std::string	Gpu::toString()
 	return (s);
 }
 
+unsigned int gbColors[4] = {0x00FFFFFF, 0x00C0C0C0, 0x00606060, 0x00000000};
+
 unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 {
 	t_gpuControl	gpuC = (t_gpuControl){_memory->read_byte(REGISTER_LCDC)};
 	uint8_t			scy = _memory->read_byte(REGISTER_SCY);
 	uint8_t			scx = _memory->read_byte(REGISTER_SCX);
 
-	unsigned int pixel = 0xFFFFFF;
 	unsigned int tileMapAddr = gpuC.tile_map ? MAP1_ADDR : MAP0_ADDR;
 	unsigned int tileSetAddr = gpuC.tile_set ? TILES1_ADDR : TILES0_ADDR;
 	unsigned int tileId = _memory->read_byte(
@@ -75,25 +76,7 @@ unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 	uint8_t	sdata2 = _memory->read_byte(tileAddr + (sy * 2) + 1);
 	unsigned int colorId = ((sdata1 >> rsx) & 1) | (((sdata2 >> rsx) & 1) << 1);
 
-	switch (colorId)
-	{
-		case 0:
-			pixel = 0x00FFFFFF;
-			break ;
-		case 1:
-			pixel = 0x00C0C0C0;
-			break ;
-		case 2:
-			pixel = 0x00606060;
-			break ;
-		case 3:
-			pixel = 0x00000000;
-			break;
-		default:
-			pixel = 0x00FF0000; // TODO: impossible case !
-			break ;
-	}
-	return pixel;
+	return gbColors[colorId & 3];
 }
 
 void	Gpu::scanActLine()
@@ -108,6 +91,8 @@ void	Gpu::scanActLine()
 		_window->drawPixel(addrLine, pixel);
 	}
 }
+
+#include "interrupt.hpp"
 
 void	Gpu::step()
 {
@@ -141,6 +126,8 @@ void	Gpu::step()
 				{
 					_mode = VBLANK;
 					_window->renderLater();
+					_memory->write_byte(REGISTER_IF, 
+							_memory->read_byte(REGISTER_IF) | INTER_VBLANK);
 				}
 				else
 				{

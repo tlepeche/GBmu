@@ -341,6 +341,7 @@ class Cpu_z80
 				
 	private:
 		void							_resetPtrAddr(void);
+		void							_loadPtr(uint16_t pc);
 		void							_nextPtr(void);
 						
 	/*

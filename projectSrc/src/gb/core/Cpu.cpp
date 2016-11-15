@@ -116,21 +116,53 @@ bool Cpu_z80::getIME(void)
 	return this->_IME;
 }
 
+#include "interrupt.hpp"
+
 bool Cpu_z80::isInterrupt(void)
 {
-	return (this->_memory->read_byte(REGISTER_IF) > 0x00);
+	return (this->_memory->read_byte(REGISTER_IF) & INTER_MASK);
 }
 
 bool Cpu_z80::_getInterrupt(uint8_t interrupt)
 {
-	return ((this->_memory->read_byte(0xFF0F) & interrupt) >= 0x1);
+	return ((this->_memory->read_byte(0xFF0F) & interrupt) != 0);
+}
+
+void Cpu_z80::execInterrupt(void)
+{
+	// Get interrupt here
+	if (this->_getInterrupt(INTER_VBLANK))
+	{
+		// push PC on stack
+		this->_cpuRegister.SP -= 2;
+		this->_memory->write_word(_cpuRegister.SP, _cpuRegister.BC);
+		// set low INTER_VBLANK
+		this->_memory->write_byte(REGISTER_IF,
+				_memory->read_byte(REGISTER_IF) & (INTER_MASK ^ INTER_VBLANK));
+		// Go to 0x40
+		this->_cpuRegister.PC = 0x40;
+		this->_loadPtr(this->_cpuRegister.PC);
+	}
+	else if (this->_getInterrupt(INTER_TOVERF))
+	{
+		this->_setHalt(false);
+		this->_setStop(false);
+	}
+	else if (this->isInterrupt())
+		this->_setHalt(false);
+	std::cout << "interrupt cpu" << std::endl;
+}
+
+void Cpu_z80::_loadPtr(uint16_t pc)
+{
+	this->_opcodeInProgress = this->_getOpcode(this->_memory->read_byte(pc));
+	this->_setDataOpcode();
 }
 
 void Cpu_z80::_nextPtr(void) {
 	if (getStepState())
 		this->_cpuRegister.PC = this->_cpuRegister.PC + this->_opcodeInProgress.lengthData;
-	this->_opcodeInProgress = this->_getOpcode(this->_memory->read_byte(this->_cpuRegister.PC));
-	this->_setDataOpcode();
+	this->_loadPtr(this->_cpuRegister.PC);
 }
 
 uint8_t Cpu_z80::nbCycleNextOpCode(void)
@@ -156,8 +188,8 @@ void Cpu_z80::init(void)
 {
 	setStepState(true);
 	printf("INITIALIZING\n");
-	this->_IME = true;
-	this->_holdIME = true;
+	this->_IME = false;
+	this->_holdIME = false;
 	htype typeRom;
 
 	//init register cpu
@@ -254,18 +286,6 @@ void Cpu_z80::_setLowBit(uint16_t addr, uint8_t bit)
 void Cpu_z80::_setHightBit(uint16_t addr, uint8_t bit)
 {
 	this->_memory->write_byte(addr, (uint8_t)((0x01 << bit) | this->_memory->read_byte(addr)));
-}
-
-void Cpu_z80::execInterrupt(void)
-{
-	if (this->_getInterrupt(0x4))
-	{
-		this->_setHalt(false);
-		this->_setStop(false);
-	}
-	else if (this->isInterrupt())
-		this->_setHalt(false);
-	std::cout << "interrupt cpu" << std::endl;
 }
 
 std::array<uint32_t, 4> Cpu_z80::getArrayFrequency()
