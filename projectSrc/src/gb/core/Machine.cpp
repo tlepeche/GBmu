@@ -24,12 +24,7 @@ bool Machine::step(void)
 {
 	this->_clock->setFrequency(this->_cpu->getArrayFrequency());
 	this->_clock->setCycleTotal(this->_getCycleOpcode());
-	//on test si on est en halt, si oui on attend juste une nouvelle interruption afin de continuer.
-	if (this->_cpu->getIME() && this->_cpu->isInterrupt())
-	{
-		this->_cpu->execInterrupt();
-	}
-	else if (!this->_cpu->getHalt() && !this->_cpu->getStop() && ((this->_memory->read_byte(REGISTER_TAC) & 0x4) == 0x4))
+	if (!this->_cpu->getHalt() && !this->_cpu->getStop() && ((this->_memory->read_byte(REGISTER_TAC) & 0x4) == 0x4))
 	{
 		if (this->_cpu->nbCycleNextOpCode() < this->_clock->getCycleAcc()) {
 			unsigned int clock = this->_cpu->executeNextOpcode();
@@ -37,10 +32,8 @@ bool Machine::step(void)
 			this->_clock->setCycleAcc(clock);
 			this->_gpu->step();
 			this->_gpu->accClock(clock);
-	if (this->_cpu->getIME() && this->_cpu->isInterrupt())
-	{
-		this->_cpu->execInterrupt();
-	}
+			if (this->_cpu->getIME() && this->_cpu->isInterrupt())
+				this->_cpu->execInterrupt();
 			return (true);
 		}
 		else

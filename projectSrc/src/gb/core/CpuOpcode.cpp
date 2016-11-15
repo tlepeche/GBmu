@@ -37,7 +37,7 @@ void	Cpu_z80::CP(uint8_t val)
 {
 	_cpuRegister.n = 1;
 	_cpuRegister.h = (testSub(_cpuRegister.A, val, 0xf0)) ? 1 : 0;
-	_cpuRegister.c = (_cpuRegister.A > val) ? 1 : 0;
+	_cpuRegister.c = (_cpuRegister.A < val) ? 1 : 0;
 	_cpuRegister.z = (_cpuRegister.A == val) ? 1 : 0;
 }
 
