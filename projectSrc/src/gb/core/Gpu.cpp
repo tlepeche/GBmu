@@ -22,7 +22,7 @@ Gpu::~Gpu()
 #define TILES1_ADDR 0x8800 // Go to 0x97FF / -128->127
 
 #define TILE_W 8 // bits
-#define TILE_PIXEL_SIZE 2 // bits on Gb
+#define TILE_H 8
 #define BYTE_SIZE 8 // byte size 0000 0000 ;)
 
 #define MAP_W 32 
@@ -52,20 +52,21 @@ std::string	Gpu::toString()
 	return (s);
 }
 
+unsigned int gbColors[4] = {0x00FFFFFF, 0x00C0C0C0, 0x00606060, 0x00000000};
+
 unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 {
 	t_gpuControl	gpuC = (t_gpuControl){_memory->read_byte(REGISTER_LCDC)};
 	uint8_t			scy = _memory->read_byte(REGISTER_SCY);
 	uint8_t			scx = _memory->read_byte(REGISTER_SCX);
 
-	unsigned int pixel = 0xFFFFFF;
 	unsigned int tileMapAddr = gpuC.tile_map ? MAP1_ADDR : MAP0_ADDR;
 	unsigned int tileSetAddr = gpuC.tile_set ? TILES1_ADDR : TILES0_ADDR;
 	unsigned int tileId = _memory->read_byte(
 			tileMapAddr
 			+ (((line / TILE_W) + scy) * MAP_W)
 			+ (x / TILE_W) + scx); // TODO: use scroll X / Y here
-	unsigned int tileAddr = tileSetAddr + tileId;
+	unsigned int tileAddr = tileSetAddr + tileId * TILE_H * 2;
 
 	unsigned int sy = line % TILE_W;
 	unsigned int sx = x % TILE_W;
@@ -75,25 +76,7 @@ unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 	uint8_t	sdata2 = _memory->read_byte(tileAddr + (sy * 2) + 1);
 	unsigned int colorId = ((sdata1 >> rsx) & 1) | (((sdata2 >> rsx) & 1) << 1);
 
-	switch (colorId)
-	{
-		case 0:
-			pixel = 0x00FFFFFF;
-			break ;
-		case 1:
-			pixel = 0x00C0C0C0;
-			break ;
-		case 2:
-			pixel = 0x00606060;
-			break ;
-		case 3:
-			pixel = 0x00000000;
-			break;
-		default:
-			pixel = 0x00FF0000; // TODO: impossible case !
-			break ;
-	}
-	return pixel;
+	return gbColors[colorId & 3];
 }
 
 void	Gpu::scanActLine()
@@ -108,6 +91,8 @@ void	Gpu::scanActLine()
 		_window->drawPixel(addrLine, pixel);
 	}
 }
+
+#include "interrupt.hpp"
 
 void	Gpu::step()
 {
@@ -141,6 +126,8 @@ void	Gpu::step()
 				{
 					_mode = VBLANK;
 					_window->renderLater();
+					_memory->write_byte(REGISTER_IF, 
+							_memory->read_byte(REGISTER_IF) | INTER_VBLANK);
 				}
 				else
 				{

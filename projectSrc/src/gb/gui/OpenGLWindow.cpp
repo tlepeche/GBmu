@@ -5,6 +5,7 @@
 #include <QOpenGLPaintDevice>
 #include <QPainter>
 #include <QMenuBar>
+#include <QKeyEvent>
 
 #include <QFileDialog>
 
@@ -13,14 +14,14 @@
 // GOOD tuto
 // http://doc.qt.io/qt-5/qtwidgets-mainwindows-menus-example.html
 
-OpenGLWindow::OpenGLWindow(QWindow *parent)
+	OpenGLWindow::OpenGLWindow(QWindow *parent)
 	: QWindow(parent)
 	, m_update_pending(false)
 	, m_animating(false)
 	, _menuBar(this->genMenuBar())
 	, frameBuffer(new QImage(WIN_WIDTH, WIN_HEIGHT, QImage::Format_RGB32))
 	, m_context(0)
-	, m_device(0)
+	  , m_device(0)
 {
 	setSurfaceType(QWindow::OpenGLSurface);
 }
@@ -69,18 +70,27 @@ OpenGLWindow::~OpenGLWindow()
 	delete frameBuffer;
 }
 
+void OpenGLWindow::keyReleaseEvent(QKeyEvent* e)
+{
+	emit keyReleaseSign(e->key());
+}
+
+void OpenGLWindow::keyPressEvent(QKeyEvent* e)
+{
+	emit keyPressSign(e->key());
+}
 
 // Format_RGB32 Format_Mono
 /*
-void OpenGLWindow::changeFormat(QImage::Format f)
-{
-	QImage* old = frameBuffer;
+   void OpenGLWindow::changeFormat(QImage::Format f)
+   {
+   QImage* old = frameBuffer;
 
-	frameBuffer = new QImage(160, 140, f);
+   frameBuffer = new QImage(160, 140, f);
 
-	delete old;
-}
-*/
+   delete old;
+   }
+   */
 
 void OpenGLWindow::drawPixel(uint16_t addr, uint8_t r, uint8_t g, uint8_t b)
 {
