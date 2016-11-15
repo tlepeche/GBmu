@@ -22,7 +22,7 @@ Gpu::~Gpu()
 #define TILES1_ADDR 0x8800 // Go to 0x97FF / -128->127
 
 #define TILE_W 8 // bits
-#define TILE_PIXEL_SIZE 2 // bits on Gb
+#define TILE_H 8
 #define BYTE_SIZE 8 // byte size 0000 0000 ;)
 
 #define MAP_W 32 
@@ -66,7 +66,7 @@ unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 			tileMapAddr
 			+ (((line / TILE_W) + scy) * MAP_W)
 			+ (x / TILE_W) + scx); // TODO: use scroll X / Y here
-	unsigned int tileAddr = tileSetAddr + tileId;
+	unsigned int tileAddr = tileSetAddr + tileId * TILE_H * 2;
 
 	unsigned int sy = line % TILE_W;
 	unsigned int sx = x % TILE_W;
