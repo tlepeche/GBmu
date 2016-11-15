@@ -2,18 +2,12 @@
 #include <cstring>
 #include "Memory.hpp"
 
-Memory::Memory(void) : _rom(Rom::Instance())
+Memory::Memory(void)
 {
 }
 
 Memory::~Memory(void) {}
 
-Memory			&Memory::Instance(void)
-{
-	static Memory	*_mem = nullptr;
-	if (!_mem) _mem = new Memory();
-	return *_mem;
-}
 
 void			Memory::Init(void)
 {
@@ -79,7 +73,7 @@ uint8_t			Memory::read_byte(uint16_t addr)
 					else
 					{
 						// Zero page
-						return this->_m_zp[(addr & 0xFF)];
+						return this->_m_zp[(addr & 0xFF) - 0x7F];
 					}
 					break;
 			}
@@ -138,7 +132,7 @@ void			Memory::write_byte(uint16_t addr, uint8_t val)
 					else
 					{
 						// Zero page
-						this->_m_zp[(addr & 0xFF)] = val;
+						this->_m_zp[(addr & 0xFF) - 0x7F] = val;
 					}
 					break;
 			}

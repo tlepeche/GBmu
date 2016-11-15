@@ -72,7 +72,6 @@ private:
 	t_register			*_r;
 	Memory				*_mem;
 	std::list<uint16_t>	*_breakpoints; // unuse at this time
-
 	unsigned int		_start;
 };
 

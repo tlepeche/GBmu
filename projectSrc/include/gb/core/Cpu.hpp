@@ -28,19 +28,19 @@ inline bool testSub(T1 op1, T2 op2, T3 mask)
 	return false;
 }
 
+class Machine;
+
 class Cpu_z80
 {
+	friend Machine;
 	bool _tmp;
 	/*
 	** ################################################################
 	** CREATE Singleton
 	** ################################################################
 	*/
-	public:
-		static Cpu_z80 &Instance();
-
 	private:
-		Cpu_z80(void);
+		Cpu_z80(Memory *memory);
 		virtual ~Cpu_z80(void);
 		static Cpu_z80					_instance;
 
@@ -377,7 +377,7 @@ class Cpu_z80
 	*/
 	private:
 		unsigned int					_ptrAddr;
-		Memory							&_memory;
+		Memory							*_memory;
 		std::array<uint32_t, 4>			_arrayFrequency {{static_cast<uint32_t>(4096), static_cast<uint32_t>(16385), static_cast<uint32_t>(65536), static_cast<uint32_t>(262144) }};
 		t_opcode						_opcodeInProgress;
 		bool							_stepState;

@@ -7,24 +7,18 @@
  ** CREATE Singleton
  ** ################################################################
  */
-std::array<t_opcode, 256>	_opcodeMap;
-std::array<t_opcode, 256>	_CBopcodeMap;
+// See opcode.hpp
+std::array<t_opcode, 256>		_opcodeMap;
+std::array<t_opcode, 256>		_CBopcodeMap;
 
-Cpu_z80		Cpu_z80::_instance = Cpu_z80();
-
-Cpu_z80::Cpu_z80(void) :
-	_memory(Memory::Instance())
+Cpu_z80::Cpu_z80(Memory *memory) :
+	_memory(memory)
 {
 	_setOpcodeMap();
 }
 
 Cpu_z80::~Cpu_z80(void)
 {
-}
-
-Cpu_z80 &Cpu_z80::Instance(void)
-{
-	return Cpu_z80::_instance;
 }
 
 /*
@@ -38,7 +32,7 @@ t_opcode Cpu_z80::_getOpcode(uint8_t opcode)
 	if (opcode == 0xCB)
 	{
 		this->_cpuRegister.PC += LENGTH_ADDR;
-		uint8_t cbopcode = this->_memory.read_byte(this->_cpuRegister.PC);
+		uint8_t cbopcode = this->_memory->read_byte(this->_cpuRegister.PC);
 		return _CBopcodeMap[cbopcode];
 	}
 	return _opcodeMap[opcode];
@@ -56,9 +50,9 @@ void Cpu_z80::_setDataOpcode(void)
 	if (this->_opcodeInProgress.lengthData > 1)
 	{
 		if (this->_opcodeInProgress.lengthData > 2)
-			this->_opcodeInProgress.data = this->_memory.read_byte(this->_cpuRegister.PC + LENGTH_ADDR);
+			this->_opcodeInProgress.data = this->_memory->read_byte(this->_cpuRegister.PC + LENGTH_ADDR);
 		else
-			this->_opcodeInProgress.data = this->_memory.read_word(this->_cpuRegister.PC + LENGTH_ADDR);
+			this->_opcodeInProgress.data = this->_memory->read_word(this->_cpuRegister.PC + LENGTH_ADDR);
 	}
 }
 
@@ -135,7 +129,7 @@ bool Cpu_z80::_getInterrupt(uint8_t interrupt)
 void Cpu_z80::_nextPtr(void) {
 	if (getStepState())
 		this->_cpuRegister.PC = this->_cpuRegister.PC + this->_opcodeInProgress.lengthData;
-	this->_opcodeInProgress = this->_getOpcode(this->_memory.read_byte(this->_cpuRegister.PC));
+	this->_opcodeInProgress = this->_getOpcode(this->_memory->read_byte(this->_cpuRegister.PC));
 	this->_setDataOpcode();
 }
 
@@ -147,7 +141,7 @@ uint8_t Cpu_z80::nbCycleNextOpCode(void)
 uint8_t Cpu_z80::executeNextOpcode(void)
 {
 	if (this->_opcodeInProgress.functionOpcode == NULL)
-		printf("Function not yet implemented\n");
+		printf("Function not yet implemented: opcode(%.2X)\n", this->_opcodeInProgress.opcode);
 	else
 		this->_opcodeInProgress.functionOpcode();
 	uint8_t cycle = this->_getCycleOpcode();
@@ -182,64 +176,64 @@ void Cpu_z80::init(void)
 	this->_cpuRegister.SP = 0xFFFE;
 
 	//init register memory
-	this->_memory.write_byte(REGISTER_NR10, 0x80);
-	this->_memory.write_byte(REGISTER_NR11, 0xBF);
-	this->_memory.write_byte(REGISTER_NR12, 0xF3);
-	this->_memory.write_byte(REGISTER_NR14, 0xBF);
-	this->_memory.write_byte(REGISTER_NR21, 0x3F);
-	this->_memory.write_byte(REGISTER_NR22, 0x00);
-	this->_memory.write_byte(REGISTER_NR24, 0xBF);
-	this->_memory.write_byte(REGISTER_NR30, 0x7F);
-	this->_memory.write_byte(REGISTER_NR31, 0xFF);
-	this->_memory.write_byte(REGISTER_NR32, 0x9F);
-	this->_memory.write_byte(REGISTER_NR33, 0xBF);
-	this->_memory.write_byte(REGISTER_NR41, 0xFF);
-	this->_memory.write_byte(REGISTER_NR42, 0x00);
-	this->_memory.write_byte(REGISTER_NR43, 0x00);
-	this->_memory.write_byte(REGISTER_NR30_, 0xBF);
-	this->_memory.write_byte(REGISTER_NR50, 0x77);
-	this->_memory.write_byte(REGISTER_NR51, 0xF3);
-	this->_memory.write_byte(REGISTER_NR52, 0xF1);
+	this->_memory->write_byte(REGISTER_NR10, 0x80);
+	this->_memory->write_byte(REGISTER_NR11, 0xBF);
+	this->_memory->write_byte(REGISTER_NR12, 0xF3);
+	this->_memory->write_byte(REGISTER_NR14, 0xBF);
+	this->_memory->write_byte(REGISTER_NR21, 0x3F);
+	this->_memory->write_byte(REGISTER_NR22, 0x00);
+	this->_memory->write_byte(REGISTER_NR24, 0xBF);
+	this->_memory->write_byte(REGISTER_NR30, 0x7F);
+	this->_memory->write_byte(REGISTER_NR31, 0xFF);
+	this->_memory->write_byte(REGISTER_NR32, 0x9F);
+	this->_memory->write_byte(REGISTER_NR33, 0xBF);
+	this->_memory->write_byte(REGISTER_NR41, 0xFF);
+	this->_memory->write_byte(REGISTER_NR42, 0x00);
+	this->_memory->write_byte(REGISTER_NR43, 0x00);
+	this->_memory->write_byte(REGISTER_NR30_, 0xBF);
+	this->_memory->write_byte(REGISTER_NR50, 0x77);
+	this->_memory->write_byte(REGISTER_NR51, 0xF3);
+	this->_memory->write_byte(REGISTER_NR52, 0xF1);
 
 	// Other register
-	this->_memory.write_byte(REGISTER_P1, 0xCF);
-	this->_memory.write_byte(REGISTER_SB, 0x00);
-	this->_memory.write_byte(REGISTER_SC, 0x7E);
-	this->_memory.write_byte(REGISTER_DIV, 0xD3); // bios: 0xD3 start: 0x81
-	this->_memory.write_byte(REGISTER_TIMA, 0x00);
-	this->_memory.write_byte(REGISTER_TMA, 0x00);
-	this->_memory.write_byte(REGISTER_TAC, 0x00);
-	this->_memory.write_byte(REGISTER_KEY1, 0xFF);
-	this->_memory.write_byte(REGISTER_VBK, 0xFF);
-	this->_memory.write_byte(REGISTER_HDMA1, 0xFF);
-	this->_memory.write_byte(REGISTER_HDMA2, 0xFF);
-	this->_memory.write_byte(REGISTER_HDMA3, 0xFF);
-	this->_memory.write_byte(REGISTER_HDMA4, 0xFF);
-	this->_memory.write_byte(REGISTER_HDMA5, 0xFF);
-	this->_memory.write_byte(REGISTER_SVBK, 0xFF);
-	this->_memory.write_byte(REGISTER_IF, 0xE1);
-	this->_memory.write_byte(REGISTER_IE, 0x00);
+	this->_memory->write_byte(REGISTER_P1, 0xCF);
+	this->_memory->write_byte(REGISTER_SB, 0x00);
+	this->_memory->write_byte(REGISTER_SC, 0x7E);
+	this->_memory->write_byte(REGISTER_DIV, 0xD3); // bios: 0xD3 start: 0x81
+	this->_memory->write_byte(REGISTER_TIMA, 0x00);
+	this->_memory->write_byte(REGISTER_TMA, 0x00);
+	this->_memory->write_byte(REGISTER_TAC, 0x00);
+	this->_memory->write_byte(REGISTER_KEY1, 0xFF);
+	this->_memory->write_byte(REGISTER_VBK, 0xFF);
+	this->_memory->write_byte(REGISTER_HDMA1, 0xFF);
+	this->_memory->write_byte(REGISTER_HDMA2, 0xFF);
+	this->_memory->write_byte(REGISTER_HDMA3, 0xFF);
+	this->_memory->write_byte(REGISTER_HDMA4, 0xFF);
+	this->_memory->write_byte(REGISTER_HDMA5, 0xFF);
+	this->_memory->write_byte(REGISTER_SVBK, 0xFF);
+	this->_memory->write_byte(REGISTER_IF, 0xE1);
+	this->_memory->write_byte(REGISTER_IE, 0x00);
 	
 
-	this->_memory.write_byte(REGISTER_LCDC, 0x91);
-	this->_memory.write_byte(REGISTER_STAT, 0x81); // bios: 0x80 start: 0x81
-	this->_memory.write_byte(REGISTER_SCY, 0x00);
-	this->_memory.write_byte(REGISTER_SCX, 0x00);
-	this->_memory.write_byte(REGISTER_LY, 0x00); // bios: 0x00 start: 0x81
-	this->_memory.write_byte(REGISTER_LYC, 0x00);
-	this->_memory.write_byte(REGISTER_DMA, 0xFF);
-	this->_memory.write_byte(REGISTER_BGP, 0xFC); // edelangh: this is bullshit !!
-	this->_memory.write_byte(REGISTER_OBP0, 0xFF);
-	this->_memory.write_byte(REGISTER_OBP1, 0xFF);
-	this->_memory.write_byte(REGISTER_WY, 0x00);
-	this->_memory.write_byte(REGISTER_WX, 0x00);
+	this->_memory->write_byte(REGISTER_LCDC, 0x91);
+	this->_memory->write_byte(REGISTER_STAT, 0x81); // bios: 0x80 start: 0x81
+	this->_memory->write_byte(REGISTER_SCY, 0x00);
+	this->_memory->write_byte(REGISTER_SCX, 0x00);
+	this->_memory->write_byte(REGISTER_LY, 0x00); // bios: 0x00 start: 0x81
+	this->_memory->write_byte(REGISTER_LYC, 0x00);
+	this->_memory->write_byte(REGISTER_DMA, 0xFF);
+	this->_memory->write_byte(REGISTER_BGP, 0xFC); // edelangh: this is bullshit !!
+	this->_memory->write_byte(REGISTER_OBP0, 0xFF);
+	this->_memory->write_byte(REGISTER_OBP1, 0xFF);
+	this->_memory->write_byte(REGISTER_WY, 0x00);
+	this->_memory->write_byte(REGISTER_WX, 0x00);
 	/* TODO: WTF ? I dont see then in doc */
-	this->_memory.write_byte(REGISTER_BCPS, 0xFF);
-	this->_memory.write_byte(REGISTER_BCPD, 0xFF);
-	this->_memory.write_byte(REGISTER_OCPS, 0xFF);
-	this->_memory.write_byte(REGISTER_OCPD, 0xFF);
+	this->_memory->write_byte(REGISTER_BCPS, 0xFF);
+	this->_memory->write_byte(REGISTER_BCPD, 0xFF);
+	this->_memory->write_byte(REGISTER_OCPS, 0xFF);
+	this->_memory->write_byte(REGISTER_OCPD, 0xFF);
 
-	this->_opcodeInProgress = this->_getOpcode(this->_memory.read_byte(this->_cpuRegister.PC));
+	this->_opcodeInProgress = this->_getOpcode(this->_memory->read_byte(this->_cpuRegister.PC));
 	this->_setDataOpcode();
 
 	//TODO: Setup loop, i think this one is up when rom memory is plugged
@@ -254,12 +248,12 @@ void Cpu_z80::init(void)
 
 void Cpu_z80::_setLowBit(uint16_t addr, uint8_t bit)
 {
-	this->_memory.write_byte(addr, (uint8_t)((0x01 << bit) ^ this->_memory.read_byte(addr)));
+	this->_memory->write_byte(addr, (uint8_t)((0x01 << bit) ^ this->_memory->read_byte(addr)));
 }
 
 void Cpu_z80::_setHightBit(uint16_t addr, uint8_t bit)
 {
-	this->_memory.write_byte(addr, (uint8_t)((0x01 << bit) | this->_memory.read_byte(addr)));
+	this->_memory->write_byte(addr, (uint8_t)((0x01 << bit) | this->_memory->read_byte(addr)));
 }
 
 void Cpu_z80::execInterrupt(void)
@@ -286,7 +280,6 @@ void Cpu_z80::_resetPtrAddr(void)
 
 void Cpu_z80::_setOpcodeMap()
 {
-	std::cout << "salut" << std::endl;
 	_opcodeMap = {
 		(t_opcode){0x00, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::NOP, this),		"NOP",			0x0000},
 		(t_opcode){0x01, 0x00, 12, 12, 3, std::bind(&Cpu_z80::LD_BC_n, this),	"LD BC, nn",	0x0000},
