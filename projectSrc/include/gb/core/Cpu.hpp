@@ -67,6 +67,7 @@ class Cpu_z80
 		void							_setDataOpcode(void);
 		void							_setOpcodeMap(void);
 		void							_setIME(bool state);
+		void							_setCbOpcodeMap(void);
 
 	/*
 	** ################################################################
@@ -78,6 +79,11 @@ class Cpu_z80
 		std::array<uint32_t, 4>			getArrayFrequency();
 		void							init(void);
 
+	/*
+	** ################################################################
+	** METHOD Opcode
+	** ################################################################
+	*/
 
 		void							XOR(uint8_t val);
 		void							AND(uint8_t val);
@@ -338,7 +344,15 @@ class Cpu_z80
 		void							EI();			//0xfb     Not done yet
 		void							CP_n();			//0xfe 
 		void							RST_38H();		//0xff  		
-				
+
+	/*
+	** ################################################################
+	** METHOD CB opcode
+	** ################################################################
+	*/
+		void							rotate_left(uint8_t *reg);
+		void							RLC_B();		//0x00
+	
 	private:
 		void							_resetPtrAddr(void);
 		void							_loadPtr(uint16_t pc);
