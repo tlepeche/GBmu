@@ -1,4 +1,5 @@
 #include "Cpu.hpp"
+#include "registerAddr.hpp"
 #include <stdio.h>
 
 /*
@@ -75,6 +76,56 @@ uint8_t Cpu_z80::_getLengthDataOpcode(void)
 	return this->_opcodeInProgress.lengthData;
 }
 
+void Cpu_z80::_setHalt(bool state)
+{
+	this->_halt = state;
+}
+
+bool Cpu_z80::getHalt(void)
+{
+	return this->_halt;
+}
+
+void Cpu_z80::_setStop(bool state)
+{
+	this->_stop = state;
+}
+
+bool Cpu_z80::getStop(void)
+{
+	return this->_stop;
+}
+
+void Cpu_z80::_setIME(bool state)
+{
+	this->_IME = state;
+}
+
+void Cpu_z80::setHoldIME(bool state)
+{
+	this->_holdIME = state;
+}
+
+bool Cpu_z80::getHoldIME(void)
+{
+	return this->_holdIME;
+}
+
+bool Cpu_z80::getIME(void)
+{
+	return this->_IME;
+}
+
+bool Cpu_z80::isInterrupt(void)
+{
+	return (this->_memory->read_byte(REGISTER_IF) > 0x00);
+}
+
+bool Cpu_z80::_getInterrupt(uint8_t interrupt)
+{
+	return ((this->_memory->read_byte(0xFF0F) & interrupt) >= 0x1);
+}
+
 void Cpu_z80::_nextPtr(void) {
 	if (getStepState())
 		this->_cpuRegister.PC = this->_cpuRegister.PC + this->_opcodeInProgress.lengthData;
@@ -105,6 +156,8 @@ void Cpu_z80::init(void)
 {
 	setStepState(true);
 	printf("INITIALIZING\n");
+	this->_IME = true;
+	this->_holdIME = true;
 	htype typeRom;
 
 	//init register cpu
@@ -203,8 +256,16 @@ void Cpu_z80::_setHightBit(uint16_t addr, uint8_t bit)
 	this->_memory->write_byte(addr, (uint8_t)((0x01 << bit) | this->_memory->read_byte(addr)));
 }
 
-void Cpu_z80::interrupt(void)
+void Cpu_z80::execInterrupt(void)
 {
+	if (this->_getInterrupt(0x4))
+	{
+		this->_setHalt(false);
+		this->_setStop(false);
+	}
+	else if (this->isInterrupt())
+		this->_setHalt(false);
+	std::cout << "interrupt cpu" << std::endl;
 }
 
 std::array<uint32_t, 4> Cpu_z80::getArrayFrequency()

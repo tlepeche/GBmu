@@ -792,7 +792,9 @@ void	Cpu_z80::LD_HL_L() //0x75
 }
 
 void	Cpu_z80::HALT()	//0x76
-{}
+{
+	this->_setHalt(true);
+}
 
 void	Cpu_z80::LD_HL_A() //0x77
 {
@@ -1445,7 +1447,7 @@ void	Cpu_z80::LD_A_CC()	//0xf2
 
 void	Cpu_z80::DI() //0xf3
 {
-	//	setIME(false);
+	this->_setIME(false);
 }
 
 void	Cpu_z80::PUSH_AF() //0xf5
@@ -1505,8 +1507,13 @@ void	Cpu_z80::RST_38H() //0xff
 
 
 void	Cpu_z80::STOP()			//0x10     Not done yet
-{}
+{
+	this->_setHalt(true);
+	this->_setStop(true);
+}
 void	Cpu_z80::PREFIX_CB()	//0xcb     Not done yet
 {}
 void	Cpu_z80::EI()	//0xfb
-{}
+{
+	this->_setIME(true);
+}
