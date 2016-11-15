@@ -55,6 +55,9 @@ class Cpu_z80
 		uint8_t							executeNextOpcode(void);
 		void							setStepState(bool state);
 		bool							getStepState(void);
+		void							setHoldIME(bool state);
+		bool							getIME(void);
+		bool							getHoldIME(void);
 
 	private:
 		t_opcode						_getOpcode(uint8_t opcode);
@@ -63,6 +66,7 @@ class Cpu_z80
 		uint8_t							_getLengthDataOpcode(void);
 		void							_setDataOpcode(void);
 		void							_setOpcodeMap(void);
+		void							_setIME(bool state);
 		void							_setCbOpcodeMap(void);
 
 	/*
@@ -73,7 +77,6 @@ class Cpu_z80
 
 	public:
 		std::array<uint32_t, 4>			getArrayFrequency();
-		void							interrupt(void);
 		void							init(void);
 
 	/*
@@ -366,14 +369,19 @@ class Cpu_z80
 
 	/*
 	** ################################################################
-	** METHOD display -- see display.cpp
+	** METHOD CPU
 	** ################################################################
 	*/
 	public:
-		void							setInterrupt(uint16_t addr, uint8_t bit);
+		void							execInterrupt(void);
+		bool							isInterrupt(void);
+		bool							_getInterrupt(uint8_t interrupt);
+		bool							getHalt(void);
+		bool							getStop(void);
 
 	private:
-		void							_getInterrupt(void);
+	void								_setStop(bool state);
+	void								_setHalt(bool state);
 
 
 	/*
@@ -387,6 +395,10 @@ class Cpu_z80
 		std::array<uint32_t, 4>			_arrayFrequency {{static_cast<uint32_t>(4096), static_cast<uint32_t>(16385), static_cast<uint32_t>(65536), static_cast<uint32_t>(262144) }};
 		t_opcode						_opcodeInProgress;
 		bool							_stepState;
+		bool							_halt = false;
+		bool							_stop = false;
+		bool							_IME = true;
+		bool							_holdIME = true;
 
 	public:
 		unsigned int					_addrLength;
