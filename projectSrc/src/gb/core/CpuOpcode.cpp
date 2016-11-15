@@ -36,8 +36,8 @@ void	Cpu_z80::OR(uint8_t val)
 void	Cpu_z80::CP(uint8_t val)
 {
 	_cpuRegister.n = 1;
-	_cpuRegister.h = (testSub(_cpuRegister.A, val, 0xf0)) ? 1 : 0;
-	_cpuRegister.c = (_cpuRegister.A > val) ? 1 : 0;
+	_cpuRegister.h = ((_cpuRegister.A & 0x0F) < (val & 0x0F)) ? 1 : 0;
+	_cpuRegister.c = (_cpuRegister.A < val) ? 1 : 0;
 	_cpuRegister.z = (_cpuRegister.A == val) ? 1 : 0;
 }
 
@@ -54,7 +54,7 @@ void	Cpu_z80::LD_x_y(uint8_t *dst, uint8_t src)
 void Cpu_z80::inc(uint8_t *val)
 {
 	_cpuRegister.n = 0;
-	_cpuRegister.h = static_cast<int>(testAdd(*val, 1, 0xf0));
+	_cpuRegister.h = static_cast<int>(testAdd(*val & 0x0f, 1, 0xf0));
 	(*val)++;
 	_cpuRegister.z = (*val == 0) ? 1 : 0;
 }
@@ -1368,7 +1368,7 @@ void	Cpu_z80::POP_HL() //0xe1
 
 void	Cpu_z80::LD_CC_A()	//0xe2
 {
-	_memory->write_word((0x0000 + _cpuRegister.c), _cpuRegister.A);
+	_memory->write_word((0xff00 + _cpuRegister.C), _cpuRegister.A);
 }
 
 void	Cpu_z80::PUSH_HL() //0xe5
@@ -1487,10 +1487,10 @@ void	Cpu_z80::LD_SP_HL()	//0xf9
 
 void	Cpu_z80::LD_A_b() //0xfa
 {
-	uint8_t nn;
+	uint16_t nn;
 
 	nn = _memory->read_word(_cpuRegister.PC + 1);
-	_cpuRegister.A = nn;
+	_cpuRegister.A = _memory->read_byte(nn);
 }
 
 void	Cpu_z80::CP_n()	//0xfe
@@ -1749,7 +1749,7 @@ void Cpu_z80::_setOpcodeMap()
 		(t_opcode){0xdf, 0x00, 16, 16, 1, std::bind(&Cpu_z80::RST_18H, this),   "RST 18H",		0x0000},
 		(t_opcode){0xe0, 0x00, 12, 12, 2, std::bind(&Cpu_z80::LDH_n_A, this),   "LD (0xff00+n), A",	0x0000},
 		(t_opcode){0xe1, 0x00, 12, 12, 1, std::bind(&Cpu_z80::POP_HL, this),    "POP HL",		0x0000},
-		(t_opcode){0xe2, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_CC_A, this),   "LD (C), A",	0x0000},
+		(t_opcode){0xe2, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_CC_A, this),   "LD (0xff00+C), A",	0x0000},
 		(t_opcode){0xe3, 0x00, 0 , 0 , 0, NULL, "", 0x0000},
 		(t_opcode){0xe4, 0x00, 0 , 0 , 0, NULL, "", 0x0000},
 		(t_opcode){0xe5, 0x00, 16, 16, 1, std::bind(&Cpu_z80::PUSH_HL, this),   "PUSH HL",		0x0000},
@@ -1773,7 +1773,7 @@ void Cpu_z80::_setOpcodeMap()
 		(t_opcode){0xf7, 0x00, 16, 16, 1, std::bind(&Cpu_z80::RST_30H, this),   "RST 30H",		0x0000},
 		(t_opcode){0xf8, 0x00, 12, 12, 2, std::bind(&Cpu_z80::LD_HL_SP_n, this),"LD HL, SP+n",  0x0000},
 		(t_opcode){0xf9, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_SP_HL, this),  "LD SP,HL",		0x0000},
-		(t_opcode){0xfa, 0x00, 16, 16, 3, std::bind(&Cpu_z80::LD_A_n, this),    "LS A, (nn)",	0x0000},
+		(t_opcode){0xfa, 0x00, 16, 16, 3, std::bind(&Cpu_z80::LD_A_b, this),    "LD A, (nn)",	0x0000},
 		(t_opcode){0xfb, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::EI, this),    	"EI",			0x0000},
 		(t_opcode){0xfc, 0x00, 0 , 0 , 0, NULL,  "", 0x0000},
 		(t_opcode){0xfd, 0x00, 0 , 0 , 0, NULL,  "", 0x0000},
