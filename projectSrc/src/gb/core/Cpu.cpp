@@ -47,7 +47,7 @@ uint8_t	Cpu_z80::_getCycleOpcode(void)
 
 void Cpu_z80::_setDataOpcode(void)
 {
-	if (this->_opcodeInProgress.lengthData > 1)
+	if (this->_opcodeInProgress.lengthData > 1 && getStepState())
 	{
 		if (this->_opcodeInProgress.lengthData > 2)
 			this->_opcodeInProgress.data = this->_memory->read_byte(this->_cpuRegister.PC + LENGTH_ADDR);
