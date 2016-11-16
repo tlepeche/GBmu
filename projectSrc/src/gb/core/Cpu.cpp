@@ -171,8 +171,8 @@ uint8_t Cpu_z80::executeNextOpcode(void)
 void Cpu_z80::init(void)
 {
 	setStepState(true);
-	this->_IME = true;
-	this->_holdIME = true;
+	this->_IME = false;
+	this->_holdIME = false;
 	htype typeRom;
 
 	//init register cpu
@@ -292,12 +292,8 @@ void Cpu_z80::execInterrupt(void)
 		this->_loadPtr(this->_cpuRegister.PC);
 	}
 	else if (this->_getInterrupt(INTER_TOVERF))
-	{
-		this->_setHalt(false);
 		this->_setStop(false);
-	}
-	else if (this->isInterrupt())
-		this->_setHalt(false);
+	this->_setHalt(false);
 	this->_resetInterrupt();
 }
 

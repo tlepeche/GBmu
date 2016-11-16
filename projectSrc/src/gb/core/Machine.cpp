@@ -24,6 +24,8 @@ bool Machine::step(void)
 {
 	this->_clock->setFrequency(this->_cpu->getArrayFrequency());
 	this->_clock->setCycleTotal(this->_getCycleOpcode());
+	if ((this->_cpu->getIME() || (!this->_cpu->getIME() && this->_cpu->getHalt()) || (!this->_cpu->getIME() && this->_cpu->getStop())) && this->_cpu->isInterrupt())
+		this->_cpu->execInterrupt();
 	if (!this->_cpu->getHalt() && !this->_cpu->getStop() && ((this->_memory->read_byte(REGISTER_TAC) & 0x4) == 0x4))
 	{
 		if (this->_clock->isCycleAcc(this->_cpu->nbCycleNextOpCode())) {
