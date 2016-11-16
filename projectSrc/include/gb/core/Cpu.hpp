@@ -98,7 +98,7 @@ class Cpu_z80
 		void							adc(uint8_t val);
 		void							sub(uint8_t val);
 		void							sbc(uint8_t val);
-
+		void							RST(uint16_t addr);
 
 		void							NOP();			//0x00
 		void							LD_BC_n();		//0x01
