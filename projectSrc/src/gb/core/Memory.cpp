@@ -3,17 +3,9 @@
 #include "Memory.hpp"
 #include "registerAddr.hpp"
 
-Memory::Memory(void)
-{
-}
+Memory::Memory(void) {}
 
 Memory::~Memory(void) {}
-
-
-void			Memory::Init(void)
-{
-	this->reset();
-}
 
 void			Memory::reset(void)
 {
@@ -22,6 +14,19 @@ void			Memory::reset(void)
 	memset(this->_m_oam, 0, 160);
 	memset(this->_m_io, 0, 127);
 	memset(this->_m_zp, 0, 127);
+}
+
+htype			Memory::getRomType(void)
+{
+	return this->_rom.getHardware();
+}
+
+int				Memory::loadRom(const char *file, htype hardware)
+{
+	int		ret;
+
+	ret = this->_rom.load(file);
+	return ret;
 }
 
 uint8_t			Memory::read_byte(uint16_t addr)

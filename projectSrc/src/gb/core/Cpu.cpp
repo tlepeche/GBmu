@@ -168,20 +168,14 @@ uint8_t Cpu_z80::executeNextOpcode(void)
 
 #include "registerAddr.hpp"
 
-void Cpu_z80::init(void)
+void Cpu_z80::init(htype hardware)
 {
 	setStepState(true);
 	this->_IME = false;
 	this->_holdIME = false;
-	htype typeRom;
 
 	//init register cpu
-	//if (this->_rom.isLoaded()) //TODO: when david PR his code
-	typeRom = GB; //this->_rom.getType().type;
-
-
-	//TODO: A modifier pour rajouter le forcage de type GB GBC
-	this->_cpuRegister.A = typeRom == GB ? 0x01 : 0x11;
+	this->_cpuRegister.A = hardware == GB ? 0x01 : 0x11;
 	this->_cpuRegister.F = 0xB0;
 	this->_cpuRegister.BC = 0x0013;
 	this->_cpuRegister.DE = 0x00D8;
