@@ -226,9 +226,9 @@ void DbWindow::updateMemory(Memory& m)
 
 void	DbWindow::lineAddrEditedSlot()
 {
-	unsigned int		max = 0xFFFF - 8 * 0x10;
+	unsigned int		max = 0xFF70;
 	QString				text = lineAddr->text();
-	_start = QStringToHexInt<unsigned int>(text);
+	_start = QStringToHexInt<unsigned int>(text) & 0xFFF0;
 	if (_start >= max)
 		_start = max;
 }
