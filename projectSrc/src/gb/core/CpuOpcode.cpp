@@ -1325,7 +1325,7 @@ void	Cpu_z80::RET_C() //0xd8
 void	Cpu_z80::RETI() //0xd9
 {
 	RET();
-	//TODO: ADD BOOL TO ALLOW INTERUPTS
+	EI();
 }
 
 void	Cpu_z80::JP_C_n() //0xda
