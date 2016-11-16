@@ -16,7 +16,7 @@ class DbWindow;
 #define DEBUG
 
 #define START Qt::Key_Return
-#define	Select Qt::Key_Shift
+#define	SELECT Qt::Key_Shift
 #define B_BUTTON Qt::Key_C
 #define A_BUTTON Qt::Key_V
 #define UP Qt::Key_Up
