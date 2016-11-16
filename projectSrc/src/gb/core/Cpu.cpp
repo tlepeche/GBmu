@@ -229,7 +229,7 @@ void Cpu_z80::init(void)
 	this->_memory->write_byte(REGISTER_NR52, 0xF1);
 
 	// Other register
-	this->_memory->write_byte(REGISTER_P1, 0xCF);
+	this->_memory->write_byte(REGISTER_P1, 0xCF, true);
 	this->_memory->write_byte(REGISTER_SB, 0x00);
 	this->_memory->write_byte(REGISTER_SC, 0x7E);
 	this->_memory->write_byte(REGISTER_DIV, 0xD3); // bios: 0xD3 start: 0x81

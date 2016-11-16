@@ -56,9 +56,9 @@ class Memory {
 		void				Init(void);
 		void				reset(void);
 		uint8_t				read_byte(uint16_t addr);
-		void				write_byte(uint16_t addr, uint8_t val);
+		void				write_byte(uint16_t addr, uint8_t val, bool super = false);
 		uint16_t			read_word(uint16_t addr);
-		void				write_word(uint16_t addr, uint16_t val);
+		void				write_word(uint16_t addr, uint16_t val, bool super = false);
 
 		Rom					_rom;
 	private:
