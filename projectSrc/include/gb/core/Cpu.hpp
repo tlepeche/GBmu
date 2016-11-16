@@ -6,6 +6,7 @@
 #include "Rom.hpp"
 #include "register.hpp"
 #include "opcode.hpp"
+#include "htype.hpp"
 
 #define NB_OPCODE 255
 #define NOP_OPCODE 0
@@ -78,7 +79,7 @@ class Cpu_z80
 
 	public:
 		std::array<uint32_t, 4>			getArrayFrequency();
-		void							init(void);
+		void							init(htype hardware = GB);
 
 	/*
 	** ################################################################

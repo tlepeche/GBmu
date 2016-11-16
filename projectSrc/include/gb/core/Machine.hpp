@@ -5,6 +5,7 @@
 #include "Gpu.hpp"
 #include "Memory.hpp"
 #include "Timer.hpp"
+#include "htype.hpp"
 
 class Machine
 {
@@ -13,6 +14,7 @@ class Machine
 		Timer	*_clock;
 		Cpu_z80	*_cpu;
 		Gpu		*_gpu;
+		htype	_hardware;
 
 		uint8_t _getFrequencyFrameTimeGpu(void);
 		uint32_t _getCycleOpcode(void);
@@ -23,6 +25,5 @@ class Machine
 
 		bool			step(void);
 		virtual void	run(void);
-
 };
 #endif

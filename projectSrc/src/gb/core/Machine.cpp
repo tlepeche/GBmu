@@ -62,5 +62,3 @@ uint8_t Machine::_getFrequencyFrameTimeGpu(void)
 {
 	return ((unsigned int)(1000 / 60)); //TODO: CHange 60 by this->_gpu->getFrequency when gpu driver is ok
 }
-
-
