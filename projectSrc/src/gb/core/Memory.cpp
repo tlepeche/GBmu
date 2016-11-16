@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstring>
 #include "Memory.hpp"
+#include "registerAddr.hpp"
 
 Memory::Memory(void)
 {

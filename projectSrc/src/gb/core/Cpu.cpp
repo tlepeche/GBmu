@@ -2,6 +2,8 @@
 #include "registerAddr.hpp"
 #include <stdio.h>
 
+#define CLOCKSPEED 4194304
+
 /*
  ** ################################################################
  ** CREATE Singleton
@@ -19,6 +21,11 @@ Cpu_z80::Cpu_z80(Memory *memory) :
 
 Cpu_z80::~Cpu_z80(void)
 {
+}
+
+uint32_t Cpu_z80::getClockSpeed(void)
+{
+	return CLOCKSPEED;
 }
 
 /*
@@ -123,7 +130,7 @@ bool Cpu_z80::isInterrupt(void)
 
 bool Cpu_z80::_getInterrupt(uint8_t interrupt)
 {
-	return ((this->_memory->read_byte(0xFF0F) & interrupt) >= 0x1);
+	return ((this->_memory->read_byte(REGISTER_IF) & interrupt) >= 0x1);
 }
 
 void Cpu_z80::_nextPtr(void) {
@@ -155,7 +162,6 @@ uint8_t Cpu_z80::executeNextOpcode(void)
 void Cpu_z80::init(void)
 {
 	setStepState(true);
-	printf("INITIALIZING\n");
 	this->_IME = true;
 	this->_holdIME = true;
 	htype typeRom;
@@ -199,7 +205,7 @@ void Cpu_z80::init(void)
 	this->_memory->write_byte(REGISTER_P1, 0xCF);
 	this->_memory->write_byte(REGISTER_SB, 0x00);
 	this->_memory->write_byte(REGISTER_SC, 0x7E);
-	this->_memory->write_byte(REGISTER_DIV, 0xD3); // bios: 0xD3 start: 0x81
+	this->_memory->write_byte(REGISTER_DIV, 0xA4); // bios: 0xD3 start: 0x81
 	this->_memory->write_byte(REGISTER_TIMA, 0x00);
 	this->_memory->write_byte(REGISTER_TMA, 0x00);
 	this->_memory->write_byte(REGISTER_TAC, 0x00);
@@ -256,6 +262,11 @@ void Cpu_z80::_setHightBit(uint16_t addr, uint8_t bit)
 	this->_memory->write_byte(addr, (uint8_t)((0x01 << bit) | this->_memory->read_byte(addr)));
 }
 
+void Cpu_z80::_resetInterrupt(void)
+{
+	this->_memory->write_byte(REGISTER_IF, 0x00);
+}
+
 void Cpu_z80::execInterrupt(void)
 {
 	if (this->_getInterrupt(0x4))
@@ -265,7 +276,7 @@ void Cpu_z80::execInterrupt(void)
 	}
 	else if (this->isInterrupt())
 		this->_setHalt(false);
-	std::cout << "interrupt cpu" << std::endl;
+	this->_resetInterrupt();
 }
 
 std::array<uint32_t, 4> Cpu_z80::getArrayFrequency()

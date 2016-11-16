@@ -117,7 +117,6 @@ void	Cpu_z80::sbc(uint8_t val)
 
 void	Cpu_z80::NOP() //0x00
 {
-	std::cout << "NOP" << std::endl;
 }
 
 void	Cpu_z80::LD_BC_n() //0x01

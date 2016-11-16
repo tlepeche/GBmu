@@ -12,11 +12,11 @@
 ** ############################################################################
 */
 Machine::Machine(void) :
-	_memory(new Memory()),
-	_clock(new Timer())
+	_memory(new Memory())
 {
 	_cpu = new Cpu_z80(_memory);
 	_gpu = new Gpu(_memory);
+	_clock = new Timer(_memory);
 	this->_cpu->init();
 }
 
@@ -32,20 +32,12 @@ bool Machine::step(void)
 	}
 	if (!this->_cpu->getHalt() && !this->_cpu->getStop() && ((this->_memory->read_byte(REGISTER_TAC) & 0x4) == 0x4))
 	{
-		if (this->_cpu->nbCycleNextOpCode() < this->_clock->getCycleAcc()) {
+		if (this->_clock->isCycleAcc(this->_cpu->nbCycleNextOpCode())) {
 			unsigned int clock = this->_cpu->executeNextOpcode();
-
 			this->_clock->setCycleAcc(clock);
 			this->_gpu->step();
 			this->_gpu->accClock(clock);
 			return (true);
-		}
-		else
-		{
-			//this->_gpu.render();
-			this->_clock->sleep(this->_getFrequencyFrameTimeGpu());
-			this->_clock->reset();
-			return (false);
 		}
 	}
 	return (true);
@@ -57,13 +49,14 @@ void Machine::run(void)
 	this->run();
 }
 
-uint8_t Machine::_getCycleOpcode(void)
+uint32_t Machine::_getCycleOpcode(void)
 {
 	double period;
 	const unsigned int typeFrequency = this->_memory->read_byte(REGISTER_TAC) & 0x3;
 
 	period = (double) (1. / (float)this->_clock->getArrayFrequency(typeFrequency));
 	period *= 1000;
+	return (this->_cpu->getClockSpeed() / this->_clock->getArrayFrequency(typeFrequency));
 	return (this->_getFrequencyFrameTimeGpu() / period);
 }
 

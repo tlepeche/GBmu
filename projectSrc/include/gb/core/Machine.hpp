@@ -15,7 +15,7 @@ class Machine
 		Gpu		*_gpu;
 
 		uint8_t _getFrequencyFrameTimeGpu(void);
-		uint8_t _getCycleOpcode(void);
+		uint32_t _getCycleOpcode(void);
 
 	public:
 		Machine(void);
