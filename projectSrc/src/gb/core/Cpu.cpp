@@ -181,6 +181,7 @@ void Cpu_z80::init(htype hardware)
 	this->_cpuRegister.DE = 0x00D8;
 	this->_cpuRegister.HL = 0x014D;
 
+	this->_cpuRegister.PC = 0x100;
 	this->_cpuRegister.SP = 0xFFFE;
 
 	//init register memory
