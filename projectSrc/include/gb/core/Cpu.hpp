@@ -58,6 +58,7 @@ class Cpu_z80
 		void							setHoldIME(bool state);
 		bool							getIME(void);
 		bool							getHoldIME(void);
+		uint32_t						getClockSpeed(void);
 
 	private:
 		t_opcode						_getOpcode(uint8_t opcode);
@@ -381,8 +382,9 @@ class Cpu_z80
 		bool							getStop(void);
 
 	private:
-	void								_setStop(bool state);
-	void								_setHalt(bool state);
+		void								_resetInterrupt(void);
+		void								_setStop(bool state);
+		void								_setHalt(bool state);
 
 
 	/*
