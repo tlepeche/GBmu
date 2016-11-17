@@ -39,8 +39,7 @@ t_opcode Cpu_z80::_getOpcode(uint8_t opcode)
 {
 	if (opcode == 0xCB)
 	{
-//		this->_cpuRegister.PC += LENGTH_ADDR;
-		uint8_t cbopcode = this->_memory->read_byte(this->_cpuRegister.PC);
+		uint8_t cbopcode = this->_memory->read_byte(this->_cpuRegister.PC + LENGTH_ADDR);
 		return _CBopcodeMap[cbopcode];
 	}
 	return _opcodeMap[opcode];
