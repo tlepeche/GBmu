@@ -83,6 +83,7 @@ void	Gameboy::reset()
 	{
 		_willRun.store(true);
 		this->_memory->reset();
+		this->_clock->reset();
 		if (_memory->loadRom(_romPath.c_str(), this->_hardware))
 			_willRun.store(false);
 		else
@@ -98,10 +99,12 @@ void	Gameboy::reset()
 		std::cerr << "Gameboy: No rom path defined" << std::endl;
 }
 
-void	Gameboy::stepPressedSlot()
+void	Gameboy::stepPressedSlot(unsigned int count)
 {
 	_stepMode.store(true);
-	gstep();
+	while (count--) {
+		gstep();
+	}
 }
 
 #include "registerAddr.hpp"

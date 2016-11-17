@@ -276,10 +276,8 @@ void Cpu_z80::execInterrupt(void)
 		|| !this->getStop())
 		return ;
 	// Get interrupt here
-	printf("Interrupt :\n");
 	if ((this->_memory->read_byte(REGISTER_IF) & INTER_VBLANK) > 0x00)
 	{
-		printf("Interrupt de INTER_VBLANK\n");
 		// push PC on stack
 		this->_cpuRegister.SP -= 2;
 		this->_memory->write_word(_cpuRegister.SP, _cpuRegister.PC);
@@ -292,7 +290,6 @@ void Cpu_z80::execInterrupt(void)
 	}
 	else if ((this->_memory->read_byte(REGISTER_IF) & INTER_LCDC) > 0x00)
 	{
-		printf("Interrupt de INTER_LCDC\n");
 		// push PC on stack
 		this->_cpuRegister.SP -= 2;
 		this->_memory->write_word(_cpuRegister.SP, _cpuRegister.PC);
@@ -305,7 +302,6 @@ void Cpu_z80::execInterrupt(void)
 	}
 	else if ((this->_memory->read_byte(REGISTER_IF) & INTER_TOVERF) > 0x00)
 	{
-		printf("Interrupt de INTER_TOVERF\n");
 		// push PC on stack
 		this->_cpuRegister.SP -= 2;
 		this->_memory->write_word(_cpuRegister.SP, _cpuRegister.PC);
@@ -318,7 +314,6 @@ void Cpu_z80::execInterrupt(void)
 	}
 	else if ((this->_memory->read_byte(REGISTER_IF) & INTER_TIOE) > 0x00)
 	{
-		printf("Interrupt de INTER_TIOE\n");
 		// push PC on stack
 		this->_cpuRegister.SP -= 2;
 		this->_memory->write_word(_cpuRegister.SP, _cpuRegister.PC);
@@ -331,7 +326,6 @@ void Cpu_z80::execInterrupt(void)
 	}
 	else if ((this->_memory->read_byte(REGISTER_IF) & INTER_TPIN) > 0x00)
 	{
-		printf("Interrupt de INTER_TPIN\n");
 		// push PC on stack
 		this->_setStop(false);
 		this->_cpuRegister.SP -= 2;

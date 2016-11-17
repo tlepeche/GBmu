@@ -41,7 +41,8 @@ DbWindow::DbWindow(t_register* r, Memory* mem, std::list<uint16_t> *breakpoint) 
 	_r(r),
 	_mem(mem),
 	_breakpoints(breakpoint),
-	_start(0xD000)
+	_start(0xD000),
+	_stepCount(1)
 {
 	ui->setupUi(this);
 
@@ -61,6 +62,7 @@ DbWindow::DbWindow(t_register* r, Memory* mem, std::list<uint16_t> *breakpoint) 
 	buttonBpAdd			= this->findChild<QPushButton*>("buttonBpAdd");
 
 	lineAddr			= this->findChild<QLineEdit*>("lineAddr");
+	lineStepCount		= this->findChild<QLineEdit*>("lineStepCount");
 	tableMemory->resizeColumnsToContents();
 
 	connect(buttonStep, &QPushButton::pressed, this, &DbWindow::stepPressedSlot);
@@ -71,6 +73,7 @@ DbWindow::DbWindow(t_register* r, Memory* mem, std::list<uint16_t> *breakpoint) 
 	connect(buttonBpAdd, &QPushButton::pressed, this, &DbWindow::bpAddPressedSlot);
 	connect(listBreakpoint, &QListWidget::itemDoubleClicked, this, &DbWindow::bpDoubleClikedSlot);
 	connect(lineAddr, &QLineEdit::editingFinished, this, &DbWindow::lineAddrEditedSlot);
+	connect(lineStepCount, &QLineEdit::editingFinished, this, &DbWindow::lineStepCountEditedSlot);
 
 	connect(&timer, &QTimer::timeout, this, &DbWindow::updateAllSlot);
 	timer.start(100);
@@ -233,9 +236,16 @@ void	DbWindow::lineAddrEditedSlot()
 		_start = max;
 }
 
+void	DbWindow::lineStepCountEditedSlot()
+{
+	QString		text = lineStepCount->text();
+	_stepCount = QStringToHexInt<unsigned int>(text);
+	lineStepCount->clearFocus();
+}
+
 void	DbWindow::stepPressedSlot()
 {
-	emit	stepPressedSign();
+	emit	stepPressedSign(_stepCount);
 }
 
 void	DbWindow::framePressedSlot()

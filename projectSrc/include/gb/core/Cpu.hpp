@@ -1,7 +1,6 @@
 #ifndef _CPU_HPP
 # define _CPU_HPP
 
-#include "Timer.hpp"
 #include "Memory.hpp"
 #include "Rom.hpp"
 #include "register.hpp"
