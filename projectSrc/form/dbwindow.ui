@@ -43,7 +43,7 @@
      <rect>
       <x>110</x>
       <y>0</y>
-      <width>113</width>
+      <width>91</width>
       <height>32</height>
      </rect>
     </property>
@@ -84,6 +84,28 @@
     </property>
     <property name="text">
      <string>Frame</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineStepCount">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>4</y>
+      <width>31</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
+    <property name="text">
+     <string>1</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
   </widget>
