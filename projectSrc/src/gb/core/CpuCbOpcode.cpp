@@ -35,7 +35,7 @@ void	Cpu_z80::rotateLeftCarry(uint8_t *reg)
 	_cpuRegister.n = 0;
 	_cpuRegister.h = 0;
 	*reg <<= 1;
-	*reg += _cpuRegister.c;
+	*reg += carry;
 	_cpuRegister.z = (*reg == 0) ? 1 : 0;
 }
 
@@ -46,7 +46,7 @@ void	Cpu_z80::rotateRightCarry(uint8_t *reg)
 	_cpuRegister.n = 0;
 	_cpuRegister.h = 0;
 	*reg >>= 1;
-	*reg += _cpuRegister.c;
+	*reg += carry;
 	_cpuRegister.z = (*reg == 0) ? 1 : 0;
 }
 
@@ -56,26 +56,27 @@ void	Cpu_z80::shiftLeft(uint8_t *reg)
 	_cpuRegister.n = 0;
 	_cpuRegister.h = 0;
 	*reg <<= 1;
-	*reg &= 0xfe;
+//	*reg &= 0xfe;
 	_cpuRegister.z = (*reg == 0) ? 1 : 0;
 }
 
 void	Cpu_z80::shiftRight(uint8_t *reg)
 {
-	uint8_t msb = *reg & 0x80;
+//	uint8_t msb = *reg & 0x80;
 	_cpuRegister.c = *reg & 0x01;
 	_cpuRegister.n = 0;
 	_cpuRegister.h = 0;
 	*reg >>= 1;
-	*reg += msb;
+//	*reg += msb;
 	_cpuRegister.z = (*reg == 0) ? 1 : 0;
 }
 
 void	Cpu_z80::swap(uint8_t *reg)
 {
-	uint8_t tmp = *reg && 0x0f;
+	uint8_t tmp = *reg & 0x0f;
 	tmp <<= 4;
 	*reg >>= 4;
+	*reg &= 0xf0;
 	*reg += tmp;
 	_cpuRegister.c = 0;
 	_cpuRegister.n = 0;
@@ -85,13 +86,11 @@ void	Cpu_z80::swap(uint8_t *reg)
 
 void	Cpu_z80::shiftRightZero(uint8_t *reg)
 {
-	uint8_t msb = *reg & 0x80;
 	_cpuRegister.c = *reg & 0x01;
 	_cpuRegister.n = 0;
 	_cpuRegister.h = 0;
 	*reg >>= 1;
-	*reg -= (*reg & 0x80) 0x80 ? 0x80 : 0;
-	*reg += msb;
+//	*reg -= (*reg & 0x80) ? 0x80 : 0;
 	_cpuRegister.z = (*reg == 0) ? 1 : 0;
 }
 
@@ -101,6 +100,15 @@ void	Cpu_z80::bit(uint8_t mask, uint8_t reg)
 	_cpuRegister.n = 0;
 	_cpuRegister.z = (reg & mask) ? 0 : 1;
 }
+
+void	Cpu_z80::set(bool set, uint8_t mask, uint8_t *reg)
+{
+	if (!set && (*reg & mask))
+		*reg -= mask;
+	else if (set && !(*reg & mask))
+		*reg += mask;
+}
+
 
 /*
  ** ############################################
@@ -460,332 +468,1013 @@ void	Cpu_z80::SRL_A() //0x3f
 	shiftRightZero(&_cpuRegister.A);
 }
 
-void	Cpu_z80::bit0_B() //0x40
+void	Cpu_z80::BIT0_B() //0x40
 {
 	bit(0x01, _cpuRegister.B);
 }
 
-void	Cpu_z80::bit0_C() //0x41
+void	Cpu_z80::BIT0_C() //0x41
 {
 	bit(0x01, _cpuRegister.C);
 }
 
-void	Cpu_z80::bit0_D() //0x42
+void	Cpu_z80::BIT0_D() //0x42
 {
 	bit(0x01, _cpuRegister.D);
 }
 
-void	Cpu_z80::bit0_E() //0x43
+void	Cpu_z80::BIT0_E() //0x43
 {
 	bit(0x01, _cpuRegister.E);
 }
 
-void	Cpu_z80::bit0_H() //0x44
+void	Cpu_z80::BIT0_H() //0x44
 {
 	bit(0x01, _cpuRegister.H);
 }
 
-void	Cpu_z80::bit0_L() //0x45
+void	Cpu_z80::BIT0_L() //0x45
 {
 	bit(0x01, _cpuRegister.L);
 }
 
-void	Cpu_z80::bit0_HL() //0x46
+void	Cpu_z80::BIT0_HL() //0x46
 {
 	bit(0x01, _memory->read_byte(_cpuRegister.HL));
 }
 
-void	Cpu_z80::bit0_A() //0x47
+void	Cpu_z80::BIT0_A() //0x47
 {
 	bit(0x01, _cpuRegister.A);
 }
 
-void	Cpu_z80::bit1_B() //0x48
+void	Cpu_z80::BIT1_B() //0x48
 {
 	bit(0x02, _cpuRegister.B);
 }
 
-void	Cpu_z80::bit1_C() //0x49
+void	Cpu_z80::BIT1_C() //0x49
 {
 	bit(0x02, _cpuRegister.C);
 }
 
-void	Cpu_z80::bit1_D() //0x4a
+void	Cpu_z80::BIT1_D() //0x4a
 {
 	bit(0x02, _cpuRegister.D);
 }
 
-void	Cpu_z80::bit1_E() //0x4b
+void	Cpu_z80::BIT1_E() //0x4b
 {
 	bit(0x02, _cpuRegister.E);
 }
 
-void	Cpu_z80::bit1_H() //0x4c
+void	Cpu_z80::BIT1_H() //0x4c
 {
 	bit(0x02, _cpuRegister.H);
 }
 
-void	Cpu_z80::bit1_L() //0x4d
+void	Cpu_z80::BIT1_L() //0x4d
 {
-	bit(0x02, _cpuRegister.:);
+	bit(0x02, _cpuRegister.L);
 }
 
-void	Cpu_z80::bit1_HL() //0x4e
+void	Cpu_z80::BIT1_HL() //0x4e
 {
 	bit(0x02, _memory->read_byte(_cpuRegister.HL));
 }
 
-void	Cpu_z80::bit1_A() //0x4f
+void	Cpu_z80::BIT1_A() //0x4f
 {
 	bit(0x02, _cpuRegister.A);
 }
 
-void	Cpu_z80::bit2_B() //0x50
+void	Cpu_z80::BIT2_B() //0x50
 {
 	bit(0x04, _cpuRegister.B);
 }
 
-void	Cpu_z80::bit2_C() //0x51
+void	Cpu_z80::BIT2_C() //0x51
 {
 	bit(0x04, _cpuRegister.C);
 }
 
-void	Cpu_z80::bit2_D() //0x52
+void	Cpu_z80::BIT2_D() //0x52
 {
 	bit(0x04, _cpuRegister.D);
 }
 
-void	Cpu_z80::bit2_E() //0x53
+void	Cpu_z80::BIT2_E() //0x53
 {
 	bit(0x04, _cpuRegister.E);
 }
 
-void	Cpu_z80::bit2_H() //0x54
+void	Cpu_z80::BIT2_H() //0x54
 {
 	bit(0x04, _cpuRegister.H);
 }
 
-void	Cpu_z80::bit2_L() //0x55
+void	Cpu_z80::BIT2_L() //0x55
 {
 	bit(0x04, _cpuRegister.L);
 }
 
-void	Cpu_z80::bit2_HL() //0x56
+void	Cpu_z80::BIT2_HL() //0x56
 {
 	bit(0x04, _memory->read_byte(_cpuRegister.HL));
 }
 
-void	Cpu_z80::bit2_A() //0x57
+void	Cpu_z80::BIT2_A() //0x57
 {
 	bit(0x04, _cpuRegister.A);
 }
 
-void	Cpu_z80::bit3_B() //0x58
+void	Cpu_z80::BIT3_B() //0x58
 {
 	bit(0x08, _cpuRegister.B);
 }
 
-void	Cpu_z80::bit3_C() //0x59
+void	Cpu_z80::BIT3_C() //0x59
 {
-	bit(0x08, _cpuRegister.V);
+	bit(0x08, _cpuRegister.C);
 }
 
-void	Cpu_z80::bit3_D() //0x5a
+void	Cpu_z80::BIT3_D() //0x5a
 {
 	bit(0x08, _cpuRegister.F);
 }
 
-void	Cpu_z80::bit3_E() //0x5b
+void	Cpu_z80::BIT3_E() //0x5b
 {
-	bit(0x08, _cpuRegister.R);
+	bit(0x08, _cpuRegister.E);
 }
 
-void	Cpu_z80::bit3_H() //0x5c
+void	Cpu_z80::BIT3_H() //0x5c
 {
 	bit(0x08, _cpuRegister.H);
 }
 
-void	Cpu_z80::bit3_L() //0x5d
+void	Cpu_z80::BIT3_L() //0x5d
 {
 	bit(0x08, _cpuRegister.L);
 }
 
-void	Cpu_z80::bit3_HL() //0x5e
+void	Cpu_z80::BIT3_HL() //0x5e
 {
 	bit(0x08, _memory->read_byte(_cpuRegister.HL));
 }
 
-void	Cpu_z80::bit3_A() //0x5f
+void	Cpu_z80::BIT3_A() //0x5f
 {
 	bit(0x08, _cpuRegister.A);
 }
 
-void	Cpu_z80::bit4_B() //0x60
+void	Cpu_z80::BIT4_B() //0x60
 {
 	bit(0x10, _cpuRegister.B);
 }
 
-void	Cpu_z80::bit4_C() //0x61
+void	Cpu_z80::BIT4_C() //0x61
 {
 	bit(0x10, _cpuRegister.C);
 }
 
-void	Cpu_z80::bit4_D() //0x62
+void	Cpu_z80::BIT4_D() //0x62
 {
 	bit(0x10, _cpuRegister.D);
 }
 
-void	Cpu_z80::bit4_E() //0x65
+void	Cpu_z80::BIT4_E() //0x65
 {
 	bit(0x10, _cpuRegister.E);
 }
 
-void	Cpu_z80::bit4_H() //0x64
+void	Cpu_z80::BIT4_H() //0x64
 {
 	bit(0x10, _cpuRegister.H);
 }
 
-void	Cpu_z80::bit4_L() //0x65
+void	Cpu_z80::BIT4_L() //0x65
 {
 	bit(0x10, _cpuRegister.L);
 }
 
-void	Cpu_z80::bit4_HL() //0x66
+void	Cpu_z80::BIT4_HL() //0x66
 {
 	bit(0x10, _memory->read_byte(_cpuRegister.HL));
 }
 
-void	Cpu_z80::bit4_A() //0x67
+void	Cpu_z80::BIT4_A() //0x67
 {
 	bit(0x10, _cpuRegister.A);
 }
 
-void	Cpu_z80::bit5_B() //0x68
+void	Cpu_z80::BIT5_B() //0x68
 {
 	bit(0x20, _cpuRegister.B);
 }
 
-void	Cpu_z80::bit5_C() //0x69
+void	Cpu_z80::BIT5_C() //0x69
 {
-	bit(0x20, _cpuRegister.V);
+	bit(0x20, _cpuRegister.C);
 }
 
-void	Cpu_z80::bit5_D() //0x6a
+void	Cpu_z80::BIT5_D() //0x6a
 {
 	bit(0x20, _cpuRegister.F);
 }
 
-void	Cpu_z80::bit5_E() //0x6b
+void	Cpu_z80::BIT5_E() //0x6b
 {
-	bit(0x20, _cpuRegister.R);
+	bit(0x20, _cpuRegister.E);
 }
 
-void	Cpu_z80::bit5_H() //0x6c
+void	Cpu_z80::BIT5_H() //0x6c
 {
 	bit(0x20, _cpuRegister.H);
 }
 
-void	Cpu_z80::bit5_L() //0x6d
+void	Cpu_z80::BIT5_L() //0x6d
+{
 	bit(0x20, _cpuRegister.L);
 }
 
-void	Cpu_z80::bit5_HL() //0x6e
+void	Cpu_z80::BIT5_HL() //0x6e
 {
 	bit(0x20, _memory->read_byte(_cpuRegister.HL));
 }
 
-void	Cpu_z80::bit5_A() //0x6f
+void	Cpu_z80::BIT5_A() //0x6f
 {
 	bit(0x20, _cpuRegister.A);
 }
 
-void	Cpu_z80::bit6_B() //0x70
+void	Cpu_z80::BIT6_B() //0x70
 {
 	bit(0x40, _cpuRegister.B);
 }
 
-void	Cpu_z80::bit6_C() //0x71
+void	Cpu_z80::BIT6_C() //0x71
 {
 	bit(0x40, _cpuRegister.C);
 }
 
-void	Cpu_z80::bit6_D() //0x72
+void	Cpu_z80::BIT6_D() //0x72
 {
 	bit(0x40, _cpuRegister.D);
 }
 
-void	Cpu_z80::bit6_E() //0x73
+void	Cpu_z80::BIT6_E() //0x73
 {
 	bit(0x40, _cpuRegister.E);
 }
 
-void	Cpu_z80::bit6_H() //0x74
+void	Cpu_z80::BIT6_H() //0x74
 {
 	bit(0x40, _cpuRegister.H);
 }
 
-void	Cpu_z80::bit6_L() //0x75
+void	Cpu_z80::BIT6_L() //0x75
 {
 	bit(0x40, _cpuRegister.L);
 }
 
-void	Cpu_z80::bit6_HL() //0x76
+void	Cpu_z80::BIT6_HL() //0x76
 {
 	bit(0x40, _memory->read_byte(_cpuRegister.HL));
 }
 
-void	Cpu_z80::bit6_A() //0x77
+void	Cpu_z80::BIT6_A() //0x77
 {
 	bit(0x40, _cpuRegister.A);
 }
 
-void	Cpu_z80::bit7_B() //0x78
+void	Cpu_z80::BIT7_B() //0x78
 {
 	bit(0x80, _cpuRegister.B);
 }
 
-void	Cpu_z80::bit7_C() //0x79
+void	Cpu_z80::BIT7_C() //0x79
 {
-	bit(0x80, _cpuRegister.V);
+	bit(0x80, _cpuRegister.C);
 }
 
-void	Cpu_z80::bit7_D() //0x7a
+void	Cpu_z80::BIT7_D() //0x7a
 {
 	bit(0x80, _cpuRegister.F);
 }
 
-void	Cpu_z80::bit7_E() //0x7b
+void	Cpu_z80::BIT7_E() //0x7b
 {
-	bit(0x80, _cpuRegister.R);
+	bit(0x80, _cpuRegister.E);
 }
 
-void	Cpu_z80::bit7_H() //0x7c
+void	Cpu_z80::BIT7_H() //0x7c
 {
 	bit(0x80, _cpuRegister.H);
 }
 
-void	Cpu_z80::bit7_L() //0x7d
+void	Cpu_z80::BIT7_L() //0x7d
 {
 	bit(0x80, _cpuRegister.L);
 }
 
-void	Cpu_z80::bit7_HL() //0x7e
+void	Cpu_z80::BIT7_HL() //0x7e
 {
 	bit(0x80, _memory->read_byte(_cpuRegister.HL));
 }
 
-void	Cpu_z80::bit7_A() //0x7f
+void	Cpu_z80::BIT7_A() //0x7f
 {
 	bit(0x80, _cpuRegister.A);
 }
 
+void	Cpu_z80::RES0_B() //0x80
+{
+	set(0, 0x01, &_cpuRegister.B);
+}
 
+void	Cpu_z80::RES0_C() //0x81
+{
+	set(0, 0x01, &_cpuRegister.C);
+}
 
+void	Cpu_z80::RES0_D() //0x82
+{
+	set(0, 0x01, &_cpuRegister.D);
+}
 
+void	Cpu_z80::RES0_E() //0x83
+{
+	set(0, 0x01, &_cpuRegister.E);
+}
 
+void	Cpu_z80::RES0_H() //0x84
+{
+	set(0, 0x01, &_cpuRegister.H);
+}
 
+void	Cpu_z80::RES0_L() //0x85
+{
+	set(0, 0x01, &_cpuRegister.L);
+}
 
+void	Cpu_z80::RES0_HL() //0x86
+{
+	uint8_t tmp;
+	tmp = _memory->read_byte(_cpuRegister.HL);
+	set(0, 0x01, &tmp);
+	_memory->write_byte(_cpuRegister.HL, tmp);
+}
 
+void	Cpu_z80::RES0_A() //0x87
+{
+	set(0, 0x01, &_cpuRegister.A);
+}
+
+void	Cpu_z80::RES1_B() //0x88
+{
+	set(0, 0x02, &_cpuRegister.B);
+}
+
+void	Cpu_z80::RES1_C() //0x89
+{
+	set(0, 0x02, &_cpuRegister.C);
+}
+
+void	Cpu_z80::RES1_D() //0x8a
+{
+	set(0, 0x02, &_cpuRegister.D);
+}
+
+void	Cpu_z80::RES1_E() //0x8b
+{
+	set(0, 0x02, &_cpuRegister.E);
+}
+
+void	Cpu_z80::RES1_H() //0x8c
+{
+	set(0, 0x02, &_cpuRegister.H);
+}
+
+void	Cpu_z80::RES1_L() //0x8d
+{
+	set(0, 0x02, &_cpuRegister.L);
+}
+
+void	Cpu_z80::RES1_HL() //0x8e
+{
+	uint8_t tmp;
+	tmp = _memory->read_byte(_cpuRegister.HL);
+	set(0, 0x02, &tmp);
+	_memory->write_byte(_cpuRegister.HL, tmp);
+}
+
+void	Cpu_z80::RES1_A() //0x8f
+{
+	set(0, 0x02, &_cpuRegister.A);
+}
+
+void	Cpu_z80::RES2_B() //0x90
+{
+	set(0, 0x04, &_cpuRegister.B);
+}
+
+void	Cpu_z80::RES2_C() //0x91
+{
+	set(0, 0x04, &_cpuRegister.C);
+}
+
+void	Cpu_z80::RES2_D() //0x92
+{
+	set(0, 0x04, &_cpuRegister.D);
+}
+
+void	Cpu_z80::RES2_E() //0x93
+{
+	set(0, 0x04, &_cpuRegister.E);
+}
+
+void	Cpu_z80::RES2_H() //0x94
+{
+	set(0, 0x04, &_cpuRegister.H);
+}
+
+void	Cpu_z80::RES2_L() //0x95
+{
+	set(0, 0x04, &_cpuRegister.L);
+}
+
+void	Cpu_z80::RES2_HL() //0x96
+{
+	uint8_t tmp;
+	tmp = _memory->read_byte(_cpuRegister.HL);
+	set(0, 0x04, &tmp);
+	_memory->write_byte(_cpuRegister.HL, tmp);
+}
+
+void	Cpu_z80::RES2_A() //0x97
+{
+	set(0, 0x04, &_cpuRegister.A);
+}
+
+void	Cpu_z80::RES3_B() //0x98
+{
+	set(0, 0x08, &_cpuRegister.B);
+}
+
+void	Cpu_z80::RES3_C() //0x99
+{
+	set(0, 0x08, &_cpuRegister.C);
+}
+
+void	Cpu_z80::RES3_D() //0x9a
+{
+	set(0, 0x08, &_cpuRegister.D);
+}
+
+void	Cpu_z80::RES3_E() //0x9b
+{
+	set(0, 0x08, &_cpuRegister.E);
+}
+
+void	Cpu_z80::RES3_H() //0x9c
+{
+	set(0, 0x08, &_cpuRegister.H);
+}
+
+void	Cpu_z80::RES3_L() //0x9d
+{
+	set(0, 0x08, &_cpuRegister.L);
+}
+
+void	Cpu_z80::RES3_HL() //0x9e
+{
+	uint8_t tmp;
+	tmp = _memory->read_byte(_cpuRegister.HL);
+	set(0, 0x08, &tmp);
+	_memory->write_byte(_cpuRegister.HL, tmp);
+}
+
+void	Cpu_z80::RES3_A() //0x9f
+{
+	set(0, 0x08, &_cpuRegister.A);
+}
+
+void	Cpu_z80::RES4_B() //0xa0
+{
+	set(0, 0x10, &_cpuRegister.B);
+}
+
+void	Cpu_z80::RES4_C() //0xa1
+{
+	set(0, 0x10, &_cpuRegister.C);
+}
+
+void	Cpu_z80::RES4_D() //0xa2
+{
+	set(0, 0x10, &_cpuRegister.D);
+}
+
+void	Cpu_z80::RES4_E() //0xa3
+{
+	set(0, 0x10, &_cpuRegister.E);
+}
+
+void	Cpu_z80::RES4_H() //0xa4
+{
+	set(0, 0x10, &_cpuRegister.H);
+}
+
+void	Cpu_z80::RES4_L() //0xa5
+{
+	set(0, 0x10, &_cpuRegister.L);
+}
+
+void	Cpu_z80::RES4_HL() //0xa6
+{
+	uint8_t tmp;
+	tmp = _memory->read_byte(_cpuRegister.HL);
+	set(0, 0x10, &tmp);
+	_memory->write_byte(_cpuRegister.HL, tmp);
+}
+
+void	Cpu_z80::RES4_A() //0xa7
+{
+	set(0, 0x10, &_cpuRegister.A);
+}
+
+void	Cpu_z80::RES5_B() //0xa8
+{
+	set(0, 0x20, &_cpuRegister.B);
+}
+
+void	Cpu_z80::RES5_C() //0xa9
+{
+	set(0, 0x20, &_cpuRegister.C);
+}
+
+void	Cpu_z80::RES5_D() //0xaa
+{
+	set(0, 0x20, &_cpuRegister.D);
+}
+
+void	Cpu_z80::RES5_E() //0xab
+{
+	set(0, 0x20, &_cpuRegister.E);
+}
+
+void	Cpu_z80::RES5_H() //0xac
+{
+	set(0, 0x20, &_cpuRegister.H);
+}
+
+void	Cpu_z80::RES5_L() //0xad
+{
+	set(0, 0x20, &_cpuRegister.L);
+}
+
+void	Cpu_z80::RES5_HL() //0xae
+{
+	uint8_t tmp;
+	tmp = _memory->read_byte(_cpuRegister.HL);
+	set(0, 0x20, &tmp);
+	_memory->write_byte(_cpuRegister.HL, tmp);
+}
+
+void	Cpu_z80::RES5_A() //0xbf
+{
+	set(0, 0x20, &_cpuRegister.A);
+}
+
+void	Cpu_z80::RES6_B() //0xb0
+{
+	set(0, 0x40, &_cpuRegister.B);
+}
+
+void	Cpu_z80::RES6_C() //0xb1
+{
+	set(0, 0x40, &_cpuRegister.C);
+}
+
+void	Cpu_z80::RES6_D() //0xb2
+{
+	set(0, 0x40, &_cpuRegister.D);
+}
+
+void	Cpu_z80::RES6_E() //0xb3
+{
+	set(0, 0x40, &_cpuRegister.E);
+}
+
+void	Cpu_z80::RES6_H() //0xb4
+{
+	set(0, 0x40, &_cpuRegister.H);
+}
+
+void	Cpu_z80::RES6_L() //0xb5
+{
+	set(0, 0x40, &_cpuRegister.L);
+}
+
+void	Cpu_z80::RES6_HL() //0xb6
+{
+	uint8_t tmp;
+	tmp = _memory->read_byte(_cpuRegister.HL);
+	set(0, 0x40, &tmp);
+	_memory->write_byte(_cpuRegister.HL, tmp);
+}
+
+void	Cpu_z80::RES6_A() //0xb7
+{
+	set(0, 0x40, &_cpuRegister.A);
+}
+
+void	Cpu_z80::RES7_B() //0xb8
+{
+	set(0, 0x80, &_cpuRegister.B);
+}
+
+void	Cpu_z80::RES7_C() //0xb9
+{
+	set(0, 0x80, &_cpuRegister.C);
+}
+
+void	Cpu_z80::RES7_D() //0xba
+{
+	set(0, 0x80, &_cpuRegister.D);
+}
+
+void	Cpu_z80::RES7_E() //0xbb
+{
+	set(0, 0x80, &_cpuRegister.E);
+}
+
+void	Cpu_z80::RES7_H() //0xbc
+{
+	set(0, 0x80, &_cpuRegister.H);
+}
+
+void	Cpu_z80::RES7_L() //0xbd
+{
+	set(0, 0x80, &_cpuRegister.L);
+}
+
+void	Cpu_z80::RES7_HL() //0xbe
+{
+	uint8_t tmp;
+	tmp = _memory->read_byte(_cpuRegister.HL);
+	set(0, 0x80, &tmp);
+	_memory->write_byte(_cpuRegister.HL, tmp);
+}
+
+void	Cpu_z80::RES7_A() //0xbf
+{
+	set(0, 0x80, &_cpuRegister.A);
+}
+
+void	Cpu_z80::SET0_B() //0xc0
+{
+	set(1, 0x01, &_cpuRegister.B);
+}
+
+void	Cpu_z80::SET0_C() //0xc1
+{
+	set(1, 0x01, &_cpuRegister.C);
+}
+
+void	Cpu_z80::SET0_D() //0xc2
+{
+	set(1, 0x01, &_cpuRegister.D);
+}
+
+void	Cpu_z80::SET0_E() //0xc3
+{
+	set(1, 0x01, &_cpuRegister.E);
+}
+
+void	Cpu_z80::SET0_H() //0xc4
+{
+	set(1, 0x01, &_cpuRegister.H);
+}
+
+void	Cpu_z80::SET0_L() //0xc5
+{
+	set(1, 0x01, &_cpuRegister.L);
+}
+
+void	Cpu_z80::SET0_HL() //0xc6
+{
+	uint8_t tmp;
+	tmp = _memory->read_byte(_cpuRegister.HL);
+	set(1, 0x01, &tmp);
+	_memory->write_byte(_cpuRegister.HL, tmp);
+}
+
+void	Cpu_z80::SET0_A() //0xc7
+{
+	set(1, 0x01, &_cpuRegister.A);
+}
+
+void	Cpu_z80::SET1_B() //0xc8
+{
+	set(1, 0x02, &_cpuRegister.B);
+}
+
+void	Cpu_z80::SET1_C() //0xc9
+{
+	set(1, 0x02, &_cpuRegister.C);
+}
+
+void	Cpu_z80::SET1_D() //0xca
+{
+	set(1, 0x02, &_cpuRegister.D);
+}
+
+void	Cpu_z80::SET1_E() //0xcb
+{
+	set(1, 0x02, &_cpuRegister.E);
+}
+
+void	Cpu_z80::SET1_H() //0xcc
+{
+	set(1, 0x02, &_cpuRegister.H);
+}
+
+void	Cpu_z80::SET1_L() //0xcd
+{
+	set(1, 0x02, &_cpuRegister.L);
+}
+
+void	Cpu_z80::SET1_HL() //0xce
+{
+	uint8_t tmp;
+	tmp = _memory->read_byte(_cpuRegister.HL);
+	set(1, 0x02, &tmp);
+	_memory->write_byte(_cpuRegister.HL, tmp);
+}
+
+void	Cpu_z80::SET1_A() //0xcf
+{
+	set(1, 0x02, &_cpuRegister.A);
+}
+
+void	Cpu_z80::SET2_B() //0xd0
+{
+	set(1, 0x04, &_cpuRegister.B);
+}
+
+void	Cpu_z80::SET2_C() //0xd1
+{
+	set(1, 0x04, &_cpuRegister.C);
+}
+
+void	Cpu_z80::SET2_D() //0xd2
+{
+	set(1, 0x04, &_cpuRegister.D);
+}
+
+void	Cpu_z80::SET2_E() //0xd3
+{
+	set(1, 0x04, &_cpuRegister.E);
+}
+
+void	Cpu_z80::SET2_H() //0xd4
+{
+	set(1, 0x04, &_cpuRegister.H);
+}
+
+void	Cpu_z80::SET2_L() //0xd5
+{
+	set(1, 0x04, &_cpuRegister.L);
+}
+
+void	Cpu_z80::SET2_HL() //0xd6
+{
+	uint8_t tmp;
+	tmp = _memory->read_byte(_cpuRegister.HL);
+	set(1, 0x04, &tmp);
+	_memory->write_byte(_cpuRegister.HL, tmp);
+}
+
+void	Cpu_z80::SET2_A() //0xd7
+{
+	set(1, 0x04, &_cpuRegister.A);
+}
+
+void	Cpu_z80::SET3_B() //0xd8
+{
+	set(1, 0x08, &_cpuRegister.B);
+}
+
+void	Cpu_z80::SET3_C() //0xd9
+{
+	set(1, 0x08, &_cpuRegister.C);
+}
+
+void	Cpu_z80::SET3_D() //0xda
+{
+	set(1, 0x08, &_cpuRegister.D);
+}
+
+void	Cpu_z80::SET3_E() //0xdb
+{
+	set(1, 0x08, &_cpuRegister.E);
+}
+
+void	Cpu_z80::SET3_H() //0xdc
+{
+	set(1, 0x08, &_cpuRegister.H);
+}
+
+void	Cpu_z80::SET3_L() //0xdd
+{
+	set(1, 0x08, &_cpuRegister.L);
+}
+
+void	Cpu_z80::SET3_HL() //0xde
+{
+	uint8_t tmp;
+	tmp = _memory->read_byte(_cpuRegister.HL);
+	set(1, 0x08, &tmp);
+	_memory->write_byte(_cpuRegister.HL, tmp);
+}
+
+void	Cpu_z80::SET3_A() //0xdf
+{
+	set(1, 0x08, &_cpuRegister.A);
+}
+
+void	Cpu_z80::SET4_B() //0xe0
+{
+	set(1, 0x10, &_cpuRegister.B);
+}
+
+void	Cpu_z80::SET4_C() //0xe1
+{
+	set(1, 0x10, &_cpuRegister.C);
+}
+
+void	Cpu_z80::SET4_D() //0xe2
+{
+	set(1, 0x10, &_cpuRegister.D);
+}
+
+void	Cpu_z80::SET4_E() //0xe3
+{
+	set(1, 0x10, &_cpuRegister.E);
+}
+
+void	Cpu_z80::SET4_H() //0xe4
+{
+	set(1, 0x10, &_cpuRegister.H);
+}
+
+void	Cpu_z80::SET4_L() //0xe5
+{
+	set(1, 0x10, &_cpuRegister.L);
+}
+
+void	Cpu_z80::SET4_HL() //0xe6
+{
+	uint8_t tmp;
+	tmp = _memory->read_byte(_cpuRegister.HL);
+	set(1, 0x10, &tmp);
+	_memory->write_byte(_cpuRegister.HL, tmp);
+}
+
+void	Cpu_z80::SET4_A() //0xe7
+{
+	set(1, 0x10, &_cpuRegister.A);
+}
+
+void	Cpu_z80::SET5_B() //0xe8
+{
+	set(1, 0x20, &_cpuRegister.B);
+}
+
+void	Cpu_z80::SET5_C() //0xe9
+{
+	set(1, 0x20, &_cpuRegister.C);
+}
+
+void	Cpu_z80::SET5_D() //0xea
+{
+	set(1, 0x20, &_cpuRegister.D);
+}
+
+void	Cpu_z80::SET5_E() //0xeb
+{
+	set(1, 0x20, &_cpuRegister.E);
+}
+
+void	Cpu_z80::SET5_H() //0xec
+{
+	set(1, 0x20, &_cpuRegister.H);
+}
+
+void	Cpu_z80::SET5_L() //0xed
+{
+	set(1, 0x20, &_cpuRegister.L);
+}
+
+void	Cpu_z80::SET5_HL() //0xee
+{
+	uint8_t tmp;
+	tmp = _memory->read_byte(_cpuRegister.HL);
+	set(1, 0x20, &tmp);
+	_memory->write_byte(_cpuRegister.HL, tmp);
+}
+
+void	Cpu_z80::SET5_A() //0xef
+{
+	set(1, 0x20, &_cpuRegister.A);
+}
+
+void	Cpu_z80::SET6_B() //0xf0
+{
+	set(1, 0x40, &_cpuRegister.B);
+}
+
+void	Cpu_z80::SET6_C() //0xf1
+{
+	set(1, 0x40, &_cpuRegister.C);
+}
+
+void	Cpu_z80::SET6_D() //0xf2
+{
+	set(1, 0x40, &_cpuRegister.D);
+}
+
+void	Cpu_z80::SET6_E() //0xf3
+{
+	set(1, 0x40, &_cpuRegister.E);
+}
+
+void	Cpu_z80::SET6_H() //0xf4
+{
+	set(1, 0x40, &_cpuRegister.H);
+}
+
+void	Cpu_z80::SET6_L() //0xf5
+{
+	set(1, 0x40, &_cpuRegister.L);
+}
+
+void	Cpu_z80::SET6_HL() //0xf6
+{
+	uint8_t tmp;
+	tmp = _memory->read_byte(_cpuRegister.HL);
+	set(1, 0x40, &tmp);
+	_memory->write_byte(_cpuRegister.HL, tmp);
+}
+
+void	Cpu_z80::SET6_A() //0xf7
+{
+	set(1, 0x40, &_cpuRegister.A);
+}
+
+void	Cpu_z80::SET7_B() //0xf8
+{
+	set(1, 0x80, &_cpuRegister.B);
+}
+
+void	Cpu_z80::SET7_C() //0xf9
+{
+	set(1, 0x80, &_cpuRegister.C);
+}
+
+void	Cpu_z80::SET7_D() //0xfa
+{
+	set(1, 0x80, &_cpuRegister.D);
+}
+
+void	Cpu_z80::SET7_E() //0xfb
+{
+	set(1, 0x80, &_cpuRegister.E);
+}
+
+void	Cpu_z80::SET7_H() //0xfc
+{
+	set(1, 0x80, &_cpuRegister.H);
+}
+
+void	Cpu_z80::SET7_L() //0xfd
+{
+	set(1, 0x80, &_cpuRegister.L);
+}
+
+void	Cpu_z80::SET7_HL() //0xfe
+{
+	uint8_t tmp;
+	tmp = _memory->read_byte(_cpuRegister.HL);
+	set(1, 0x80, &tmp);
+	_memory->write_byte(_cpuRegister.HL, tmp);
+}
+
+void	Cpu_z80::SET7_A() //0xff
+{
+	set(1, 0x80, &_cpuRegister.A);
+}
 
 
 void Cpu_z80::_setCbOpcodeMap()
@@ -798,7 +1487,7 @@ void Cpu_z80::_setCbOpcodeMap()
 		(t_opcode){0x04, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RLC_H, this),	"RLC H",	0x0000},
 		(t_opcode){0x05, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RLC_L, this),	"RLC L",	0x0000},
 		(t_opcode){0x06, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RLC_HL, this),  "RLC HL",	0x0000},
-		(t_opcode){0x07, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RLC_A, this),	"RLC A,		0x0000},
+		(t_opcode){0x07, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RLC_A, this),	"RLC A",	0x0000},
 		(t_opcode){0x08, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RRC_B, this),   "RRC B",	0x0000},
 		(t_opcode){0x09, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RRC_C, this),	"RRC C",	0x0000},
 		(t_opcode){0x0a, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RRC_D, this),   "RRC D",	0x0000},
@@ -838,7 +1527,7 @@ void Cpu_z80::_setCbOpcodeMap()
 		(t_opcode){0x2c, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SRA_H, this),   "SRA H",	0x0000},
 		(t_opcode){0x2d, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SRA_L, this),   "SRA L",	0x0000},
 		(t_opcode){0x2e, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SRA_HL, this),  "SRA Hl",	0x0000},
-		(t_opcode){0x2f, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SRA_Q, this),   "SRA A",	0x0000},
+		(t_opcode){0x2f, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SRA_A, this),   "SRA A",	0x0000},
 		(t_opcode){0x30, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SWAP_B, this),  "SWAP B",	0x0000},
 		(t_opcode){0x31, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SWAP_C, this),  "SWAP C",	0x0000},
 		(t_opcode){0x32, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SWAP_D, this),	"SWAP D",	0x0000},
@@ -863,14 +1552,14 @@ void Cpu_z80::_setCbOpcodeMap()
 		(t_opcode){0x45, 0x00, 8, 8, 2, std::bind(&Cpu_z80::BIT0_L, this),  "BIT 0 L",	0x0000},
 		(t_opcode){0x46, 0x00, 8, 8, 2, std::bind(&Cpu_z80::BIT0_HL, this), "BIT 0 HL",	0x0000},
 		(t_opcode){0x47, 0x00, 8, 8, 2, std::bind(&Cpu_z80::BIT0_A, this),  "BIT 0 A",	0x0000},
-		(t_opcode){0x48, 0x00, 8, 8, 2, std::bind(&Cpu_z80::BIT3_B, this),  "BIT 1 B",	0x0000},
-		(t_opcode){0x49, 0x00, 8, 8, 2, std::bind(&Cpu_z80::BIT3_C, this),  "BIT 1 C",	0x0000},
-		(t_opcode){0x4a, 0x00, 8, 8, 2, std::bind(&Cpu_z80::BIT3_D, this),  "BIT 1 D",	0x0000},
-		(t_opcode){0x4b, 0x00, 8, 8, 2, std::bind(&Cpu_z80::BIT3_E, this),  "BIT 1 E",	0x0000},
-		(t_opcode){0x4c, 0x00, 8, 8, 2, std::bind(&Cpu_z80::BIT3_H, this),  "BIT 1 H",	0x0000},
-		(t_opcode){0x4d, 0x00, 8, 8, 2, std::bind(&Cpu_z80::BIT3_L, this),  "BIT 1 L",	0x0000},
-		(t_opcode){0x4e, 0x00, 8, 8, 2, std::bind(&Cpu_z80::BIT3_HL, this), "BIT 1 HL",	0x0000},
-		(t_opcode){0x4f, 0x00, 8, 8, 2, std::bind(&Cpu_z80::BIT3_A, this),  "BIT 1 A",	0x0000},
+		(t_opcode){0x48, 0x00, 8, 8, 2, std::bind(&Cpu_z80::BIT1_B, this),  "BIT 1 B",	0x0000},
+		(t_opcode){0x49, 0x00, 8, 8, 2, std::bind(&Cpu_z80::BIT1_C, this),  "BIT 1 C",	0x0000},
+		(t_opcode){0x4a, 0x00, 8, 8, 2, std::bind(&Cpu_z80::BIT1_D, this),  "BIT 1 D",	0x0000},
+		(t_opcode){0x4b, 0x00, 8, 8, 2, std::bind(&Cpu_z80::BIT1_E, this),  "BIT 1 E",	0x0000},
+		(t_opcode){0x4c, 0x00, 8, 8, 2, std::bind(&Cpu_z80::BIT1_H, this),  "BIT 1 H",	0x0000},
+		(t_opcode){0x4d, 0x00, 8, 8, 2, std::bind(&Cpu_z80::BIT1_L, this),  "BIT 1 L",	0x0000},
+		(t_opcode){0x4e, 0x00, 8, 8, 2, std::bind(&Cpu_z80::BIT1_HL, this), "BIT 1 HL",	0x0000},
+		(t_opcode){0x4f, 0x00, 8, 8, 2, std::bind(&Cpu_z80::BIT1_A, this),  "BIT 1 A",	0x0000},
 		(t_opcode){0x50, 0x00, 8, 8, 2, std::bind(&Cpu_z80::BIT2_B, this),  "BIT 2 B",	0x0000},
 		(t_opcode){0x51, 0x00, 8, 8, 2, std::bind(&Cpu_z80::BIT2_C, this),  "BIT 2 C",	0x0000},
 		(t_opcode){0x52, 0x00, 8, 8, 2, std::bind(&Cpu_z80::BIT2_D, this),  "BIT 2 D",	0x0000},
@@ -949,7 +1638,7 @@ void Cpu_z80::_setCbOpcodeMap()
 		(t_opcode){0x9b, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RES3_E, this),  "RES 3 E",	0x0000},
 		(t_opcode){0x9c, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RES3_H, this),  "RES 3 H",	0x0000},
 		(t_opcode){0x9d, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RES3_L, this),  "RES 3 L",	0x0000},
-		(t_opcode){0x9e, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RES3_HL, this), "RES 3 HL,	0x0000},
+		(t_opcode){0x9e, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RES3_HL, this), "RES 3 HL",	0x0000},
 		(t_opcode){0x9f, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RES3_A, this),  "RES 3 A",	0x0000},
 		(t_opcode){0xa0, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RES4_B, this),  "RES 4 B",	0x0000},
 		(t_opcode){0xa1, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RES4_C, this),  "RES 4 C",	0x0000},
