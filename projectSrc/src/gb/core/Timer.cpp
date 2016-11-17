@@ -25,6 +25,7 @@ Timer::Timer(Memory *memory) : _memory(memory)
 void Timer::reset(void)
 {
 	this->_cycles = 0;
+	this->_divider = 0;
 }
 
 void Timer::setFrequency(const std::array<uint32_t, 4> arrFrequency)
@@ -40,9 +41,9 @@ void Timer::setCycleTotal(uint32_t cycleTotal)
 #include <inttypes.h>
 void Timer::setCycleAcc(uint8_t cycles)
 {
-	static uint64_t test = 0;
+	/*static uint64_t test = 0;
 	test += cycles;
-	//printf("cycles consummed: %"PRIu64"\n", test);
+	printf("cycles consummed: %"PRIu64"\n", test);*/
 	_doDividerRegister(cycles);
 	_doClockRegister(cycles);
 }

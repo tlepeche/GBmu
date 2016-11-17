@@ -49,13 +49,13 @@ void Machine::run(void)
 
 uint32_t Machine::_getCycleOpcode(void)
 {
-	double period;
+//	double period;
 	const unsigned int typeFrequency = this->_memory->read_byte(REGISTER_TAC) & 0x3;
 
-	period = (double) (1. / (float)this->_clock->getArrayFrequency(typeFrequency));
-	period *= 1000;
+//	period = (double) (1. / (float)this->_clock->getArrayFrequency(typeFrequency));
+//	period *= 1000;
 	return (this->_cpu->getClockSpeed() / this->_clock->getArrayFrequency(typeFrequency));
-	return (this->_getFrequencyFrameTimeGpu() / period);
+//	return (this->_getFrequencyFrameTimeGpu() / period);
 }
 
 uint8_t Machine::_getFrequencyFrameTimeGpu(void)
