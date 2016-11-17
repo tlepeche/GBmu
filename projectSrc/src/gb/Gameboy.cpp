@@ -119,6 +119,7 @@ void	Gameboy::framePressedSlot()
 
 void	Gameboy::resetPressedSlot()
 {
+	_stepMode.store(true);
 	reset();
 }
 
