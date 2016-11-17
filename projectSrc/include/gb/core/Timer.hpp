@@ -25,44 +25,31 @@ class Timer
 	** ############################################################
 	*/
 	public:
-		void						reset();
-		void 						setCycleAcc(uint8_t cycle);
-		void 						setFrequency(std::array<uint32_t, 4> arrFrequency);
-		void 						setCycleTotal(uint32_t cycle);
-
 	/*
 	** ########################################################
 	** GETTEUR
 	** ########################################################
 	*/
-	public:
-		uint32_t						getArrayFrequency(const uint8_t idFrequency);
-		uint32_t						getCycleAcc(void);
-		bool							isCycleAcc(uint32_t cycle);
 
-	/*
-	** ########################################################
-	** METHOD
-	** ########################################################
-	*/
-	public:
-		void						sleep(unsigned char ms);
-
-	private:
-		uint32_t					_getCycleOpcodeTotal(void);
-		void						_doDividerRegister(uint8_t cycles);
-		void						_doClockRegister(uint8_t cycles);
 
 	/*
 	** ########################################################
 	** ATTRIBUTE
 	** ########################################################
 	*/
+	public:
+		void						incTima();
+		void						reset();
+		void						step(unsigned int cycles);
 	private:
-		std::array<uint32_t, 4>		_arrayFrequency;
-		uint32_t					_cycles = 0;
-		uint32_t					_cyclesTotal;
-		uint16_t					_divider = 0;
+		std::array<uint32_t, 4>		_arrayFrequency {
+				{
+					static_cast<uint32_t>(4096), static_cast<uint32_t>(262144),
+					static_cast<uint32_t>(65536), static_cast<uint32_t>(16384)
+				}};
+
+		unsigned int				_cycles;
+		unsigned int				_cyclesAcc;
 		Memory						*_memory;
 };
 

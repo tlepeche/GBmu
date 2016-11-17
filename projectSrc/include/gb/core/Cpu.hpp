@@ -59,7 +59,7 @@ class Cpu_z80
 		void							setHoldIME(bool state);
 		bool							getIME(void);
 		bool							getHoldIME(void);
-		uint32_t						getClockSpeed(void);
+		static uint32_t					getClockSpeed(void);
 
 	private:
 	t_opcode						_getOpcode(uint8_t opcode);
@@ -78,7 +78,6 @@ class Cpu_z80
 	 */
 
 	public:
-		std::array<uint32_t, 4>			getArrayFrequency();
 		void							init(htype hardware = GB);
 
 	/*
@@ -662,7 +661,6 @@ class Cpu_z80
 	private:
 	unsigned int					_ptrAddr;
 	Memory							*_memory;
-	std::array<uint32_t, 4>			_arrayFrequency {{static_cast<uint32_t>(4096), static_cast<uint32_t>(16385), static_cast<uint32_t>(65536), static_cast<uint32_t>(262144) }};
 	t_opcode						_opcodeInProgress;
 	bool							_stepState;
 	bool							_halt = false;
