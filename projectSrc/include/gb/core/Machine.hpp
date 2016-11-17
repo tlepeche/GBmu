@@ -16,14 +16,15 @@ class Machine
 		Gpu		*_gpu;
 		htype	_hardware;
 
-		uint8_t _getFrequencyFrameTimeGpu(void);
-		uint32_t _getCycleOpcode(void);
-
 	public:
 		Machine(void);
 		virtual ~Machine(void) {};
 
 		bool			step(void);
 		virtual void	run(void);
+
+		unsigned int	_cyclesMax;
+		unsigned int	_cyclesAcc;
+
 };
 #endif
