@@ -227,7 +227,7 @@ void Cpu_z80::init(htype hardware)
 	this->_memory->write_byte(REGISTER_STAT, 0x81); // bios: 0x80 start: 0x81
 	this->_memory->write_byte(REGISTER_SCY, 0x00);
 	this->_memory->write_byte(REGISTER_SCX, 0x00);
-	this->_memory->write_byte(REGISTER_LY, 0x00); // bios: 0x00 start: 0x81
+	this->_memory->write_byte(REGISTER_LY, 0x00); // bios: 0x00 start: 0x99
 	this->_memory->write_byte(REGISTER_LYC, 0x00);
 	this->_memory->write_byte(REGISTER_DMA, 0xFF);
 	this->_memory->write_byte(REGISTER_BGP, 0xFC); // edelangh: this is bullshit !!
@@ -272,19 +272,68 @@ void Cpu_z80::_resetInterrupt(void)
 void Cpu_z80::execInterrupt(void)
 {
 	// Get interrupt here
-	if (this->_getInterrupt(INTER_VBLANK))
+	if ((this->_memory->read_byte(REGISTER_IF) & INTER_VBLANK) > 0x00)
 	{
 		// push PC on stack
 		this->_cpuRegister.SP -= 2;
 		this->_memory->write_word(_cpuRegister.SP, _cpuRegister.PC);
-		// set low INTER_VBLANK
+		// set low interrupt
 		this->_memory->write_byte(REGISTER_IF,
 				_memory->read_byte(REGISTER_IF) & (INTER_MASK ^ INTER_VBLANK));
 		// Go to 0x40
 		this->_cpuRegister.PC = 0x40;
 		this->_loadPtr(this->_cpuRegister.PC);
 	}
-	else if (this->_getInterrupt(INTER_TOVERF))
+	else if ((this->_memory->read_byte(REGISTER_IF) & INTER_LCDC) > 0x00)
+	{
+		// push PC on stack
+		this->_cpuRegister.SP -= 2;
+		this->_memory->write_word(_cpuRegister.SP, _cpuRegister.PC);
+		// set low interrupt
+		this->_memory->write_byte(REGISTER_IF,
+				_memory->read_byte(REGISTER_IF) & (INTER_MASK ^ INTER_LCDC));
+		// Go to 0x48
+		this->_cpuRegister.PC = 0x48;
+		this->_loadPtr(this->_cpuRegister.PC);
+	}
+	else if ((this->_memory->read_byte(REGISTER_IF) & INTER_TOVERF) > 0x00)
+	{
+		// push PC on stack
+		this->_cpuRegister.SP -= 2;
+		this->_memory->write_word(_cpuRegister.SP, _cpuRegister.PC);
+		// set low interrupt
+		this->_memory->write_byte(REGISTER_IF,
+				_memory->read_byte(REGISTER_IF) & (INTER_MASK ^ INTER_TOVERF));
+		// Go to 0x50
+		this->_cpuRegister.PC = 0x50;
+		this->_loadPtr(this->_cpuRegister.PC);
+	}
+	else if ((this->_memory->read_byte(REGISTER_IF) & INTER_TIOE) > 0x00)
+	{
+		// push PC on stack
+		this->_cpuRegister.SP -= 2;
+		this->_memory->write_word(_cpuRegister.SP, _cpuRegister.PC);
+		// set low interrupt
+		this->_memory->write_byte(REGISTER_IF,
+				_memory->read_byte(REGISTER_IF) & (INTER_MASK ^ INTER_TIOE));
+		// Go to 0x58
+		this->_cpuRegister.PC = 0x58;
+		this->_loadPtr(this->_cpuRegister.PC);
+	}
+	else if ((this->_memory->read_byte(REGISTER_IF) & INTER_TPIN) > 0x00)
+	{
+		// push PC on stack
+		this->_setStop(false);
+		this->_cpuRegister.SP -= 2;
+		this->_memory->write_word(_cpuRegister.SP, _cpuRegister.PC);
+		// set low interrupt
+		this->_memory->write_byte(REGISTER_IF,
+				_memory->read_byte(REGISTER_IF) & (INTER_MASK ^ INTER_TPIN));
+		// Go to 0x60
+		this->_cpuRegister.PC = 0x60;
+		this->_loadPtr(this->_cpuRegister.PC);
+	}
+	if ((this->_memory->read_byte(REGISTER_IF) & INTER_TPIN) > 0x00)
 		this->_setStop(false);
 	this->_setHalt(false);
 	this->_resetInterrupt();

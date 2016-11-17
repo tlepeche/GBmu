@@ -180,6 +180,7 @@ void	Gameboy::KeyPress(int key)
 //		else
 //			setLowBit(_memory, REGISTER_INPUT, 5);
 //	}
+	setHightBit(_memory, REGISTER_IF, 4);
 	switch(key)
 	{
 		case RIGHT:
