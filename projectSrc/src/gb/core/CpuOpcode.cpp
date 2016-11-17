@@ -112,7 +112,7 @@ void	Cpu_z80::sbc(uint8_t val)
 void	Cpu_z80::RST(uint16_t addr)
 {
 	_cpuRegister.SP -= 2;
-	_memory->write_word(_cpuRegister.SP, _memory->read_word(_cpuRegister.PC));
+	_memory->write_word(_cpuRegister.SP, _cpuRegister.PC + 1);
 	_cpuRegister.PC = addr;
 	_stepState = false;
 }
@@ -1400,7 +1400,8 @@ void	Cpu_z80::ADD_SP_n()	//0xe8
 
 void	Cpu_z80::JP_HL() //0xe9
 {
-	_cpuRegister.PC = _memory->read_word(_cpuRegister.HL);
+	_cpuRegister.PC = _cpuRegister.HL;
+	_stepState = false;
 }
 
 void	Cpu_z80::LD_n_A() //0xea
