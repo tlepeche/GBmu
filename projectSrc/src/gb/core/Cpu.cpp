@@ -180,7 +180,7 @@ void Cpu_z80::init(htype hardware)
 	this->_cpuRegister.DE = 0x00D8;
 	this->_cpuRegister.HL = 0x014D;
 
-	this->_cpuRegister.PC = 0x100;
+	this->_cpuRegister.PC = 0x00;
 	this->_cpuRegister.SP = 0xFFFE;
 
 	//init register memory
@@ -224,7 +224,7 @@ void Cpu_z80::init(htype hardware)
 	
 
 	this->_memory->write_byte(REGISTER_LCDC, 0x91);
-	this->_memory->write_byte(REGISTER_STAT, 0x81); // bios: 0x80 start: 0x81
+	this->_memory->write_byte(REGISTER_STAT, 0x80); // bios: 0x80 start: 0x81
 	this->_memory->write_byte(REGISTER_SCY, 0x00);
 	this->_memory->write_byte(REGISTER_SCX, 0x00);
 	this->_memory->write_byte(REGISTER_LY, 0x00); // bios: 0x00 start: 0x99
