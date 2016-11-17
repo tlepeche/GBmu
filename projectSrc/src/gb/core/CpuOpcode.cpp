@@ -109,6 +109,14 @@ void	Cpu_z80::sbc(uint8_t val)
 	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
 }
 
+void	Cpu_z80::RST(uint16_t addr)
+{
+	_cpuRegister.SP -= 2;
+	_memory->write_word(_cpuRegister.SP, _cpuRegister.PC + 1);
+	_cpuRegister.PC = addr;
+	_stepState = false;
+}
+
 /*
  ** ############################################
  ** OPCODE METHODS
@@ -117,7 +125,6 @@ void	Cpu_z80::sbc(uint8_t val)
 
 void	Cpu_z80::NOP() //0x00
 {
-	std::cout << "NOP" << std::endl;
 }
 
 void	Cpu_z80::LD_BC_n() //0x01
@@ -1224,9 +1231,7 @@ void	Cpu_z80::ADD_A_n() //0xc6
 
 void	Cpu_z80::RST_00H() //0xc7
 {
-	_cpuRegister.SP -= 2;
-	_memory->write_word(_cpuRegister.SP, _memory->read_word(_cpuRegister.PC));
-	_cpuRegister.PC = 0x0000;
+	RST(0x0000);
 }
 
 void	Cpu_z80::RET_Z() //0xc8
@@ -1269,9 +1274,7 @@ void	Cpu_z80::ADC_A_n() //0xce
 
 void	Cpu_z80::RST_08H() //0xcf
 {
-	_cpuRegister.SP -= 2;
-	_memory->write_word(_cpuRegister.SP, _memory->read_word(_cpuRegister.PC));
-	_cpuRegister.PC = 0x0008;
+	RST(0x0008);
 }
 
 void	Cpu_z80::RET_NC() //0xd0
@@ -1311,9 +1314,7 @@ void	Cpu_z80::SUB_n() //0xd6
 
 void	Cpu_z80::RST_10H() //0xd7
 {
-	_cpuRegister.SP -= 2;
-	_memory->write_word(_cpuRegister.SP, _memory->read_word(_cpuRegister.PC));
-	_cpuRegister.PC = 0x0010;
+	RST(0x0010);
 }
 
 void	Cpu_z80::RET_C() //0xd8
@@ -1325,7 +1326,7 @@ void	Cpu_z80::RET_C() //0xd8
 void	Cpu_z80::RETI() //0xd9
 {
 	RET();
-	//TODO: ADD BOOL TO ALLOW INTERUPTS
+	EI();
 }
 
 void	Cpu_z80::JP_C_n() //0xda
@@ -1347,9 +1348,7 @@ void	Cpu_z80::SBC_A_n()	//0xde
 
 void	Cpu_z80::RST_18H() //0xdf
 {
-	_cpuRegister.SP -= 2;
-	_memory->write_word(_cpuRegister.SP, _memory->read_word(_cpuRegister.PC));
-	_cpuRegister.PC = 0x0018;
+	RST(0x0018);
 }
 
 void	Cpu_z80::LDH_n_A() //0xe0
@@ -1384,9 +1383,7 @@ void	Cpu_z80::AND_n()	//0xe6
 
 void	Cpu_z80::RST_20H() //0xe7
 {
-	_cpuRegister.SP -= 2;
-	_memory->write_word(_cpuRegister.SP, _memory->read_word(_cpuRegister.PC));
-	_cpuRegister.PC = 0x0020;
+	RST(0x0020);
 }
 
 void	Cpu_z80::ADD_SP_n()	//0xe8
@@ -1403,7 +1400,8 @@ void	Cpu_z80::ADD_SP_n()	//0xe8
 
 void	Cpu_z80::JP_HL() //0xe9
 {
-	_cpuRegister.PC = _memory->read_word(_cpuRegister.HL);
+	_cpuRegister.PC = _cpuRegister.HL;
+	_stepState = false;
 }
 
 void	Cpu_z80::LD_n_A() //0xea
@@ -1421,9 +1419,7 @@ void	Cpu_z80::XOR_n() //0xee
 
 void	Cpu_z80::RST_28H() //0xef
 {
-	_cpuRegister.SP -= 2;
-	_memory->write_word(_cpuRegister.SP, _memory->read_word(_cpuRegister.PC));
-	_cpuRegister.PC = 0x0028;
+	RST(0x0028);
 }
 
 void	Cpu_z80::LDH_A_n() //0xf0
@@ -1463,9 +1459,7 @@ void	Cpu_z80::OR_n() //0xf6
 
 void	Cpu_z80::RST_30H() //0xf7
 {
-	_cpuRegister.SP -= 2;
-	_memory->write_word(_cpuRegister.SP, _memory->read_word(_cpuRegister.PC));
-	_cpuRegister.PC = 0x0030;
+	RST(0x0030);
 }
 
 void	Cpu_z80::LD_HL_SP_n()	//0xf8
@@ -1500,9 +1494,7 @@ void	Cpu_z80::CP_n()	//0xfe
 
 void	Cpu_z80::RST_38H() //0xff
 {
-	_cpuRegister.SP -= 2;
-	_memory->write_word(_cpuRegister.SP, _memory->read_word(_cpuRegister.PC));
-	_cpuRegister.PC = 0x0038;
+	RST(0x0038);
 }
 
 

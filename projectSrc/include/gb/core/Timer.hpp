@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <array>
+#include "Memory.hpp"
 
 class Machine;
 
@@ -15,7 +16,7 @@ class Timer
 	** ################################################################
 	*/
 	private:
-		Timer(void);
+		Timer(Memory *mem);
 		virtual ~Timer(void) {};
 
 	/*
@@ -27,7 +28,7 @@ class Timer
 		void						reset();
 		void 						setCycleAcc(uint8_t cycle);
 		void 						setFrequency(std::array<uint32_t, 4> arrFrequency);
-		void 						setCycleTotal(uint8_t cycle);
+		void 						setCycleTotal(uint32_t cycle);
 
 	/*
 	** ########################################################
@@ -36,7 +37,8 @@ class Timer
 	*/
 	public:
 		uint32_t						getArrayFrequency(const uint8_t idFrequency);
-		uint8_t 					getCycleAcc(void);
+		uint32_t						getCycleAcc(void);
+		bool							isCycleAcc(uint32_t cycle);
 
 	/*
 	** ########################################################
@@ -47,7 +49,9 @@ class Timer
 		void						sleep(unsigned char ms);
 
 	private:
-		uint8_t						_getCycleOpcodeTotal(void);
+		uint32_t					_getCycleOpcodeTotal(void);
+		void						_doDividerRegister(uint8_t cycles);
+		void						_doClockRegister(uint8_t cycles);
 
 	/*
 	** ########################################################
@@ -56,8 +60,10 @@ class Timer
 	*/
 	private:
 		std::array<uint32_t, 4>		_arrayFrequency;
-		uint8_t						_cycles;
-		uint8_t						_cyclesTotal;
+		uint32_t					_cycles = 0;
+		uint32_t					_cyclesTotal;
+		uint16_t					_divider = 0;
+		Memory						*_memory;
 };
 
 #endif

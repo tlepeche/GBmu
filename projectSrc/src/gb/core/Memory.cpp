@@ -1,18 +1,11 @@
 #include <iostream>
 #include <cstring>
 #include "Memory.hpp"
+#include "registerAddr.hpp"
 
-Memory::Memory(void)
-{
-}
+Memory::Memory(void) {}
 
 Memory::~Memory(void) {}
-
-
-void			Memory::Init(void)
-{
-	this->reset();
-}
 
 void			Memory::reset(void)
 {
@@ -21,6 +14,19 @@ void			Memory::reset(void)
 	memset(this->_m_oam, 0, 160);
 	memset(this->_m_io, 0, 127);
 	memset(this->_m_zp, 0, 127);
+}
+
+htype			Memory::getRomType(void)
+{
+	return this->_rom.getHardware();
+}
+
+int				Memory::loadRom(const char *file, htype hardware)
+{
+	int		ret;
+
+	ret = this->_rom.load(file);
+	return ret;
 }
 
 uint8_t			Memory::read_byte(uint16_t addr)
@@ -82,7 +88,7 @@ uint8_t			Memory::read_byte(uint16_t addr)
 	return 0;
 }
 
-void			Memory::write_byte(uint16_t addr, uint8_t val)
+void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 {
 	switch (addr & 0xF000){
 		case 0x0000:
@@ -124,7 +130,12 @@ void			Memory::write_byte(uint16_t addr, uint8_t val)
 					}
 					break;
 				case 0x0F00:
-					if ((addr & 0xFF) <= 0x7F)
+					if (!super && addr == 0xFF00)
+					{
+						// P1
+						this->_m_io[(addr & 0xFF)] = (val & 0xF0) | (this->_m_io[(addr & 0xFF)] & 0x0F);
+					}
+					else if ((addr & 0xFF) <= 0x7F)
 					{
 						// I/O
 						this->_m_io[(addr & 0xFF)] = val;
@@ -145,8 +156,8 @@ uint16_t		Memory::read_word(uint16_t addr)
 	return this->read_byte(addr) + (this->read_byte(addr + 1) << 8);
 }
 
-void			Memory::write_word(uint16_t addr, uint16_t val)
+void			Memory::write_word(uint16_t addr, uint16_t val, bool super)
 {
-	this->write_byte(addr, (val & 0xFF));
-	this->write_byte(addr + 1, ((val & 0xFF00) >> 8));
+	this->write_byte(addr, (val & 0xFF), super);
+	this->write_byte(addr + 1, ((val & 0xFF00) >> 8), super);
 }

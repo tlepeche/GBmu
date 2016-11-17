@@ -2,7 +2,18 @@
 
 #include "OpenGLWindow.hpp"
 #include "DbWindow.hpp"
+#include "registerAddr.hpp"
 #include "Gameboy.hpp"
+
+void setLowBit(Memory *memory, uint16_t addr, uint8_t bit)
+{
+	memory->write_byte(addr, (uint8_t)((0x01 << bit) ^ memory->read_byte(addr)), true);
+}
+
+void setHightBit(Memory *memory, uint16_t addr, uint8_t bit)
+{
+	memory->write_byte(addr, (uint8_t)((0x01 << bit) | memory->read_byte(addr)), true);
+}
 
 Gameboy::Gameboy() :
 	_window(OpenGLWindow::Instance())
@@ -10,6 +21,7 @@ Gameboy::Gameboy() :
 	, _thread(nullptr)
 	, _romPath("")
 {
+	this->_hardware = AUTO;
 	_stepMode.store(false);
 	_willRun.store(false);
 
@@ -71,12 +83,14 @@ void	Gameboy::reset()
 	{
 		_willRun.store(true);
 		this->_memory->reset();
-		if (_memory->_rom.load(_romPath.c_str()))
+		if (_memory->loadRom(_romPath.c_str(), this->_hardware))
 			_willRun.store(false);
 		else
 		{
-			this->_cpu->init();
-			this->_gpu->init();
+			htype		hardRom;
+			hardRom = (this->_hardware == AUTO) ? this->_memory->getRomType() : this->_hardware;
+			this->_cpu->init(hardRom);
+			this->_gpu->init(); // TODO pour passer hardware au gpu: this->_gpu->init(hardRom)
 			_thread = new std::thread(&Gameboy::run, this);
 		}
 	}
@@ -105,6 +119,7 @@ void	Gameboy::framePressedSlot()
 
 void	Gameboy::resetPressedSlot()
 {
+	_stepMode.store(true);
 	reset();
 }
 
@@ -158,11 +173,54 @@ bool	Gameboy::isBreakpoint(uint16_t addr)
 
 void	Gameboy::KeyPress(int key)
 {
-	printf("key = 0x%02x\n\n", key);
+//	if ((_memory->read_byte(REGISTER_INPUT) & 0x30) == 0x30)
+//	{
+//		if (key == UP || key == DOWN || key == LEFT || key == RIGHT)
+//			setLowBit(_memory, REGISTER_INPUT, 4);
+//		else
+//			setLowBit(_memory, REGISTER_INPUT, 5);
+//	}
+	switch(key)
+	{
+		case RIGHT:
+		case A_BUTTON:
+			setLowBit(_memory, REGISTER_INPUT, 0);
+			break;
+		case LEFT:
+		case B_BUTTON:
+			setLowBit(_memory, REGISTER_INPUT, 1);
+			break;
+		case UP:
+		case SELECT:
+			setLowBit(_memory, REGISTER_INPUT, 2);
+			break;
+		case DOWN:
+		case START:
+			setLowBit(_memory, REGISTER_INPUT, 3);
+			break;
+	}
 }
 
 void	Gameboy::KeyRelease(int key)
 {
-	printf("key = 0x%02x\n\n", key);
+	switch(key)
+	{
+		case RIGHT:
+		case A_BUTTON:
+			setHightBit(_memory, REGISTER_INPUT, 0);
+			break;
+		case LEFT:
+		case B_BUTTON:
+			setHightBit(_memory, REGISTER_INPUT, 1);
+			break;
+		case UP:
+		case SELECT:
+			setHightBit(_memory, REGISTER_INPUT, 2);
+			break;
+		case DOWN:
+		case START:
+			setHightBit(_memory, REGISTER_INPUT, 3);
+			break;
+	}
 }
 
