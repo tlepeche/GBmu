@@ -97,6 +97,7 @@ void	Gpu::step()
 {
 	uint8_t	line = _memory->read_byte(REGISTER_LY);
 	t_gpuMode mode = readGpuMode();
+	t_gpuStat gpuStat = {_memory->read_byte(REGISTER_STAT)};
 
 	switch (mode)
 	{
@@ -105,6 +106,8 @@ void	Gpu::step()
 			{
 				_clock = 0;
 				writeGpuMode(VRAM_READ);
+				if (gpuStat.interupt_oam)
+					_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_LCDC);
 			}
 			break ;
 		case VRAM_READ:
@@ -126,13 +129,14 @@ void	Gpu::step()
 				{
 					writeGpuMode(VBLANK);
 					_window->renderLater();
-					_memory->write_byte(REGISTER_IF, 
-							_memory->read_byte(REGISTER_IF) | INTER_VBLANK);
+					_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_VBLANK);
 				}
 				else
 				{
 					writeGpuMode(OAM_READ);
 				}
+				if (gpuStat.interupt_hblank)
+					_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_LCDC);
 			}
 			break ;
 		case VBLANK:
@@ -146,11 +150,19 @@ void	Gpu::step()
 					writeGpuMode(OAM_READ);
 					_memory->write_byte(REGISTER_LY, 0);
 				}
+				if (gpuStat.interupt_vblank)
+					_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_LCDC);
 			}
 			break ;
 		default:
 			break ;
 	}
+	// Check LYC
+	gpuStat = {_memory->read_byte(REGISTER_STAT)};
+	gpuStat.coincidence = (uint8_t)(_memory->read_byte(REGISTER_LY) == _memory->read_byte(REGISTER_LYC));
+	_memory->write_byte(REGISTER_STAT, gpuStat.stat);
+	if (gpuStat.interupt_coincid && gpuStat.coincidence)
+			_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_LCDC);
 }
 
 void	Gpu::init()

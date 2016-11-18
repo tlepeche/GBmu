@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include <stdint.h>
+
 typedef	enum	s_gpuMode
 {
 	OAM_READ = 2,
@@ -9,8 +11,23 @@ typedef	enum	s_gpuMode
 	VBLANK = 1
 }				t_gpuMode;
 
+typedef struct	s_gpuStat
+{
+	union {
+		struct {
+			uint8_t unused_bit:1;
+			uint8_t	interupt_coincid:1;
+			uint8_t	interupt_oam:1;
+			uint8_t	interupt_vblank:1;
+			uint8_t	interupt_hblank:1;
+			uint8_t	coincidence:1;
+			uint8_t mode:2;
+		};
+		uint8_t stat;
+	};
+}				t_gpuStat;
+
 class OpenGLWindow;
-#include <stdint.h>
 #include "Memory.hpp"
 #include "Sprites.hpp"
 
