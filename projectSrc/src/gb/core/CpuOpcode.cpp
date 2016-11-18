@@ -70,7 +70,7 @@ void Cpu_z80::dec(uint8_t *val)
 void Cpu_z80::add(uint8_t val)
 {
 	_cpuRegister.n = 0;
-	_cpuRegister.h = static_cast<int>(testAdd(_cpuRegister.A, val, 0xf0));
+	_cpuRegister.h = static_cast<int>(testAdd(_cpuRegister.A & 0x0f, val & 0x0f, 0xf0));
 	_cpuRegister.c = static_cast<int>(testAdd(_cpuRegister.A, val, 0xff00));
 	_cpuRegister.A += val;
 	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
@@ -82,7 +82,7 @@ void Cpu_z80::adc(uint8_t val)
 
 	tmp = val + _cpuRegister.c;
 	_cpuRegister.n = 0;
-	_cpuRegister.h = static_cast<int>(testAdd(_cpuRegister.A, tmp, 0xf0));
+	_cpuRegister.h = static_cast<int>(testAdd(_cpuRegister.A & 0x0f, tmp & 0x0f, 0xf0));
 	_cpuRegister.c = static_cast<int>(testAdd(_cpuRegister.A, tmp, 0xff00));
 	_cpuRegister.A += tmp;
 	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
@@ -251,8 +251,8 @@ void	Cpu_z80::RLA() //0x17
 {
 	int	carry;
 
-	carry = (_cpuRegister.c == 1) ? 1 : 0;
-	_cpuRegister.c = _cpuRegister.A & 0x01;
+	carry = _cpuRegister.c;
+	_cpuRegister.c = (_cpuRegister.A & 0x80) ? 1 : 0;
 	_cpuRegister.A <<= 1;
 	_cpuRegister.A += carry;
 	_cpuRegister.n = 0;
@@ -307,7 +307,7 @@ void	Cpu_z80::RRA() //0x1f
 	int	carry;
 
 	carry = ((_cpuRegister.c == 1) ? 1 : 0) << 7;
-	_cpuRegister.c = _cpuRegister.A & 0x01;
+	_cpuRegister.c = _cpuRegister.A & 0x80 ? 1 : 0;
 	_cpuRegister.A >>= 1;
 	_cpuRegister.A += carry;
 	_cpuRegister.n = 0;
@@ -1406,7 +1406,7 @@ void	Cpu_z80::JP_HL() //0xe9
 
 void	Cpu_z80::LD_n_A() //0xea
 {
-	uint8_t nn;
+	uint16_t nn;
 
 	nn = _memory->read_word(_cpuRegister.PC + 1);
 	_memory->write_byte(nn, _cpuRegister.A);
