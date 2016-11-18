@@ -10,7 +10,6 @@
 
 Timer::Timer(Memory *memory) :
 	_memory(memory),
-	_cycles(0),
 	_divider(0),
 	_cyclesAcc(0)
 {
@@ -29,7 +28,7 @@ Timer::Timer(Memory *memory) :
 void Timer::reset(void)
 {
 	this->_divider = 0;
-	this->_cycles = 0;
+	this->_cyclesAcc = 0;
 }
 
 void Timer::step(unsigned int cycles)
