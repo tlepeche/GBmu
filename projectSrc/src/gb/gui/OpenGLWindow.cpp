@@ -54,9 +54,9 @@ QMenuBar	*OpenGLWindow::genMenuBar()
 	QAction*	type1	= new QAction(tr("GB"));
 	QAction*	type2	= new QAction(tr("GBC"));
 
-	connect(type0, &QAction::triggered, this, &OpenGLWindow::gbTypeAUTO);
-	connect(type1, &QAction::triggered, this, &OpenGLWindow::gbTypeGB);
-	connect(type2, &QAction::triggered, this, &OpenGLWindow::gbTypeGBC);
+	connect(type0, &QAction::triggered, this, &OpenGLWindow::gbTypeAUTOSlot);
+	connect(type1, &QAction::triggered, this, &OpenGLWindow::gbTypeGBSlot);
+	connect(type2, &QAction::triggered, this, &OpenGLWindow::gbTypeGBCSlot);
 	hard->addAction(type0);
 	hard->addAction(type1);
 	hard->addAction(type2);
@@ -65,17 +65,17 @@ QMenuBar	*OpenGLWindow::genMenuBar()
 	return menuBar;
 }
 
-void	OpenGLWindow::gbTypeAUTO()
+void	OpenGLWindow::gbTypeAUTOSlot()
 {
 	Machine::setHardware(AUTO);
 }
 
-void	OpenGLWindow::gbTypeGB()
+void	OpenGLWindow::gbTypeGBSlot()
 {
 	Machine::setHardware(GB);
 }
 
-void	OpenGLWindow::gbTypeGBC()
+void	OpenGLWindow::gbTypeGBCSlot()
 {
 	Machine::setHardware(GBC);
 }

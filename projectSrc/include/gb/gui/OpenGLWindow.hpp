@@ -42,9 +42,9 @@ class OpenGLWindow : public QWindow, protected QOpenGLFunctions
 	private slots:
 		void openSlot();
 		void gbDbSlot();
-		void gbTypeAUTO();
-		void gbTypeGB();
-		void gbTypeGBC();
+		void gbTypeAUTOSlot();
+		void gbTypeGBSlot();
+		void gbTypeGBCSlot();
 
 	signals:
 		void openRomSign(std::string path);
