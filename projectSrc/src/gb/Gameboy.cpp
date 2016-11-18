@@ -21,7 +21,6 @@ Gameboy::Gameboy() :
 	, _thread(nullptr)
 	, _romPath("")
 {
-	this->_hardware = AUTO;
 	_stepMode.store(false);
 	_willRun.store(false);
 
