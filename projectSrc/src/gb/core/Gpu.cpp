@@ -73,8 +73,7 @@ unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 
 	uint8_t	sdata1 = _memory->read_byte(tileAddr + (sy * 2));
 	uint8_t	sdata2 = _memory->read_byte(tileAddr + (sy * 2) + 1);
-	unsigned int colorId = ((sdata1 >> rsx) & 1) | (((sdata2 >> rsx) & 1) << 1);
-
+	unsigned int colorId = ((sdata1 >> rsx) & 1) | (((sdata2 >> (rsx)) & 1) << 1);
 	return gbColors[colorId & 3];
 }
 

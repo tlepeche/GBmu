@@ -8,7 +8,7 @@
 
 void	Cpu_z80::rotateLeft(uint8_t *reg)
 {
-	_cpuRegister.c = *reg & 0x80;
+	_cpuRegister.c = (*reg & 0x80) ? 1 : 0;
 	_cpuRegister.n = 0;
 	_cpuRegister.h = 0;
 	*reg <<= 1;
@@ -30,8 +30,8 @@ void	Cpu_z80::rotateRight(uint8_t *reg)
 
 void	Cpu_z80::rotateLeftCarry(uint8_t *reg)
 {
-	int carry = ((_cpuRegister.c == 1) ? 1 : 0);
-	_cpuRegister.c = *reg & 0x01;
+	int carry = _cpuRegister.c;
+	_cpuRegister.c = (*reg & 0x80) ? 1 : 0;
 	_cpuRegister.n = 0;
 	_cpuRegister.h = 0;
 	*reg <<= 1;
@@ -52,7 +52,7 @@ void	Cpu_z80::rotateRightCarry(uint8_t *reg)
 
 void	Cpu_z80::shiftLeft(uint8_t *reg)
 {
-	_cpuRegister.c = *reg & 0x80;
+	_cpuRegister.c = (*reg & 0x80) ? 1 : 0;
 	_cpuRegister.n = 0;
 	_cpuRegister.h = 0;
 	*reg <<= 1;
