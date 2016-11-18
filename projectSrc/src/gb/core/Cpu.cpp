@@ -272,8 +272,8 @@ void Cpu_z80::_resetInterrupt(void)
 void Cpu_z80::execInterrupt(void)
 {
 	if (!this->getIME()
-		|| !this->getHalt()
-		|| !this->getStop())
+		&& !this->getHalt()
+		&& !this->getStop())
 		return ;
 	// Get interrupt here
 	if ((this->_memory->read_byte(REGISTER_IF) & INTER_VBLANK) > 0x00)
