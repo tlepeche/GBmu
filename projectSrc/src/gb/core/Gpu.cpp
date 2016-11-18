@@ -7,7 +7,6 @@
 
 Gpu::Gpu(Memory *memory) :
 	_clock(0),
-	_mode(OAM_READ),
 	_window(nullptr),
 	_memory(memory)
 {
@@ -97,21 +96,25 @@ void	Gpu::scanActLine()
 void	Gpu::step()
 {
 	uint8_t	line = _memory->read_byte(REGISTER_LY);
+	t_gpuMode mode = readGpuMode();
+	t_gpuStat gpuStat = {_memory->read_byte(REGISTER_STAT)};
 
-	switch (_mode)
+	switch (mode)
 	{
 		case OAM_READ:
 			if (_clock >= 80)
 			{
-				_clock = 0;
-				_mode = VRAM_READ;
+				_clock -= 80;
+				writeGpuMode(VRAM_READ);
+				if (gpuStat.interupt_oam)
+					_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_LCDC);
 			}
 			break ;
 		case VRAM_READ:
 			if (_clock >= 172)
 			{
-				_clock = 0;
-				_mode = HBLANK;
+				_clock -= 172;
+				writeGpuMode(HBLANK);
 
 				scanActLine();
 			}
@@ -119,44 +122,59 @@ void	Gpu::step()
 		case HBLANK:
 			if (_clock >= 204)
 			{
-				_clock = 0;
+				_clock -= 204;
 				_memory->write_byte(REGISTER_LY, ++line);
 
 				if (line == 143)
 				{
-					_mode = VBLANK;
+					writeGpuMode(VBLANK);
 					_window->renderLater();
-					_memory->write_byte(REGISTER_IF, 
-							_memory->read_byte(REGISTER_IF) | INTER_VBLANK);
+					_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_VBLANK);
 				}
 				else
 				{
-					_mode = OAM_READ;
+					writeGpuMode(OAM_READ);
 				}
+				if (gpuStat.interupt_hblank)
+					_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_LCDC);
 			}
 			break ;
 		case VBLANK:
 			if (_clock >= 456)
 			{
-				_clock = 0;
+				_clock -= 456;
 				_memory->write_byte(REGISTER_LY, ++line);
 
 				if (line > 153)
 				{
-					_mode = OAM_READ;
+					writeGpuMode(OAM_READ);
 					_memory->write_byte(REGISTER_LY, 0);
 				}
+				if (gpuStat.interupt_vblank)
+					_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_LCDC);
 			}
 			break ;
 		default:
 			break ;
 	}
+	// Check LYC
+	gpuStat = {_memory->read_byte(REGISTER_STAT)};
+	gpuStat.coincidence = (uint8_t)(_memory->read_byte(REGISTER_LY) == _memory->read_byte(REGISTER_LYC));
+	_memory->write_byte(REGISTER_STAT, gpuStat.stat);
+	if (gpuStat.interupt_coincid && gpuStat.coincidence)
+			_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_LCDC);
 }
 
 void	Gpu::init()
 {
-	_mode = OAM_READ;
+	writeGpuMode(OAM_READ);
 	_clock = 0;
+
+	// TODO remove when bios is
+	std::cout << "set GPU to end, remove me when bios is" << std::endl;
+	writeGpuMode(VBLANK);
+	_clock = 455;
+
 	_window = OpenGLWindow::Instance();
 	_window->initialize();
 }
@@ -164,6 +182,17 @@ void	Gpu::init()
 void	Gpu::accClock(unsigned int clock)
 {
 	_clock += clock;
+}
+
+t_gpuMode	Gpu::readGpuMode()
+{
+	return static_cast<t_gpuMode>(_memory->read_byte(REGISTER_STAT) & 0x3);
+}
+
+void		Gpu::writeGpuMode(t_gpuMode mode)
+{
+	uint8_t	stat = _memory->read_byte(REGISTER_STAT);
+	_memory->write_byte(REGISTER_STAT, (stat & 0xFC ) | mode);
 }
 
 t_sprite		Gpu::findSprite(uint8_t line, uint8_t x, unsigned int spriteHeight)

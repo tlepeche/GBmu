@@ -104,6 +104,8 @@ void	Gameboy::stepPressedSlot(unsigned int count)
 	_stepMode.store(true);
 	while (count--) {
 		gstep();
+		if (isBreakpoint(_cpu->_cpuRegister.PC))
+			break ;
 	}
 }
 
