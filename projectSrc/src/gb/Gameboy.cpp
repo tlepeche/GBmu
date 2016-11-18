@@ -21,7 +21,6 @@ Gameboy::Gameboy() :
 	, _thread(nullptr)
 	, _romPath("")
 {
-	this->_hardware = AUTO;
 	_stepMode.store(false);
 	_willRun.store(false);
 
@@ -84,6 +83,7 @@ void	Gameboy::reset()
 		_willRun.store(true);
 		this->_memory->reset();
 		this->_clock->reset();
+		this->_cyclesAcc = 0;
 		if (_memory->loadRom(_romPath.c_str(), this->_hardware))
 			_willRun.store(false);
 		else

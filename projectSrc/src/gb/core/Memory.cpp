@@ -135,6 +135,11 @@ void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 						// P1
 						this->_m_io[(addr & 0xFF)] = (val & 0xF0) | (this->_m_io[(addr & 0xFF)] & 0x0F);
 					}
+					else if (!super && addr == 0xFF04)
+					{
+						// DIV
+						this->_m_io[(addr & 0xFF)] = 0x00;
+					}
 					else if ((addr & 0xFF) <= 0x7F)
 					{
 						// I/O

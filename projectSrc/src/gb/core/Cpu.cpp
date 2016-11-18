@@ -207,7 +207,7 @@ void Cpu_z80::init(htype hardware)
 	this->_memory->write_byte(REGISTER_P1, 0xCF, true);
 	this->_memory->write_byte(REGISTER_SB, 0x00);
 	this->_memory->write_byte(REGISTER_SC, 0x7E);
-	this->_memory->write_byte(REGISTER_DIV, 0xA4); // bios: 0xD3 start: 0x81
+	this->_memory->write_byte(REGISTER_DIV, 0xA4, true); // bios: 0xD3 start: 0x81
 	this->_memory->write_byte(REGISTER_TIMA, 0x00);
 	this->_memory->write_byte(REGISTER_TMA, 0x00);
 	this->_memory->write_byte(REGISTER_TAC, 0x00);
@@ -272,8 +272,8 @@ void Cpu_z80::_resetInterrupt(void)
 void Cpu_z80::execInterrupt(void)
 {
 	if (!this->getIME()
-		|| !this->getHalt()
-		|| !this->getStop())
+		&& !this->getHalt()
+		&& !this->getStop())
 		return ;
 	// Get interrupt here
 	if ((this->_memory->read_byte(REGISTER_IF) & INTER_VBLANK) > 0x00)
