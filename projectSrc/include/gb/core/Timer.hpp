@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <array>
+#include "Memory.hpp"
 
 class Machine;
 
@@ -15,7 +16,7 @@ class Timer
 	** ################################################################
 	*/
 	private:
-		Timer(void);
+		Timer(Memory *mem);
 		virtual ~Timer(void) {};
 
 	/*
@@ -24,40 +25,34 @@ class Timer
 	** ############################################################
 	*/
 	public:
-		void						reset();
-		void 						setCycleAcc(uint8_t cycle);
-		void 						setFrequency(std::array<uint32_t, 4> arrFrequency);
-		void 						setCycleTotal(uint8_t cycle);
-
 	/*
 	** ########################################################
 	** GETTEUR
 	** ########################################################
 	*/
-	public:
-		uint32_t						getArrayFrequency(const uint8_t idFrequency);
-		uint8_t 					getCycleAcc(void);
 
-	/*
-	** ########################################################
-	** METHOD
-	** ########################################################
-	*/
-	public:
-		void						sleep(unsigned char ms);
-
-	private:
-		uint8_t						_getCycleOpcodeTotal(void);
 
 	/*
 	** ########################################################
 	** ATTRIBUTE
 	** ########################################################
 	*/
+	public:
+		void						incTima();
+		void						incDivider(void);
+		void						reset();
+		void						step(unsigned int cycles);
 	private:
-		std::array<uint32_t, 4>		_arrayFrequency;
-		uint8_t						_cycles;
-		uint8_t						_cyclesTotal;
+		std::array<uint32_t, 4>		_arrayFrequency {
+				{
+					static_cast<uint32_t>(4096), static_cast<uint32_t>(262144),
+					static_cast<uint32_t>(65536), static_cast<uint32_t>(16384)
+				}};
+
+		Memory						*_memory;
+		unsigned int				_cycles;
+		unsigned int				_divider;
+		unsigned int				_cyclesAcc;
 };
 
 #endif

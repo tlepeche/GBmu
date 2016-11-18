@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 #include "Rom.hpp"
+#include "Bios.hpp"
+#include "htype.hpp"
 // Define I/O Register Address
 
 // Port / Mode
@@ -53,20 +55,25 @@ class Machine;
 class Memory {
 	friend		Machine;
 	public:
-		void				Init(void);
 		void				reset(void);
 		uint8_t				read_byte(uint16_t addr);
-		void				write_byte(uint16_t addr, uint8_t val);
+		void				write_byte(uint16_t addr, uint8_t val, bool super = false);
 		uint16_t			read_word(uint16_t addr);
-		void				write_word(uint16_t addr, uint16_t val);
+		void				write_word(uint16_t addr, uint16_t val, bool super = false);
+		int					loadRom(const char *file, htype hardware);
+		htype				getRomType(void);
 
-		Rom					_rom;
 	private:
+		Rom					_rom;
+		Bios				_bios;
 		uint8_t				_m_wram[8][4096];
 		uint8_t				_m_vram[2][8192];
 		uint8_t				_m_oam[160];
 		uint8_t				_m_io[128];
 		uint8_t				_m_zp[127];
+		bool				_inBios;
+		htype				_typeBios;
+		const uint8_t		*_codeBios;
 
 		Memory(void);
 		~Memory(void);

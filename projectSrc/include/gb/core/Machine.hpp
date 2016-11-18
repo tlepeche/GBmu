@@ -5,17 +5,16 @@
 #include "Gpu.hpp"
 #include "Memory.hpp"
 #include "Timer.hpp"
+#include "htype.hpp"
 
 class Machine
 {
 	protected:
-		Memory	*_memory;
-		Timer	*_clock;
-		Cpu_z80	*_cpu;
-		Gpu		*_gpu;
-
-		uint8_t _getFrequencyFrameTimeGpu(void);
-		uint8_t _getCycleOpcode(void);
+		Memory			*_memory;
+		Timer			*_clock;
+		Cpu_z80			*_cpu;
+		Gpu				*_gpu;
+		static htype	_hardware;
 
 	public:
 		Machine(void);
@@ -23,6 +22,11 @@ class Machine
 
 		bool			step(void);
 		virtual void	run(void);
+
+		static void		setHardware(htype hardware);
+
+		unsigned int	_cyclesMax;
+		unsigned int	_cyclesAcc;
 
 };
 #endif

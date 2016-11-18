@@ -46,9 +46,10 @@ public:
 	QPushButton		*buttonBpAdd;
 
 	QLineEdit		*lineAddr;
+	QLineEdit		*lineStepCount;
 
 	signals:
-		void	stepPressedSign();
+		void	stepPressedSign(unsigned int count);
 		void	framePressedSign();
 		void	runPressedSign();
 		void	resetPressedSign();
@@ -57,6 +58,7 @@ public:
 		void	bpDelSign(uint16_t addr);
 	public slots:
 		void	stepPressedSlot();
+		void	lineStepCountEditedSlot();
 		void	framePressedSlot();
 		void	runPressedSlot();
 		void	resetPressedSlot();
@@ -73,6 +75,7 @@ private:
 	Memory				*_mem;
 	std::list<uint16_t>	*_breakpoints; // unuse at this time
 	unsigned int		_start;
+	unsigned int		_stepCount;
 };
 
 #endif // DBWINDOW_H

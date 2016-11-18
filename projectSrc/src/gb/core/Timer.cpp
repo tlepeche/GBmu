@@ -1,5 +1,6 @@
 #include "Timer.hpp"
-#include <unistd.h>
+#include "Cpu.hpp"
+#include "registerAddr.hpp"
 
 /*
 ** ############################################################################
@@ -7,8 +8,14 @@
 ** ############################################################################
 */
 
-Timer::Timer(void)
+Timer::Timer(Memory *memory) :
+	_memory(memory),
+	_divider(0),
+	_cyclesAcc(0)
 {
+	this->_memory->write_byte(REGISTER_TIMA, 0x00);
+	this->_memory->write_byte(REGISTER_TMA, 0x00);
+	this->_memory->write_byte(REGISTER_TAC, 0x00);
 	this->reset();
 }
 
@@ -20,52 +27,46 @@ Timer::Timer(void)
 
 void Timer::reset(void)
 {
-	this->_cycles = 0;
+	this->_divider = 0;
+	this->_cyclesAcc = 0;
 }
 
-void Timer::setFrequency(const std::array<uint32_t, 4> arrFrequency)
+void Timer::step(unsigned int cycles)
 {
-	this->_arrayFrequency = arrFrequency;
+	uint8_t			tac = _memory->read_byte(REGISTER_TAC) & 0x3;
+	unsigned int	cyclesAccTima = Cpu_z80::getClockSpeed() / _arrayFrequency[tac];
+
+	_cyclesAcc += cycles;
+	_divider += cycles;
+	if (_cyclesAcc >= cyclesAccTima)
+	{
+		incTima();
+		_cyclesAcc -= cyclesAccTima;
+	}
+	if (_divider >= 0xFF)
+	{
+		incDivider();
+		_divider -= 0xFF;
+	}
 }
 
-void Timer::setCycleTotal(uint8_t cycleTotal)
+void	Timer::incTima(void)
 {
-	this->_cyclesTotal = cycleTotal;
+	uint8_t			tima = _memory->read_byte(REGISTER_TIMA);
+	uint8_t			tma = _memory->read_byte(REGISTER_TMA);
+
+	if (tima == 0xFF)
+		_memory->write_byte(REGISTER_TIMA, tma);
+	else
+		_memory->write_byte(REGISTER_TIMA, tima + 1);
 }
 
-void Timer::setCycleAcc(uint8_t cycles)
+void	Timer::incDivider(void)
 {
-	this->_cycles += cycles;
+	uint8_t			div = _memory->read_byte(REGISTER_DIV);
+
+	if (div == 0xFF)
+		_memory->write_byte(REGISTER_DIV, 0x00);
+	else
+		_memory->write_byte(REGISTER_DIV, div + 1, true);
 }
-
-/*
-** ############################################################################
-** Methodes GETTEUR
-** ############################################################################
-*/
-uint8_t Timer::getCycleAcc(void)
-{
-	return (this->_getCycleOpcodeTotal() - this->_cycles);
-}
-
-uint32_t Timer::getArrayFrequency(const uint8_t idFrequency)
-{
-	return (_arrayFrequency[idFrequency]);
-}
-
-/*
-** ############################################################################
-** PRIVATE Function
-** ############################################################################
-*/
-
-void Timer::sleep(unsigned char ms)
-{
-	usleep(ms);
-}
-
-uint8_t Timer::_getCycleOpcodeTotal(void)
-{
-	return (this->_cyclesTotal);
-}
-

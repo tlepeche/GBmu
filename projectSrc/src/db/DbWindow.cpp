@@ -15,7 +15,7 @@ QTimer timer;
 #include <iostream>
 #include <sstream>
 
-static inline
+	static inline
 void customSetItem(QTableWidget* table, int x, int y, const char *format, int value)
 {
 	char	buffer[32];
@@ -24,7 +24,7 @@ void customSetItem(QTableWidget* table, int x, int y, const char *format, int va
 	table->setItem(x, y, new QTableWidgetItem(buffer));
 }
 
-template <typename T>
+	template <typename T>
 T	QStringToHexInt(QString& s)
 {
 	std::stringstream	ss;
@@ -36,14 +36,15 @@ T	QStringToHexInt(QString& s)
 }
 
 DbWindow::DbWindow(t_register* r, Memory* mem, std::list<uint16_t> *breakpoint) :
-    QDialog(nullptr),
-    ui(new Ui::DbWindow),
+	QDialog(nullptr),
+	ui(new Ui::DbWindow),
 	_r(r),
 	_mem(mem),
 	_breakpoints(breakpoint),
-	_start(0xD000)
+	_start(0xD000),
+	_stepCount(1)
 {
-    ui->setupUi(this);
+	ui->setupUi(this);
 
 	tableRegisters		= this->findChild<QTableWidget*>("tableRegisters");
 	tableOtherRegisters	= this->findChild<QTableWidget*>("tableOtherRegisters");
@@ -61,6 +62,7 @@ DbWindow::DbWindow(t_register* r, Memory* mem, std::list<uint16_t> *breakpoint) 
 	buttonBpAdd			= this->findChild<QPushButton*>("buttonBpAdd");
 
 	lineAddr			= this->findChild<QLineEdit*>("lineAddr");
+	lineStepCount		= this->findChild<QLineEdit*>("lineStepCount");
 	tableMemory->resizeColumnsToContents();
 
 	connect(buttonStep, &QPushButton::pressed, this, &DbWindow::stepPressedSlot);
@@ -71,6 +73,7 @@ DbWindow::DbWindow(t_register* r, Memory* mem, std::list<uint16_t> *breakpoint) 
 	connect(buttonBpAdd, &QPushButton::pressed, this, &DbWindow::bpAddPressedSlot);
 	connect(listBreakpoint, &QListWidget::itemDoubleClicked, this, &DbWindow::bpDoubleClikedSlot);
 	connect(lineAddr, &QLineEdit::editingFinished, this, &DbWindow::lineAddrEditedSlot);
+	connect(lineStepCount, &QLineEdit::editingFinished, this, &DbWindow::lineStepCountEditedSlot);
 
 	connect(&timer, &QTimer::timeout, this, &DbWindow::updateAllSlot);
 	timer.start(100);
@@ -185,15 +188,25 @@ void DbWindow::updateDisassembler(t_register& r, Memory& mem)
 		char	buffer[32] = "%.2X";
 
 		opcode				= mem.read_byte(pc);
-		t_opcode&	instr	= _opcodeMap[opcode];
+		t_opcode&	instr = _opcodeMap[opcode];
 
-		if (instr.lengthData > 1) {
+
+		if (opcode != 0xcb)
+		{
+			if (instr.lengthData > 1) {
+				data1 = mem.read_byte(pc + 1);
+				sprintf(buffer, "%%.2X %.2X", data1);
+			}
+			if (instr.lengthData > 2) {
+				data2 = mem.read_byte(pc + 2);
+				sprintf(buffer, "%%.2X %.2X %.2X", data1, data2);
+			}
+		}
+		else
+		{
+			instr = _CBopcodeMap[mem.read_byte(pc + 1)];
 			data1 = mem.read_byte(pc + 1);
 			sprintf(buffer, "%%.2X %.2X", data1);
-		}
-		if (instr.lengthData > 2) {
-			data2 = mem.read_byte(pc + 2);
-			sprintf(buffer, "%%.2X %.2X %.2X", data1, data2);
 		}
 		customSetItem(tableDisassembler, i, 0, "%.4X", pc);
 		customSetItem(tableDisassembler, i, 1, instr.instructionName.c_str(), 0);
@@ -216,16 +229,23 @@ void DbWindow::updateMemory(Memory& m)
 
 void	DbWindow::lineAddrEditedSlot()
 {
-	unsigned int		max = 0xFFFF - 8 * 0x10;
+	unsigned int		max = 0xFF70;
 	QString				text = lineAddr->text();
-	_start = QStringToHexInt<unsigned int>(text);
+	_start = QStringToHexInt<unsigned int>(text) & 0xFFF0;
 	if (_start >= max)
 		_start = max;
 }
 
+void	DbWindow::lineStepCountEditedSlot()
+{
+	QString		text = lineStepCount->text();
+	_stepCount = QStringToHexInt<unsigned int>(text);
+	lineStepCount->clearFocus();
+}
+
 void	DbWindow::stepPressedSlot()
 {
-	emit	stepPressedSign();
+	emit	stepPressedSign(_stepCount);
 }
 
 void	DbWindow::framePressedSlot()
@@ -256,8 +276,8 @@ void	DbWindow::bpAddPressedSlot()
 	uint16_t			addr;
 
 	QString text = QInputDialog::getText(this, tr("Breakpoint add"),
-			                                   tr("Breakpoint addr:"), QLineEdit::Normal,
-											   "0000", &ok);
+			tr("Breakpoint addr:"), QLineEdit::Normal,
+			"0000", &ok);
 
 	if (ok)
 	{
@@ -296,5 +316,5 @@ void	DbWindow::updateAllSlot()
 
 DbWindow::~DbWindow()
 {
-    delete ui;
+	delete ui;
 }

@@ -27,6 +27,8 @@ class OpenGLWindow : public QWindow, protected QOpenGLFunctions
 
 		virtual void initialize();
 
+		virtual void keyReleaseEvent(QKeyEvent *e) override;
+		virtual void keyPressEvent(QKeyEvent *e) override;
 		void setAnimating(bool animating);
 		//void changeFormat(QImage::Format f);
 		void drawPixel(uint16_t addr, uint8_t r, uint8_t g, uint8_t b);
@@ -40,10 +42,16 @@ class OpenGLWindow : public QWindow, protected QOpenGLFunctions
 	private slots:
 		void openSlot();
 		void gbDbSlot();
+		void gbTypeAUTOSlot();
+		void gbTypeGBSlot();
+		void gbTypeGBCSlot();
 
 	signals:
 		void openRomSign(std::string path);
 		void gbDbSign();
+		void keyPressSign(int key);
+		void keyReleaseSign(int key);
+
 
 	protected:
 		bool event(QEvent *event) Q_DECL_OVERRIDE;

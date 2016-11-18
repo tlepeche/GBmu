@@ -24,8 +24,9 @@ SOURCES  += src/main.cpp \
 			src/gb/core/Gpu.cpp \
 			src/gb/core/Timer.cpp \
 			src/gb/Gameboy.cpp \
-			src/gb/core/CpuOpcode.cpp
-
+			src/gb/core/CpuOpcode.cpp \
+			src/gb/core/CpuCbOpcode.cpp \
+			src/gb/core/Bios.cpp
 
 HEADERS  += include/gb/gui/OpenGLWindow.hpp \
 			include/db/DbWindow.hpp
