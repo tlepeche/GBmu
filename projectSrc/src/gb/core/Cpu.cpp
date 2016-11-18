@@ -172,6 +172,8 @@ void Cpu_z80::init(htype hardware)
 	setStepState(true);
 	this->_IME = false;
 	this->_holdIME = false;
+	this->_halt = false;
+	this->_stop = false;
 
 	//init register cpu
 	this->_cpuRegister.A = hardware == GB ? 0x01 : 0x11;
