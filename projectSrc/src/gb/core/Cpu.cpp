@@ -227,7 +227,7 @@ void Cpu_z80::init(htype hardware)
 	this->_memory->write_byte(REGISTER_STAT, 0x81); // bios: 0x80 start: 0x81
 	this->_memory->write_byte(REGISTER_SCY, 0x00);
 	this->_memory->write_byte(REGISTER_SCX, 0x00);
-	this->_memory->write_byte(REGISTER_LY, 0x00); // bios: 0x00 start: 0x99
+	this->_memory->write_byte(REGISTER_LY, 0x99); // bios: 0x00 start: 0x99
 	this->_memory->write_byte(REGISTER_LYC, 0x00);
 	this->_memory->write_byte(REGISTER_DMA, 0xFF);
 	this->_memory->write_byte(REGISTER_BGP, 0xFC); // edelangh: this is bullshit !!
