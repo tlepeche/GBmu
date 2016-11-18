@@ -6,6 +6,8 @@
 #define DEBUG_ROM 1
 #define DEBUG_GPU
 
+htype	Machine::_hardware = AUTO;
+
 /*
 ** ############################################################################
 ** PUBLIC Function
@@ -50,3 +52,7 @@ void Machine::run(void)
 	this->run();
 }
 
+void Machine::setHardware(htype hardware)
+{
+	_hardware = hardware;
+}

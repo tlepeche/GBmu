@@ -1,4 +1,5 @@
 #include "OpenGLWindow.hpp"
+#include "Machine.hpp"
 
 #include <QCoreApplication>
 #include <QOpenGLContext>
@@ -48,7 +49,35 @@ QMenuBar	*OpenGLWindow::genMenuBar()
 	menu->addAction(gbDbAct); gbDbAct->setShortcut(tr("Ctrl+D"));
 	menuBar->addMenu(menu);
 
+	QMenu*		hard	= new QMenu(tr("Model"));
+	QAction*	type0	= new QAction(tr("AUTO"));
+	QAction*	type1	= new QAction(tr("GB"));
+	QAction*	type2	= new QAction(tr("GBC"));
+
+	connect(type0, &QAction::triggered, this, &OpenGLWindow::gbTypeAUTO);
+	connect(type1, &QAction::triggered, this, &OpenGLWindow::gbTypeGB);
+	connect(type2, &QAction::triggered, this, &OpenGLWindow::gbTypeGBC);
+	hard->addAction(type0);
+	hard->addAction(type1);
+	hard->addAction(type2);
+	menuBar->addMenu(hard);
+
 	return menuBar;
+}
+
+void	OpenGLWindow::gbTypeAUTO()
+{
+	Machine::setHardware(AUTO);
+}
+
+void	OpenGLWindow::gbTypeGB()
+{
+	Machine::setHardware(GB);
+}
+
+void	OpenGLWindow::gbTypeGBC()
+{
+	Machine::setHardware(GBC);
 }
 
 void	OpenGLWindow::openSlot()
