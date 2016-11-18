@@ -39,6 +39,7 @@ class Timer
 	*/
 	public:
 		void						incTima();
+		void						incDivider(void);
 		void						reset();
 		void						step(unsigned int cycles);
 	private:
@@ -48,9 +49,10 @@ class Timer
 					static_cast<uint32_t>(65536), static_cast<uint32_t>(16384)
 				}};
 
-		unsigned int				_cycles;
-		unsigned int				_cyclesAcc;
 		Memory						*_memory;
+		unsigned int				_cycles;
+		unsigned int				_divider;
+		unsigned int				_cyclesAcc;
 };
 
 #endif
