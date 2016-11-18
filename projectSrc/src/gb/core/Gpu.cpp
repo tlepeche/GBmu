@@ -104,7 +104,7 @@ void	Gpu::step()
 		case OAM_READ:
 			if (_clock >= 80)
 			{
-				_clock = 0;
+				_clock -= 80;
 				writeGpuMode(VRAM_READ);
 				if (gpuStat.interupt_oam)
 					_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_LCDC);
@@ -113,7 +113,7 @@ void	Gpu::step()
 		case VRAM_READ:
 			if (_clock >= 172)
 			{
-				_clock = 0;
+				_clock -= 172;
 				writeGpuMode(HBLANK);
 
 				scanActLine();
@@ -122,7 +122,7 @@ void	Gpu::step()
 		case HBLANK:
 			if (_clock >= 204)
 			{
-				_clock = 0;
+				_clock -= 204;
 				_memory->write_byte(REGISTER_LY, ++line);
 
 				if (line == 143)
@@ -142,7 +142,7 @@ void	Gpu::step()
 		case VBLANK:
 			if (_clock >= 456)
 			{
-				_clock = 0;
+				_clock -= 456;
 				_memory->write_byte(REGISTER_LY, ++line);
 
 				if (line > 153)
