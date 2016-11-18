@@ -167,14 +167,7 @@ void	Gpu::step()
 
 void	Gpu::init()
 {
-	writeGpuMode(OAM_READ);
 	_clock = 0;
-
-	// TODO remove when bios is
-	std::cout << "set GPU to end, remove me when bios is" << std::endl;
-	writeGpuMode(VBLANK);
-	_clock = 455;
-
 	_window = OpenGLWindow::Instance();
 	_window->initialize();
 }
