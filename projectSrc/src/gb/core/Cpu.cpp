@@ -209,10 +209,10 @@ void Cpu_z80::init(htype hardware)
 	this->_memory->write_byte(REGISTER_P1, 0xCF, true);
 	this->_memory->write_byte(REGISTER_SB, 0x00);
 	this->_memory->write_byte(REGISTER_SC, 0x7E);
-	this->_memory->write_byte(REGISTER_DIV, 0xA4, true); // bios: 0xD3 start: 0x81
+	this->_memory->write_byte(REGISTER_DIV, 0xD3, true); // bios: 0xD3 start: 0x81
 	this->_memory->write_byte(REGISTER_TIMA, 0x00);
 	this->_memory->write_byte(REGISTER_TMA, 0x00);
-	this->_memory->write_byte(REGISTER_TAC, 0x00);
+	this->_memory->write_byte(REGISTER_TAC, 0xF8);
 	this->_memory->write_byte(REGISTER_KEY1, 0xFF);
 	this->_memory->write_byte(REGISTER_VBK, 0xFF);
 	this->_memory->write_byte(REGISTER_HDMA1, 0xFF);
@@ -245,9 +245,6 @@ void Cpu_z80::init(htype hardware)
 
 	this->_opcodeInProgress = this->_getOpcode(this->_memory->read_byte(this->_cpuRegister.PC));
 	this->_setDataOpcode();
-
-	//TODO: Setup loop, i think this one is up when rom memory is plugged
-	this->_setHightBit(REGISTER_TAC, 2);
 }
 
 /*

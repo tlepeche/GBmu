@@ -36,17 +36,20 @@ void Timer::step(unsigned int cycles)
 	uint8_t			tac = _memory->read_byte(REGISTER_TAC) & 0x3;
 	unsigned int	cyclesAccTima = Cpu_z80::getClockSpeed() / _arrayFrequency[tac];
 
-	_cyclesAcc += cycles;
-	_divider += cycles;
-	if (_cyclesAcc >= cyclesAccTima)
+	if ((tac & 0x4) == 0x4) // Flag timer stop
 	{
-		incTima();
-		_cyclesAcc -= cyclesAccTima;
-	}
-	if (_divider >= 0xFF)
-	{
-		incDivider();
-		_divider -= 0xFF;
+		_cyclesAcc += cycles;
+		_divider += cycles;
+		if (_cyclesAcc >= cyclesAccTima)
+		{
+			incTima();
+			_cyclesAcc -= cyclesAccTima;
+		}
+		if (_divider >= 0xFF)
+		{
+			incDivider();
+			_divider -= 0xFF;
+		}
 	}
 }
 
