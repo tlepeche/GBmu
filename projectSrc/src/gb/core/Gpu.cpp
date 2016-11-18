@@ -17,8 +17,8 @@ Gpu::~Gpu()
 
 }
 
-#define TILES0_ADDR 0x8000 // Go to 0x8FFF /    0->255
-#define TILES1_ADDR 0x8800 // Go to 0x97FF / -128->127
+#define TILES1_ADDR 0x8000 // Go to 0x8FFF /    0->255
+#define TILES0_ADDR 0x8800 // Go to 0x97FF / -128->127
 
 #define TILE_W 8 // bits
 #define TILE_H 8
@@ -32,7 +32,7 @@ Gpu::~Gpu()
 
 std::string	Gpu::toString()
 {
-	t_gpuControl	gpuC = (t_gpuControl){_memory->read_byte(REGISTER_LCDC)};
+	t_gpuControl	gpuC = (t_gpuControl){{_memory->read_byte(REGISTER_LCDC)}};
 	char			buf[32];
 
 	std::string			s;
@@ -55,7 +55,7 @@ unsigned int gbColors[4] = {0x00FFFFFF, 0x00C0C0C0, 0x00606060, 0x00000000};
 
 unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 {
-	t_gpuControl	gpuC = (t_gpuControl){_memory->read_byte(REGISTER_LCDC)};
+	t_gpuControl	gpuC = (t_gpuControl){{_memory->read_byte(REGISTER_LCDC)}};
 	uint8_t			scy = _memory->read_byte(REGISTER_SCY);
 	uint8_t			scx = _memory->read_byte(REGISTER_SCX);
 
@@ -97,7 +97,7 @@ void	Gpu::step()
 {
 	uint8_t	line = _memory->read_byte(REGISTER_LY);
 	t_gpuMode mode = readGpuMode();
-	t_gpuStat gpuStat = {_memory->read_byte(REGISTER_STAT)};
+	t_gpuStat gpuStat = {{_memory->read_byte(REGISTER_STAT)}};
 
 	switch (mode)
 	{
@@ -158,7 +158,7 @@ void	Gpu::step()
 			break ;
 	}
 	// Check LYC
-	gpuStat = {_memory->read_byte(REGISTER_STAT)};
+	gpuStat = {{_memory->read_byte(REGISTER_STAT)}};
 	gpuStat.coincidence = (uint8_t)(_memory->read_byte(REGISTER_LY) == _memory->read_byte(REGISTER_LYC));
 	_memory->write_byte(REGISTER_STAT, gpuStat.stat);
 	if (gpuStat.interupt_coincid && gpuStat.coincidence)
@@ -226,7 +226,7 @@ unsigned int	Gpu::findSpritePixel(t_sprite sprite, uint8_t line, uint8_t x, uint
 	x = sprite.x_flip ? TILE_W - (x - sprite.x_pos) : x - sprite.x_pos;
 	line = sprite.y_flip ? spriteHeight + line - sprite.y_pos : line - sprite.y_pos;
 
-	unsigned int tileAddr = (TILES0_ADDR + (sprite.tile_nbr * 16));
+	unsigned int tileAddr = (TILES1_ADDR + (sprite.tile_nbr * 16));
 	unsigned int start = tileAddr + line;
 	uint8_t sdata1 = _memory->read_byte(start * 2);
 	uint8_t sdata2 = _memory->read_byte(start * 2 + 1);
@@ -237,7 +237,7 @@ unsigned int	Gpu::findSpritePixel(t_sprite sprite, uint8_t line, uint8_t x, uint
 
 unsigned int	Gpu::scanSprite(uint8_t line, uint8_t x, unsigned int pixel)
 {
-	t_gpuControl	gpuC = (t_gpuControl){_memory->read_byte(REGISTER_LCDC)};
+	t_gpuControl	gpuC = (t_gpuControl){{_memory->read_byte(REGISTER_LCDC)}};
 	unsigned int	spritePixel = 0xFFFFFF;
 
 	if (gpuC.sprite)

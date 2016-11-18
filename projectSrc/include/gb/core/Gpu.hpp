@@ -14,6 +14,7 @@ typedef	enum	s_gpuMode
 typedef struct	s_gpuStat
 {
 	union {
+		uint8_t stat;
 		struct {
 			uint8_t unused_bit:1;
 			uint8_t	interupt_coincid:1;
@@ -23,7 +24,6 @@ typedef struct	s_gpuStat
 			uint8_t	coincidence:1;
 			uint8_t mode:2;
 		};
-		uint8_t stat;
 	};
 }				t_gpuStat;
 
