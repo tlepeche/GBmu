@@ -40,7 +40,7 @@ bool Machine::step(void)
 		if (_cyclesAcc >= _cyclesMax / 60)
 		{
 			_cyclesAcc -= _cyclesMax / 60;
-			usleep(16000);
+			// TODO: usleep(16000);
 		}
 	}
 	return (true);

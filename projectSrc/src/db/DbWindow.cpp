@@ -239,7 +239,7 @@ void	DbWindow::lineAddrEditedSlot()
 void	DbWindow::lineStepCountEditedSlot()
 {
 	QString		text = lineStepCount->text();
-	_stepCount = QStringToHexInt<unsigned int>(text);
+	_stepCount = std::stoi(text.toStdString());
 	lineStepCount->clearFocus();
 }
 

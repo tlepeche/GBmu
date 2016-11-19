@@ -51,7 +51,7 @@ void	Gameboy::stopThread()
 
 void	Gameboy::gstep()
 {
-	if (!step()) step();
+	step();
 	if (isBreakpoint(_cpu->_cpuRegister.PC))
 		_stepMode.store(true);
 }
@@ -113,13 +113,18 @@ void	Gameboy::stepPressedSlot(unsigned int count)
 void	Gameboy::framePressedSlot()
 {
 	_stepMode.store(true);
+	bool			cte = true;
 
 	uint16_t	start;
 	start = _memory->read_byte(REGISTER_LY);
-	while (start == _memory->read_byte(REGISTER_LY))
+	while (start == _memory->read_byte(REGISTER_LY) && cte) {
 		gstep();
-	while (start != _memory->read_byte(REGISTER_LY))
+		cte = !isBreakpoint(_cpu->_cpuRegister.PC);
+	}
+	while (start != _memory->read_byte(REGISTER_LY) && cte) {
 		gstep();
+		cte = !isBreakpoint(_cpu->_cpuRegister.PC);
+	}
 }
 
 void	Gameboy::resetPressedSlot()
