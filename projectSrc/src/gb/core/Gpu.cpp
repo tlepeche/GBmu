@@ -64,7 +64,7 @@ unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 	unsigned int tileId = _memory->read_byte(
 			tileMapAddr
 			+ (((line / TILE_W) + scy) * MAP_W)
-			+ (x / TILE_W) + scx); // TODO: use scroll X / Y here
+			+ (x / TILE_W) + scx);
 	unsigned int tileAddr = tileSetAddr + tileId * TILE_H * 2;
 
 	unsigned int sy = line % TILE_W;
