@@ -47,8 +47,9 @@ t_opcode Cpu_z80::_getOpcode(uint8_t opcode)
 
 uint8_t	Cpu_z80::_getCycleOpcode(void)
 {
-	return this->_opcodeInProgress.cycleOpcodeNoFlag > this->_opcodeInProgress.cycleOpcodeFlag ?
-		this->_opcodeInProgress.cycleOpcodeNoFlag : this->_opcodeInProgress.cycleOpcodeFlag;
+	if (_cpuRegister.F & _opcodeInProgress.mask)
+		return _opcodeInProgress.cycleOpcodeNoFlag;
+	return _opcodeInProgress.cycleOpcodeFlag;
 }
 
 
@@ -153,12 +154,13 @@ uint8_t Cpu_z80::nbCycleNextOpCode(void)
 	return this->_getCycleOpcode();
 }
 
+#include <unistd.h>
 uint8_t Cpu_z80::executeNextOpcode(void)
 {
 	if (this->_opcodeInProgress.functionOpcode == NULL)
 		printf("Function not yet implemented: opcode(%.2X), PC = 0x%02x\n", this->_opcodeInProgress.opcode, _cpuRegister.PC);
 	else
-		this->_opcodeInProgress.functionOpcode();
+			this->_opcodeInProgress.functionOpcode();
 	uint8_t cycle = this->_getCycleOpcode();
 	this->_nextPtr();
 	setStepState(true);
@@ -183,6 +185,7 @@ void Cpu_z80::init(htype hardware)
 	this->_cpuRegister.HL = 0x014D;
 
 	this->_cpuRegister.PC = 0x00;
+//	this->_cpuRegister.PC = 0x0100;
 	this->_cpuRegister.SP = 0xFFFE;
 
 	//init register memory
