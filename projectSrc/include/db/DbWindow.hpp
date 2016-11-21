@@ -44,9 +44,13 @@ public:
 	QPushButton		*buttonRun;
 	QPushButton		*buttonOpen;
 	QPushButton		*buttonBpAdd;
+	QPushButton		*okEdit;
 
 	QLineEdit		*lineAddr;
 	QLineEdit		*lineStepCount;
+	QLineEdit		*addrEdit;
+	QLineEdit		*valEdit;
+
 
 	signals:
 		void	stepPressedSign(unsigned int count);
@@ -67,6 +71,7 @@ public:
 		void	bpDoubleClikedSlot(QListWidgetItem *item);
 		void	updateAllSlot();
 		void	lineAddrEditedSlot();
+		void	editAddrSlot();
 
 private:
     Ui::DbWindow	*ui;

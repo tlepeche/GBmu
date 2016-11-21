@@ -60,9 +60,13 @@ DbWindow::DbWindow(t_register* r, Memory* mem, std::list<uint16_t> *breakpoint) 
 	buttonRun			= this->findChild<QPushButton*>("buttonRun");
 	buttonOpen			= this->findChild<QPushButton*>("buttonOpen");
 	buttonBpAdd			= this->findChild<QPushButton*>("buttonBpAdd");
+	okEdit				= this->findChild<QPushButton*>("okEdit");
 
 	lineAddr			= this->findChild<QLineEdit*>("lineAddr");
 	lineStepCount		= this->findChild<QLineEdit*>("lineStepCount");
+	addrEdit			= this->findChild<QLineEdit*>("addrEdit");
+	valEdit				= this->findChild<QLineEdit*>("valEdit");
+
 	tableMemory->resizeColumnsToContents();
 
 	connect(buttonStep, &QPushButton::pressed, this, &DbWindow::stepPressedSlot);
@@ -74,6 +78,7 @@ DbWindow::DbWindow(t_register* r, Memory* mem, std::list<uint16_t> *breakpoint) 
 	connect(listBreakpoint, &QListWidget::itemDoubleClicked, this, &DbWindow::bpDoubleClikedSlot);
 	connect(lineAddr, &QLineEdit::editingFinished, this, &DbWindow::lineAddrEditedSlot);
 	connect(lineStepCount, &QLineEdit::editingFinished, this, &DbWindow::lineStepCountEditedSlot);
+	connect(okEdit, &QPushButton::pressed, this, &DbWindow::editAddrSlot);
 
 	connect(&timer, &QTimer::timeout, this, &DbWindow::updateAllSlot);
 	timer.start(100);
@@ -236,6 +241,24 @@ void	DbWindow::lineAddrEditedSlot()
 		_start = max;
 }
 
+void DbWindow::editAddrSlot()
+{
+	QString				addr = addrEdit->text();
+	QString				val = valEdit->text();
+	uint16_t addrValue = QStringToHexInt<unsigned int>(addr);
+
+	if (val.length() == 4)
+	{
+		uint8_t valValue = QStringToHexInt<uint8_t>(val);
+		_mem->write_word((uint16_t)addrValue, (uint16_t)valValue, true);
+	}
+	else if (val.length() == 2)
+	{
+		uint16_t valValue = QStringToHexInt<uint16_t>(val);
+		_mem->write_byte((uint16_t)addrValue, (uint8_t)valValue, true);
+	}
+}
+
 void	DbWindow::lineStepCountEditedSlot()
 {
 	QString		text = lineStepCount->text();
@@ -305,7 +328,7 @@ void	DbWindow::bpDoubleClikedSlot(QListWidgetItem *item)
 	bpDel(item);
 }
 
-// This function il call every 100ms see _timer 
+// This function il call every 100ms see _timer
 void	DbWindow::updateAllSlot()
 {
 	updateRegister(*_r);
