@@ -33,8 +33,9 @@ void Timer::reset(void)
 
 void Timer::step(unsigned int cycles)
 {
-	uint8_t			tac = _memory->read_byte(REGISTER_TAC) & 0x3;
-	unsigned int	cyclesAccTima = Cpu_z80::getClockSpeed() / _arrayFrequency[tac];
+	uint8_t			tac = _memory->read_byte(REGISTER_TAC);
+	uint8_t			freqId = tac & 0x3;
+	unsigned int	cyclesAccTima = Cpu_z80::getClockSpeed() / _arrayFrequency[freqId];
 
 	_divider += cycles;
 	if (_divider >= Cpu_z80::getClockSpeed() / 16384)
