@@ -50,6 +50,7 @@ class Gpu
 		void	init();
 		void	accClock(unsigned int clock);
 		void	scanActLine();
+		void	setLy(uint8_t line);
 
 		t_gpuMode	readGpuMode(void);
 		void		writeGpuMode(t_gpuMode mode);
