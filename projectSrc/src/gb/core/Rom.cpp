@@ -308,7 +308,7 @@ void		Rom::_writeMbc2(uint16_t addr, uint8_t val)
 			break;
 		case 0xA000:
 			// ERAM
-			if ((addr & 0x0F00) <= 0x01)
+			if ((addr & 0x0F00) <= 0x0100)
 			{
 				if (this->_mbcRamAccess())
 					this->_eram[addr] = val;
