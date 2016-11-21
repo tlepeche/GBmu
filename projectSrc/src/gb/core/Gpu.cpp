@@ -92,12 +92,11 @@ void	Gpu::scanActLine()
 
 #include "interrupt.hpp"
 
-void	Gpu::incLy()
+void	Gpu::setLy(uint8_t line)
 {
-	uint8_t	line = _memory->read_byte(REGISTER_LY);
 	t_gpuStat gpuStat = {{_memory->read_byte(REGISTER_STAT)}};
 
-	_memory->write_byte(REGISTER_LY, ++line);
+	_memory->write_byte(REGISTER_LY, line);
 	// Check LYC
 	gpuStat = {{_memory->read_byte(REGISTER_STAT)}};
 	gpuStat.coincidence = (uint8_t)(_memory->read_byte(REGISTER_LY) == _memory->read_byte(REGISTER_LYC));
@@ -136,7 +135,7 @@ void	Gpu::step()
 			if (_clock >= 204)
 			{
 				_clock -= 204;
-				incLy();
+				setLy(++line);
 
 				if (line == 143)
 				{
@@ -156,12 +155,12 @@ void	Gpu::step()
 			if (_clock >= 456)
 			{
 				_clock -= 456;
-				incLy();
+				setLy(++line);
 
 				if (line > 153)
 				{
 					writeGpuMode(OAM_READ);
-					_memory->write_byte(REGISTER_LY, 0);
+					setLy(0);
 				}
 				if (gpuStat.interupt_vblank)
 					_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_LCDC);
@@ -192,7 +191,7 @@ t_gpuMode	Gpu::readGpuMode()
 void		Gpu::writeGpuMode(t_gpuMode mode)
 {
 	uint8_t	stat = _memory->read_byte(REGISTER_STAT);
-	_memory->write_byte(REGISTER_STAT, (stat & 0xFC ) | mode);
+	_memory->write_byte(REGISTER_STAT, (stat & 0xFC ) | (mode & 0x3));
 }
 
 t_sprite		Gpu::findSprite(uint8_t line, uint8_t x, unsigned int spriteHeight)
