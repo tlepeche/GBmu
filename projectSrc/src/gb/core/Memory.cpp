@@ -9,11 +9,11 @@ Memory::~Memory(void) {}
 
 void			Memory::reset(void)
 {
-	memset(this->_m_wram, 0, 32768);
-	memset(this->_m_vram, 0, 16384);
-	memset(this->_m_oam, 0, 160);
-	memset(this->_m_io, 0, 127);
-	memset(this->_m_zp, 0, 127);
+	memset(this->_m_wram, 0xFF, 32768);
+	memset(this->_m_vram, 0xFF, 16384);
+	memset(this->_m_oam, 0xFF, 160);
+	memset(this->_m_io, 0xFF, 127);
+	memset(this->_m_zp, 0xFF, 127);
 	this->_inBios = true;
 }
 
