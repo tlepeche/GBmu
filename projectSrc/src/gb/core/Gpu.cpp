@@ -92,6 +92,20 @@ void	Gpu::scanActLine()
 
 #include "interrupt.hpp"
 
+void	Gpu::incLy()
+{
+	uint8_t	line = _memory->read_byte(REGISTER_LY);
+	t_gpuStat gpuStat = {{_memory->read_byte(REGISTER_STAT)}};
+
+	_memory->write_byte(REGISTER_LY, ++line);
+	// Check LYC
+	gpuStat = {{_memory->read_byte(REGISTER_STAT)}};
+	gpuStat.coincidence = (uint8_t)(_memory->read_byte(REGISTER_LY) == _memory->read_byte(REGISTER_LYC));
+	_memory->write_byte(REGISTER_STAT, gpuStat.stat);
+	if (gpuStat.interupt_coincid && gpuStat.coincidence)
+			_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_LCDC);
+}
+
 void	Gpu::step()
 {
 	uint8_t	line = _memory->read_byte(REGISTER_LY);
@@ -122,7 +136,7 @@ void	Gpu::step()
 			if (_clock >= 204)
 			{
 				_clock -= 204;
-				_memory->write_byte(REGISTER_LY, ++line);
+				incLy();
 
 				if (line == 143)
 				{
@@ -142,7 +156,7 @@ void	Gpu::step()
 			if (_clock >= 456)
 			{
 				_clock -= 456;
-				_memory->write_byte(REGISTER_LY, ++line);
+				incLy();
 
 				if (line > 153)
 				{
@@ -156,12 +170,6 @@ void	Gpu::step()
 		default:
 			break ;
 	}
-	// Check LYC
-	gpuStat = {{_memory->read_byte(REGISTER_STAT)}};
-	gpuStat.coincidence = (uint8_t)(_memory->read_byte(REGISTER_LY) == _memory->read_byte(REGISTER_LYC));
-	_memory->write_byte(REGISTER_STAT, gpuStat.stat);
-	if (gpuStat.interupt_coincid && gpuStat.coincidence)
-			_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_LCDC);
 }
 
 void	Gpu::init()
