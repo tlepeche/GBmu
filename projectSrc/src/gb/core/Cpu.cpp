@@ -212,7 +212,7 @@ void Cpu_z80::init(htype hardware)
 	this->_memory->write_byte(REGISTER_DIV, 0xD3, true); // bios: 0xD3 start: 0x81
 	this->_memory->write_byte(REGISTER_TIMA, 0x00);
 	this->_memory->write_byte(REGISTER_TMA, 0x00);
-	this->_memory->write_byte(REGISTER_TAC, 0xF8);
+	this->_memory->write_byte(REGISTER_TAC, 0xFC);
 	this->_memory->write_byte(REGISTER_KEY1, 0xFF);
 	this->_memory->write_byte(REGISTER_VBK, 0xFF);
 	this->_memory->write_byte(REGISTER_HDMA1, 0xFF);
@@ -223,7 +223,7 @@ void Cpu_z80::init(htype hardware)
 	this->_memory->write_byte(REGISTER_SVBK, 0xFF);
 	this->_memory->write_byte(REGISTER_IF, 0xE1);
 	this->_memory->write_byte(REGISTER_IE, 0x00);
-	
+
 
 	this->_memory->write_byte(REGISTER_LCDC, 0x91);
 	this->_memory->write_byte(REGISTER_STAT, 0x80); // bios: 0x80 start: 0x81
