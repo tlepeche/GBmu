@@ -645,6 +645,7 @@ class Cpu_z80
 	bool							_getInterrupt(uint8_t interrupt);
 	bool							getHalt(void);
 	bool							getStop(void);
+	uint16_t						getPCRegister(void);
 
 	private:
 		void								_resetInterrupt(void);
