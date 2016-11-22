@@ -24,6 +24,9 @@ Cpu_z80::~Cpu_z80(void)
 {
 }
 
+uint16_t Cpu_z80::getPCRegister(void)
+{ return (this->_cpuRegister.PC); }
+
 uint32_t Cpu_z80::getClockSpeed(void)
 {
 	return CLOCKSPEED;
@@ -339,10 +342,7 @@ void Cpu_z80::execInterrupt(void)
 		this->_cpuRegister.PC = 0x60;
 		this->_loadPtr(this->_cpuRegister.PC);
 	}
-	if ((this->_memory->read_byte(REGISTER_IF) & INTER_TPIN) > 0x00)
-		this->_setStop(false);
 	this->_setHalt(false);
-	this->_resetInterrupt();
 }
 
 void Cpu_z80::_resetPtrAddr(void)

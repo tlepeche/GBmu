@@ -27,20 +27,26 @@ Machine::Machine(void) :
 
 bool Machine::step(void)
 {
-	if (_cyclesAcc < (_cyclesMax / 60))
+	if (!this->_cpu->getHalt() && !this->_cpu->getStop() && _cyclesAcc < (uint32_t)(_cyclesMax / 59.7))
 	{
 		unsigned int cycles = this->_cpu->executeNextOpcode();
 		_cyclesAcc += cycles;
 		this->_clock->step(cycles);
 		this->_gpu->accClock(cycles);
 		this->_gpu->step();
+		if (this->_cpu->getPCRegister() >= 0x100)
+			this->_cpu->execInterrupt();
+	}
+	else if (_cyclesAcc >= (uint32_t)(_cyclesMax / 59.7))
+	{
+		_cyclesAcc = 0;
+		//usleep(16750);
 		this->_cpu->execInterrupt();
 	}
 	else
 	{
-		_cyclesAcc = 0;
-		_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_VBLANK);
-		usleep(16750);
+		if (this->_cpu->getPCRegister() >= 0x100)
+			this->_cpu->execInterrupt();
 	}
 	return (true);
 }
