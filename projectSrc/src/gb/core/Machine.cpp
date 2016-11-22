@@ -1,5 +1,6 @@
 #include "Machine.hpp"
 #include "registerAddr.hpp"
+#include "interrupt.hpp"
 #include <unistd.h>
 
 #define DEBUG_LOOP 1
@@ -26,22 +27,20 @@ Machine::Machine(void) :
 
 bool Machine::step(void)
 {
-	this->_cpu->execInterrupt();
-	if (!this->_cpu->getHalt() && !this->_cpu->getStop())
+	if (_cyclesAcc < (_cyclesMax / 60))
 	{
 		unsigned int cycles = this->_cpu->executeNextOpcode();
 		_cyclesAcc += cycles;
-
 		this->_clock->step(cycles);
-		this->_gpu->step();
 		this->_gpu->accClock(cycles);
+		this->_gpu->step();
 		this->_cpu->execInterrupt();
-
-		if (_cyclesAcc >= _cyclesMax / 60)
-		{
-			_cyclesAcc -= _cyclesMax / 60;
-			// TODO: usleep(16000);
-		}
+	}
+	else
+	{
+		_cyclesAcc = 0;
+		_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_VBLANK);
+		usleep(16750);
 	}
 	return (true);
 }

@@ -141,7 +141,7 @@ void	Gpu::step()
 				{
 					writeGpuMode(VBLANK);
 					_window->renderLater();
-					_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_VBLANK);
+					//_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_VBLANK);
 				}
 				else
 				{
