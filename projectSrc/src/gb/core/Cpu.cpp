@@ -131,7 +131,8 @@ bool Cpu_z80::getIME(void)
 
 bool Cpu_z80::isInterrupt(void)
 {
-	return (this->_memory->read_byte(REGISTER_IF) & INTER_MASK);
+	uint8_t _IE = _memory->read_byte(REGISTER_IE);
+	return (this->_memory->read_byte(REGISTER_IF) & INTER_MASK & _IE);
 }
 
 bool Cpu_z80::_getInterrupt(uint8_t interrupt)
@@ -280,8 +281,12 @@ void Cpu_z80::execInterrupt(void)
 		&& !this->getHalt()
 		&& !this->getStop())
 		return ;
+	if (this->isInterrupt())
+		this->_setIME(true);
+	uint8_t _IE = _memory->read_byte(REGISTER_IE);
 	// Get interrupt here
-	if ((this->_memory->read_byte(REGISTER_IF) & INTER_VBLANK) > 0x00)
+	if ((this->_memory->read_byte(REGISTER_IF) & INTER_VBLANK) > 0x00
+			&& _IE & INTER_VBLANK)
 	{
 		// push PC on stack
 		this->_cpuRegister.SP -= 2;
@@ -293,7 +298,8 @@ void Cpu_z80::execInterrupt(void)
 		this->_cpuRegister.PC = 0x40;
 		this->_loadPtr(this->_cpuRegister.PC);
 	}
-	else if ((this->_memory->read_byte(REGISTER_IF) & INTER_LCDC) > 0x00)
+	else if ((this->_memory->read_byte(REGISTER_IF) & INTER_LCDC) > 0x00
+			&& _IE & INTER_LCDC)
 	{
 		// push PC on stack
 		this->_cpuRegister.SP -= 2;
@@ -305,7 +311,8 @@ void Cpu_z80::execInterrupt(void)
 		this->_cpuRegister.PC = 0x48;
 		this->_loadPtr(this->_cpuRegister.PC);
 	}
-	else if ((this->_memory->read_byte(REGISTER_IF) & INTER_TOVERF) > 0x00)
+	else if ((this->_memory->read_byte(REGISTER_IF) & INTER_TOVERF) > 0x00
+			&& _IE & INTER_TOVERF)
 	{
 		// push PC on stack
 		this->_cpuRegister.SP -= 2;
@@ -317,7 +324,8 @@ void Cpu_z80::execInterrupt(void)
 		this->_cpuRegister.PC = 0x50;
 		this->_loadPtr(this->_cpuRegister.PC);
 	}
-	else if ((this->_memory->read_byte(REGISTER_IF) & INTER_TIOE) > 0x00)
+	else if ((this->_memory->read_byte(REGISTER_IF) & INTER_TIOE) > 0x00
+			&& _IE & INTER_TIOE)
 	{
 		// push PC on stack
 		this->_cpuRegister.SP -= 2;
@@ -329,7 +337,8 @@ void Cpu_z80::execInterrupt(void)
 		this->_cpuRegister.PC = 0x58;
 		this->_loadPtr(this->_cpuRegister.PC);
 	}
-	else if ((this->_memory->read_byte(REGISTER_IF) & INTER_TPIN) > 0x00)
+	else if ((this->_memory->read_byte(REGISTER_IF) & INTER_TPIN) > 0x00
+			&& _IE & INTER_TPIN)
 	{
 		// push PC on stack
 		this->_setStop(false);

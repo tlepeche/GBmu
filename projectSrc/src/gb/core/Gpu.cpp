@@ -153,6 +153,7 @@ void	Gpu::step()
 
 					if (line == 143)
 					{
+						_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_VBLANK);
 						writeGpuMode(VBLANK);
 						_window->renderLater();
 					}
@@ -172,7 +173,6 @@ void	Gpu::step()
 
 					if (line > 153)
 					{
-						_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_VBLANK);
 						writeGpuMode(OAM_READ);
 						setLy(0);
 					}
