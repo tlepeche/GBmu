@@ -58,7 +58,7 @@ class Gpu
 		unsigned int	scanPixel(uint8_t line, unsigned int x);
 		unsigned int	scanSprite(uint8_t line, uint8_t x, unsigned int pixel);
 		unsigned int	findSpritePixel(t_sprite sprite, uint8_t line, uint8_t x, uint8_t spriteHeight);
-		t_sprite		findSprite(uint8_t line, uint8_t x, unsigned int spriteHeight);
+		bool			findSprite(uint8_t line, uint8_t x, unsigned int spriteHeight, t_sprite *sprites);
 
 		std::string		toString();
 };

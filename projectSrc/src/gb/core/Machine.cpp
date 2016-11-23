@@ -29,7 +29,7 @@ bool Machine::step(void)
 {
 	if (!this->_cpu->getHalt() && !this->_cpu->getStop() && _cyclesAcc < (uint32_t)(_cyclesMax / 59.7))
 	{
-		unsigned int cycles = this->_cpu->executeNextOpcode();
+		uint8_t cycles = this->_cpu->executeNextOpcode();
 		_cyclesAcc += cycles;
 		this->_clock->step(cycles);
 		this->_gpu->accClock(cycles);
@@ -39,8 +39,8 @@ bool Machine::step(void)
 	}
 	else if (_cyclesAcc >= (uint32_t)(_cyclesMax / 59.7))
 	{
-		_cyclesAcc = 0;
-		//usleep(16750);
+		_cyclesAcc -= (uint32_t)(_cyclesMax / 59.7);
+		// usleep(16750);
 		this->_cpu->execInterrupt();
 	}
 	else
