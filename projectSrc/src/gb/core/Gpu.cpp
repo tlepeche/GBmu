@@ -183,8 +183,6 @@ void	Gpu::step()
 			default:
 				break ;
 		}
-//		if (_memory->read_byte(REGISTER_LY) == _memory->read_byte(REGISTER_LYC))
-//			_memory->write_byte(REGISTER_STAT, _memory->read_byte(REGISTER_STAT) | 0x04);
 	}
 }
 
