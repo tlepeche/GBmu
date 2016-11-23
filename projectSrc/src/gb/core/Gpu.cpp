@@ -102,8 +102,6 @@ void	Gpu::setLy(uint8_t line)
 	_memory->write_byte(REGISTER_LY, line);
 	// Check LYC
 	gpuStat = {{_memory->read_byte(REGISTER_STAT)}};
-	gpuStat.coincidence = (uint8_t)(_memory->read_byte(REGISTER_LY) == _memory->read_byte(REGISTER_LYC));
-	_memory->write_byte(REGISTER_STAT, gpuStat.stat);
 	if (gpuStat.interupt_coincid && gpuStat.coincidence)
 		_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_LCDC);
 }
