@@ -105,7 +105,7 @@ void	Gpu::setLy(uint8_t line)
 	gpuStat.coincidence = (uint8_t)(_memory->read_byte(REGISTER_LY) == _memory->read_byte(REGISTER_LYC));
 	_memory->write_byte(REGISTER_STAT, gpuStat.stat);
 	if (gpuStat.interupt_coincid && gpuStat.coincidence)
-			_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_LCDC);
+		_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_LCDC);
 }
 
 void	Gpu::step()
@@ -113,64 +113,78 @@ void	Gpu::step()
 	uint8_t	line = _memory->read_byte(REGISTER_LY);
 	t_gpuMode mode = readGpuMode();
 	t_gpuStat gpuStat = {{_memory->read_byte(REGISTER_STAT)}};
+	t_gpuControl    gpuC = (t_gpuControl){{_memory->read_byte(REGISTER_LCDC)}};
 
-	switch (mode)
+
+	if (!gpuC.display)
 	{
-		case OAM_READ:
-			if (_clock >= 80)
-			{
-				_clock -= 80;
-				writeGpuMode(VRAM_READ);
-				if (gpuStat.interupt_oam)
-					_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_LCDC);
-			}
-			break ;
-		case VRAM_READ:
-			if (_clock >= 172)
-			{
-				_clock -= 172;
-				writeGpuMode(HBLANK);
-
-				scanActLine();
-			}
-			break ;
-		case HBLANK:
-			if (_clock >= 204)
-			{
-				_clock -= 204;
-				setLy(++line);
-
-				if (line == 143)
+		_memory->write_byte(REGISTER_STAT, 0);
+		_memory->write_byte(REGISTER_LY, 0);
+		_clock = 0;
+		return ;
+	}
+	else
+	{
+		switch (mode)
+		{
+			case OAM_READ:
+				if (_clock >= 80)
 				{
-					writeGpuMode(VBLANK);
-					_window->renderLater();
+					_clock -= 80;
+					writeGpuMode(VRAM_READ);
+					if (gpuStat.interupt_oam)
+						_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_LCDC);
 				}
-				else
+				break ;
+			case VRAM_READ:
+				if (_clock >= 172)
 				{
-					writeGpuMode(OAM_READ);
-				}
-				if (gpuStat.interupt_hblank)
-					_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_LCDC);
-			}
-			break ;
-		case VBLANK:
-			if (_clock >= 456)
-			{
-				_clock -= 456;
-				setLy(++line);
+					_clock -= 172;
+					writeGpuMode(HBLANK);
 
-				if (line > 153)
-				{
-					_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_VBLANK);
-					writeGpuMode(OAM_READ);
-					setLy(0);
+					scanActLine();
 				}
-				if (gpuStat.interupt_vblank)
-					_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_LCDC);
-			}
-			break ;
-		default:
-			break ;
+				break ;
+			case HBLANK:
+				if (_clock >= 204)
+				{
+					_clock -= 204;
+					setLy(++line);
+
+					if (line == 143)
+					{
+						writeGpuMode(VBLANK);
+						_window->renderLater();
+					}
+					else
+					{
+						writeGpuMode(OAM_READ);
+					}
+					if (gpuStat.interupt_hblank)
+						_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_LCDC);
+				}
+				break ;
+			case VBLANK:
+				if (_clock >= 456)
+				{
+					_clock -= 456;
+					setLy(++line);
+
+					if (line > 153)
+					{
+						_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_VBLANK);
+						writeGpuMode(OAM_READ);
+						setLy(0);
+					}
+					if (gpuStat.interupt_vblank)
+						_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_LCDC);
+				}
+				break ;
+			default:
+				break ;
+		}
+//		if (_memory->read_byte(REGISTER_LY) == _memory->read_byte(REGISTER_LYC))
+//			_memory->write_byte(REGISTER_STAT, _memory->read_byte(REGISTER_STAT) | 0x04);
 	}
 }
 
