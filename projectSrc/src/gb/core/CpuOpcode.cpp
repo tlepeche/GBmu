@@ -446,24 +446,24 @@ void	Cpu_z80::INC_SP() //0x33
 
 void	Cpu_z80::INC_HLF() //0x34
 {
-	uint16_t tmp;
+	uint8_t tmp;
 
-	tmp = _memory->read_word(_cpuRegister.HL);
+	tmp = _memory->read_byte(_cpuRegister.HL);
 	_cpuRegister.h = static_cast<int>(testAdd(tmp, 1, 0xf0));
 	_cpuRegister.n = 0;
-	_memory->write_word(_cpuRegister.HL, (tmp + 1));
-	_cpuRegister.z = (_memory->read_word(_cpuRegister.HL) == 0) ? 1 : 0;
+	_memory->write_byte(_cpuRegister.HL, (tmp + 1));
+	_cpuRegister.z = (_memory->read_byte(_cpuRegister.HL) == 0) ? 1 : 0;
 }
 
 void	Cpu_z80::DEC_HLF() //0x35
 {
-	uint16_t tmp;
+	uint8_t tmp;
 
-	tmp = _memory->read_word(_cpuRegister.HL);
+	tmp = _memory->read_byte(_cpuRegister.HL);
 	_cpuRegister.n = 1;
 	_cpuRegister.h = static_cast<int>(testSub(tmp, 1, 0x0f));
-	_memory->write_word(_cpuRegister.HL, (tmp - 1));
-	_cpuRegister.z = (_memory->read_word(_cpuRegister.HL) == 0) ? 1 : 0;
+	_memory->write_byte(_cpuRegister.HL, (tmp - 1));
+	_cpuRegister.z = (_memory->read_byte(_cpuRegister.HL) == 0) ? 1 : 0;
 }
 void	Cpu_z80::LD_HL_n() //0x36
 {
