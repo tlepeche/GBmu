@@ -66,7 +66,7 @@ uint8_t			Memory::read_byte(uint16_t addr)
 		case 0x8000:
 		case 0x9000:
 			// VRAM
-			return this->_m_wram[(this->_m_io[(VBK & 0xFF)] & 0x01)][(addr & 0x0FFF)];
+			return this->_m_vram[(this->_m_io[(VBK & 0xFF)] & 0x01)][(addr & 0x1FFF)];
 			break;
 		case 0xA000:
 		case 0xB000:
@@ -77,9 +77,9 @@ uint8_t			Memory::read_byte(uint16_t addr)
 		case 0xD000:
 			// WRAM
 			if ((addr & 0xF000) < 0xD000)
-				return this->_m_wram[0][(addr & 0x0FFF)];
+				return this->_m_wram[0][(addr & 0x1FFF)];
 			else
-				return this->_m_wram[(this->_m_io[(SVBK & 0xFF)] & 0x03)][(addr & 0x0FFF)];
+				return this->_m_wram[(this->_m_io[(SVBK & 0xFF)] & 0x03)][(addr & 0x1FFF)];
 			break;
 		case 0xF000:
 			switch (addr & 0x0F00){
@@ -125,7 +125,7 @@ void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 		case 0x8000:
 		case 0x9000:
 			// VRAM
-			this->_m_wram[(this->_m_io[(VBK & 0xFF)] & 0x01)][(addr & 0x0FFF)] = val;
+			this->_m_vram[(this->_m_io[(VBK & 0xFF)] & 0x01)][(addr & 0x1FFF)] = val;
 			break;
 		case 0xA000:
 		case 0xB000:
@@ -136,9 +136,9 @@ void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 		case 0xD000:
 			// WRAM
 			if ((addr & 0xF000) < 0xD000)
-				this->_m_wram[0][(addr & 0x0FFF)] = val;
+				this->_m_wram[0][(addr & 0x1FFF)] = val;
 			else
-				this->_m_wram[(this->_m_io[(SVBK & 0xFF)] & 0x03)][(addr & 0x0FFF)] = val;
+				this->_m_wram[(this->_m_io[(SVBK & 0xFF)] & 0x03)][(addr & 0x1FFF)] = val;
 			break;
 		case 0xF000:
 			switch (addr & 0x0F00){

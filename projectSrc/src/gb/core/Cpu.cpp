@@ -220,13 +220,13 @@ void Cpu_z80::init(htype hardware)
 	this->_memory->write_byte(REGISTER_TMA, 0x00);
 	this->_memory->write_byte(REGISTER_TAC, 0xFC);
 	this->_memory->write_byte(REGISTER_KEY1, 0xFF);
-	this->_memory->write_byte(REGISTER_VBK, 0xFF);
+	this->_memory->write_byte(REGISTER_VBK, 0x00);
 	this->_memory->write_byte(REGISTER_HDMA1, 0xFF);
 	this->_memory->write_byte(REGISTER_HDMA2, 0xFF);
 	this->_memory->write_byte(REGISTER_HDMA3, 0xFF);
 	this->_memory->write_byte(REGISTER_HDMA4, 0xFF);
 	this->_memory->write_byte(REGISTER_HDMA5, 0xFF);
-	this->_memory->write_byte(REGISTER_SVBK, 0xFF);
+	this->_memory->write_byte(REGISTER_SVBK, 0x01);
 	this->_memory->write_byte(REGISTER_IF, 0xE1);
 	this->_memory->write_byte(REGISTER_IE, 0x00);
 
