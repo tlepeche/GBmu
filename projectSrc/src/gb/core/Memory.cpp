@@ -33,6 +33,11 @@ int				Memory::loadRom(const char *file, htype hardware)
 	return ret;
 }
 
+void			Memory::setInBios(bool inBios)
+{
+	this->_inBios = inBios;
+}
+
 uint8_t			Memory::read_byte(uint16_t addr)
 {
 	switch (addr & 0xF000){
@@ -48,8 +53,6 @@ uint8_t			Memory::read_byte(uint16_t addr)
 			}
 			else
 			{
-				if (addr == 0x0100)			// TODO A verifier si marche pour GBC
-					this->_inBios = false;	// TODO A verifier si marche pour GBC
 				return this->_rom.read(addr);
 			}
 			break;

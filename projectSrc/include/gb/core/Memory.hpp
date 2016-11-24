@@ -62,7 +62,7 @@ class Memory {
 		void				write_word(uint16_t addr, uint16_t val, bool super = false);
 		int					loadRom(const char *file, htype hardware);
 		htype				getRomType(void);
-
+		void				setInBios(bool inBios);
 	private:
 		Rom					_rom;
 		Bios				_bios;

@@ -43,6 +43,9 @@ bool Machine::step(void)
 		_cyclesAcc -= (uint32_t)(_cyclesMax / 59.7);
 		// usleep(16750);
 	}
+
+	if (_cpu->_cpuRegister.PC == 0x0100) // load Rom
+		_memory->setInBios(false);
 	return (true);
 }
 
