@@ -9,11 +9,11 @@ Memory::~Memory(void) {}
 
 void			Memory::reset(void)
 {
-	memset(this->_m_wram, 0xFF, 32768);
-	memset(this->_m_vram, 0xFF, 16384);
-	memset(this->_m_oam, 0xFF, 160);
-	memset(this->_m_io, 0xFF, 127);
-	memset(this->_m_zp, 0xFF, 127);
+	memset(this->_m_wram, 0xFF, sizeof(_m_wram));
+	memset(this->_m_vram, 0xFF, sizeof(_m_vram));
+	memset(this->_m_oam, 0xFF, sizeof(_m_oam));
+	memset(this->_m_io, 0xFF, sizeof(_m_io));
+	memset(this->_m_zp, 0xFF, sizeof(_m_zp));
 	this->_inBios = true;
 }
 
@@ -42,11 +42,11 @@ uint8_t			Memory::read_byte(uint16_t addr)
 {
 	switch (addr & 0xF000){
 		case 0x0000:
-			if (this->_inBios && addr != 0x0100)
+			if (this->_inBios)
 			{
 				if (addr <= 0xFF && this->_typeBios == GB)
 					return this->_codeBios[addr];
-				else if (addr <= 0x900 && this->_typeBios == GBC)
+				else if (addr <= 0x900 && this->_typeBios == GBC) // TODO: check if not 900
 					return this->_codeBios[addr];
 				else
 					return this->_rom.read(addr);
@@ -102,7 +102,7 @@ uint8_t			Memory::read_byte(uint16_t addr)
 					else
 					{
 						// Zero page
-						return this->_m_zp[(addr & 0xFF) - 0x7F];
+						return this->_m_zp[(addr & 0xFF) - 0x80];
 					}
 					break;
 			}
@@ -185,7 +185,7 @@ void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 					else
 					{
 						// Zero page
-						this->_m_zp[(addr & 0xFF) - 0x7F] = val;
+						this->_m_zp[(addr & 0xFF) - 0x80] = val;
 					}
 					break;
 			}
