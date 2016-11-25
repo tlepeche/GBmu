@@ -469,8 +469,8 @@ void	Cpu_z80::LD_HL_n() //0x36
 {
 	uint8_t n;
 
-	n = _memory->read_byte(_cpuRegister.HL);
-	_memory->write_byte(_cpuRegister.PC + 1, n);
+	n = _memory->read_byte(_cpuRegister.PC + 1);
+	_memory->write_byte(_cpuRegister.HL, n);
 }
 
 void	Cpu_z80::SCF() //0x37

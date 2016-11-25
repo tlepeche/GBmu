@@ -51,8 +51,8 @@ bool Machine::step(void)
 
 void Machine::run(void)
 {
-	this->step();
-	this->run();
+	while (true)
+		this->step();
 }
 
 void Machine::setHardware(htype hardware)
