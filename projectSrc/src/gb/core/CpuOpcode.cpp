@@ -134,7 +134,7 @@ void	Cpu_z80::LD_BC_n() //0x01
 
 void	Cpu_z80::LD_BC_A() //0x02
 {
-	LD_x_y(&(_cpuRegister.BC), _cpuRegister.A);
+	_memory->write_byte(_cpuRegister.BC, _cpuRegister.A);
 }
 
 void	Cpu_z80::INC_BC() //0x03
@@ -224,7 +224,7 @@ void	Cpu_z80::LD_DE_n() //0x11
 
 void	Cpu_z80::LD_DE_A() //0x12
 {
-	_memory->write_word(_cpuRegister.DE, _cpuRegister.A);
+	_memory->write_byte(_cpuRegister.DE, _cpuRegister.A);
 }
 
 void	Cpu_z80::INC_DE() //0x13
@@ -465,6 +465,7 @@ void	Cpu_z80::DEC_HLF() //0x35
 	_memory->write_byte(_cpuRegister.HL, (tmp - 1));
 	_cpuRegister.z = (_memory->read_byte(_cpuRegister.HL) == 0) ? 1 : 0;
 }
+
 void	Cpu_z80::LD_HL_n() //0x36
 {
 	uint8_t n;

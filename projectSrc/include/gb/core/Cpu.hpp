@@ -669,7 +669,7 @@ class Cpu_z80
 
 	public:
 	unsigned int					_addrLength;
-	t_opcode						_opcodeInProgress;
+	t_opcode						_opcodeInProgress; // TODO: go private
 	t_register						_cpuRegister;
 
 };
