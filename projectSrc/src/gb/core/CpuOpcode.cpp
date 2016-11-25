@@ -1367,7 +1367,7 @@ void	Cpu_z80::POP_HL() //0xe1
 
 void	Cpu_z80::LD_CC_A()	//0xe2
 {
-	_memory->write_word((0xff00 + _cpuRegister.C), _cpuRegister.A);
+	_memory->write_byte((0xff00 + _cpuRegister.C), _cpuRegister.A);
 }
 
 void	Cpu_z80::PUSH_HL() //0xe5
