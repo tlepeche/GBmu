@@ -21,6 +21,22 @@
 #define MBC3	0x03
 #define MBC5	0x04
 
+typedef struct	s_reg
+{
+	uint8_t			rtc_s;
+	uint8_t			rtc_m;
+	uint8_t			rtc_h;
+	uint8_t			rtc_dl;
+	uint8_t			rtc_dh;
+}				t_reg;
+
+typedef struct		s_timer
+{
+	t_reg			reg;
+	bool			lock;
+	bool			last;
+}					t_timer;
+
 typedef std::function<uint8_t(uint16_t)> FnReadRom;
 typedef std::function<void(uint16_t,uint8_t)> FnWriteRom;
 
@@ -47,6 +63,7 @@ class Rom {
 		uint8_t							_mbc;
 		std::array<FnReadRom, 5>		_mbcPtrRead;
 		std::array<FnWriteRom, 5>		_mbcPtrWrite;
+		t_timer							_timer;
 
 		Rom(void);
 		~Rom(void);
@@ -54,6 +71,7 @@ class Rom {
 		uint8_t							getMbc(uint8_t octet);
 		uint8_t							getBankEram(uint8_t octet);
 		bool							_mbcRamAccess(void);
+		bool							_mbcTimerAccess(void);
 		bool							_checkHeader(void);
 
 		uint8_t							_readRom(uint16_t addr);

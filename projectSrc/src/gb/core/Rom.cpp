@@ -124,6 +124,11 @@ bool		Rom::_mbcRamAccess(void)
 	return false;
 }
 
+bool		Rom::_mbcTimerAccess(void)
+{
+	return this->_timer.lock;
+}
+
 bool		Rom::_checkHeader(void)
 {
 	int			i;
@@ -214,8 +219,17 @@ uint8_t		Rom::_readMbc2(uint16_t addr)
 
 uint8_t		Rom::_readMbc3(uint16_t addr)
 {
-	// DON'T PANIC, IN PROGRESS
-	(void)addr;
+	if (addr < 0x4000)
+		return this->_rom[addr];
+	else if (addr < 0x8000)
+		return this->_rom[(addr - 0x4000) + (this->_bank * 0x4000)];
+	else if (addr >= 0xA000 && addr < 0xC000 && this->_mbcRamAccess())
+	{
+		if (this->_rambank <= 0x03 && this->_mbcRamAccess())
+			return this->_eram[addr + (this->_rambank * 0x2000)];
+		else if (this->_mbcTimerAccess())
+			return *(&this->_timer.reg.rtc_s + (this->_rambank - 0x08));
+	}
 	return 0;
 }
 
@@ -308,7 +322,7 @@ void		Rom::_writeMbc2(uint16_t addr, uint8_t val)
 			break;
 		case 0xA000:
 			// ERAM
-			if ((addr & 0x0F00) <= 0x01)
+			if ((addr & 0x0F00) <= 0x0100)
 			{
 				if (this->_mbcRamAccess())
 					this->_eram[addr] = val;
@@ -321,9 +335,49 @@ void		Rom::_writeMbc2(uint16_t addr, uint8_t val)
 
 void		Rom::_writeMbc3(uint16_t addr, uint8_t val)
 {
-	// DON'T PANIC, IN PROGRESS
-	(void)addr;
-	(void)val;
+	switch (addr & 0xF000){
+		case 0x0000:
+		case 0x1000:
+			// RAMCS
+			this->_write_protect = val;
+			break;
+		case 0x2000:
+		case 0x3000:
+			// ROM BANK CODE
+			val &= 0x7F;
+			this->_bank &= 0x80;
+			this->_bank |= val;
+			break;
+		case 0x4000:
+		case 0x5000:
+			// RAM / CLOCK BANK CODE
+			if (val <= 0x03 || (val >= 0x08 && val <= 0x0C))
+				this->_rambank = val;
+			break;
+		case 0x6000:
+		case 0x7000:
+			// LOCK CLOCK
+			if (val <= 0x01)
+			{
+				if (this->_timer.last == false)
+					this->_timer.lock = !this->_timer.lock;
+				this->_timer.last = !this->_timer.last;
+			}
+			break;
+		case 0xA000:
+		case 0xB000:
+		case 0xC000:
+			if (this->_mbcRamAccess())
+			{
+				if (this->_rambank <= 0x03)
+					this->_eram[addr + (this->_rambank * 0x2000)] = val;
+				else
+					*(&this->_timer.reg.rtc_s + (this->_rambank - 0x08)) = val;
+			}
+			break;
+		default:
+			break;
+	}
 }
 
 void		Rom::_writeMbc5(uint16_t addr, uint8_t val)
