@@ -63,10 +63,11 @@ unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 
 	unsigned int tileMapAddr = gpuC.tile_map ? MAP1_ADDR : MAP0_ADDR;
 	unsigned int tileSetAddr = gpuC.tile_set ? TILES1_ADDR : TILES0_ADDR;
-	unsigned int tileId = _memory->read_byte(
+	uint8_t tileId = _memory->read_byte(
 			tileMapAddr
 			+ (((line + scy) / TILE_W) * MAP_W)
 			+ (x / TILE_W) + scx); // peut etre ((x + scx) / TILE_W)
+	if (!gpuC.tile_set) tileId += 128; // -128 -> 127 
 	unsigned int tileAddr = tileSetAddr + tileId * TILE_H * 2;
 
 	unsigned int sy = (line + scy) % TILE_W;
