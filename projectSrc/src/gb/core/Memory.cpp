@@ -38,6 +38,17 @@ void			Memory::setInBios(bool inBios)
 	this->_inBios = inBios;
 }
 
+void			Memory::transferData(uint16_t startAddr)
+{
+	int a = 0;
+
+	for (uint16_t currAddr = startAddr ; currAddr <= (startAddr + 0x8c) ; currAddr++)
+	{
+		write_byte(0xfe00 + a, read_byte(currAddr));
+		a++;
+	}
+}
+
 uint8_t			Memory::read_byte(uint16_t addr)
 {
 	switch (addr & 0xF000){
@@ -180,6 +191,9 @@ void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 							else
 								this->_m_io[0x41] &= 0xfb;
 						}
+						//DMA
+						if (addr == 0xFF46)
+							transferData(val << 8);
 						this->_m_io[(addr & 0xFF)] = val;
 					}
 					else

@@ -63,6 +63,7 @@ class Memory {
 		int					loadRom(const char *file, htype hardware);
 		htype				getRomType(void);
 		void				setInBios(bool inBios);
+		void				transferData(uint16_t startAddr);
 	private:
 		Rom					_rom;
 		Bios				_bios;
