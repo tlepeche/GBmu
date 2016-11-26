@@ -64,6 +64,9 @@ class Memory {
 		htype				getRomType(void);
 		void				setInBios(bool inBios);
 		void				transferData(uint16_t startAddr);
+		void				handleInput();
+
+		std::array<uint8_t, 2>	key {{0x0f, 0x0f}};
 	private:
 		Rom					_rom;
 		Bios				_bios;
