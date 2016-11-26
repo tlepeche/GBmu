@@ -76,7 +76,7 @@ void	Cpu_z80::swap(uint8_t *reg)
 	uint8_t tmp = *reg & 0x0f;
 	tmp <<= 4;
 	*reg >>= 4;
-	*reg &= 0xf0;
+	*reg &= 0x0f;
 	*reg += tmp;
 	_cpuRegister.c = 0;
 	_cpuRegister.n = 0;
