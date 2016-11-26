@@ -62,7 +62,7 @@ void Cpu_z80::inc(uint8_t *val)
 void Cpu_z80::dec(uint8_t *val)
 {
 	_cpuRegister.n = 1;
-	_cpuRegister.h = ((*val) & 0x0f) ? 0 : 1;
+	_cpuRegister.h = ((*val) & 0x10) ? 1 : 0;
 	(*val)--;
 	_cpuRegister.z = (*val == 0) ? 1 : 0;
 }
@@ -88,15 +88,17 @@ void Cpu_z80::adc(uint8_t val)
 	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
 }
 
+//TODO: verif flag h
 void Cpu_z80::sub(uint8_t val)
 {
 	_cpuRegister.n = 1;
 	_cpuRegister.h = static_cast<int>(testSub(_cpuRegister.A, val, 0x0f));
 	_cpuRegister.c = static_cast<int>(testSub(_cpuRegister.A, val, 0xff00));
-	_cpuRegister.A -= _cpuRegister.B;
+	_cpuRegister.A -= val;
 	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
 }
 
+//TODO: verif flag h
 void	Cpu_z80::sbc(uint8_t val)
 {
 	uint8_t	tmp;
@@ -170,14 +172,17 @@ void	Cpu_z80::RLCA() //0x07
 
 void	Cpu_z80::LD_n_SP() //0x08
 {
-	_memory->write_word(_memory->read_word(_cpuRegister.PC + 1), _cpuRegister.SP);
+	_cpuRegister.SP = _memory->read_word(_cpuRegister.PC + 1);
 }
 
 void	Cpu_z80::ADD_HL_BC() //0x09
 {
-	_cpuRegister.h = static_cast<int>(testAdd(_cpuRegister.HL, _cpuRegister.BC, 0xf000));
-	_cpuRegister.n = 0;
+	if (((_cpuRegister.HL & 0x0f) + (_cpuRegister.DE & 0x0f)) > 0x0f)
+		_cpuRegister.h = 1;
+	else
+		_cpuRegister.h = 0;
 	_cpuRegister.c = static_cast<int>(testAdd(_cpuRegister.HL, _cpuRegister.BC, 0xffff0000));
+	_cpuRegister.n = 0;
 	_cpuRegister.HL += _cpuRegister.BC;
 }
 
@@ -208,13 +213,19 @@ void	Cpu_z80::LD_C_n() //0x0e
 
 void	Cpu_z80::RRCA() //0x0f
 {
-	_cpuRegister.c = _cpuRegister.A & 0x80;
+	_cpuRegister.c = _cpuRegister.A & 0x01;
 	_cpuRegister.A >>= 1;
 	if (_cpuRegister.c)
 		_cpuRegister.A += 0x80;
 	_cpuRegister.h = 0;
 	_cpuRegister.n = 0;
 	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
+}
+
+void	Cpu_z80::STOP() //0x10
+{
+	this->_setHalt(true);
+	this->_setStop(true);
 }
 
 void	Cpu_z80::LD_DE_n() //0x11
@@ -271,9 +282,12 @@ void	Cpu_z80::JR_n() //0x18
 
 void	Cpu_z80::ADD_HL_DE() //0x19
 {
-	_cpuRegister.h = static_cast<int>(testAdd(_cpuRegister.HL, _cpuRegister.DE, 0xf000));
-	_cpuRegister.n = 0;
+	if (((_cpuRegister.HL & 0x0f) + (_cpuRegister.DE & 0x0f)) > 0x0f)
+		_cpuRegister.h = 1;
+	else
+		_cpuRegister.h = 0;
 	_cpuRegister.c = static_cast<int>(testAdd(_cpuRegister.HL, _cpuRegister.DE, 0xffff0000));
+	_cpuRegister.n = 0;
 	_cpuRegister.HL += _cpuRegister.DE;
 }
 
@@ -306,10 +320,11 @@ void	Cpu_z80::RRA() //0x1f
 {
 	int	carry;
 
-	carry = ((_cpuRegister.c == 1) ? 1 : 0) << 7;
-	_cpuRegister.c = _cpuRegister.A & 0x80 ? 1 : 0;
+	carry = _cpuRegister.c;
+	_cpuRegister.c = _cpuRegister.A & 0x01 ? 1 : 0;
 	_cpuRegister.A >>= 1;
-	_cpuRegister.A += carry;
+	if (carry)
+		_cpuRegister.A += 0x80;
 	_cpuRegister.n = 0;
 	_cpuRegister.h = 0;
 	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
@@ -353,8 +368,10 @@ void	Cpu_z80::LD_H_n() //0x26
 	LD_x_y(&(_cpuRegister.H), _memory->read_byte(_cpuRegister.PC + 1));
 }
 
+//TODO: check bon fonctionnement opcode
 void	Cpu_z80::DAA() //0x27
 {
+	std::cout << "call function DAA" << std::endl;
 	if (_cpuRegister.n == 0)
 	{
 		if (_cpuRegister.h || (_cpuRegister.A & 0x0f) > 9)
@@ -382,9 +399,12 @@ void	Cpu_z80::JR_Z_n() //0x28
 
 void	Cpu_z80::ADD_HL_HL() //0x29
 {
-	_cpuRegister.h = static_cast<int>(testAdd(_cpuRegister.HL, _cpuRegister.HL, 0xf000));
-	_cpuRegister.n = 0;
+	if (((_cpuRegister.HL & 0x0f) + (_cpuRegister.DE & 0x0f)) > 0x0f)
+		_cpuRegister.h = 1;
+	else
+		_cpuRegister.h = 0;
 	_cpuRegister.c = static_cast<int>(testAdd(_cpuRegister.HL, _cpuRegister.HL, 0xffff0000));
+	_cpuRegister.n = 0;
 	_cpuRegister.HL += _cpuRegister.HL;
 }
 
@@ -412,7 +432,6 @@ void	Cpu_z80::DEC_L() //0x2d
 void	Cpu_z80::LD_L_n() //0x2e
 {
 	LD_x_y(&(_cpuRegister.L), _memory->read_byte(_cpuRegister.PC + 1));
-	//_cpuRegister.L = _memory->read_byte(_cpuRegister.PC + 1);
 }
 
 void	Cpu_z80::CPL() //0x2f
@@ -449,7 +468,7 @@ void	Cpu_z80::INC_HLF() //0x34
 	uint8_t tmp;
 
 	tmp = _memory->read_byte(_cpuRegister.HL);
-	_cpuRegister.h = static_cast<int>(testAdd(tmp, 1, 0xf0));
+	_cpuRegister.h = static_cast<int>(testAdd(tmp & 0x0f, 1, 0xf0));
 	_cpuRegister.n = 0;
 	_memory->write_byte(_cpuRegister.HL, (tmp + 1));
 	_cpuRegister.z = (_memory->read_byte(_cpuRegister.HL) == 0) ? 1 : 0;
@@ -461,7 +480,7 @@ void	Cpu_z80::DEC_HLF() //0x35
 
 	tmp = _memory->read_byte(_cpuRegister.HL);
 	_cpuRegister.n = 1;
-	_cpuRegister.h = static_cast<int>(testSub(tmp, 1, 0x0f));
+	_cpuRegister.h = (tmp & 0x10) ? 1 : 0; 
 	_memory->write_byte(_cpuRegister.HL, (tmp - 1));
 	_cpuRegister.z = (_memory->read_byte(_cpuRegister.HL) == 0) ? 1 : 0;
 }
@@ -489,9 +508,12 @@ void	Cpu_z80::JR_C_n() //0x38
 
 void	Cpu_z80::ADD_HL_SP() //0x39
 {
-	_cpuRegister.h = static_cast<int>(testAdd(_cpuRegister.HL, _cpuRegister.SP, 0xf000));
-	_cpuRegister.n = 0;
+	if (((_cpuRegister.HL & 0x0f) + (_cpuRegister.DE & 0x0f)) > 0x0f)
+		_cpuRegister.h = 1;
+	else
+		_cpuRegister.h = 0;
 	_cpuRegister.c = static_cast<int>(testAdd(_cpuRegister.HL, _cpuRegister.SP, 0xffff0000));
+	_cpuRegister.n = 0;
 	_cpuRegister.HL += _cpuRegister.SP;
 }
 
@@ -881,10 +903,7 @@ void	Cpu_z80::ADD_A_L() //0x85
 
 void	Cpu_z80::ADD_A_HL() //0x86
 {
-	uint8_t tmp;
-
-	tmp = _memory->read_byte(_cpuRegister.HL);
-	add(tmp);
+	add(_memory->read_byte(_cpuRegister.HL));
 }
 
 void	Cpu_z80::ADD_A_A() //0x87
@@ -924,13 +943,10 @@ void	Cpu_z80::ADC_A_L() //0x8d
 
 void	Cpu_z80::ADC_A_HL() //0x8e
 {
-	uint8_t tmp;
-
-	tmp = _cpuRegister.A + _cpuRegister.c;
-	adc(tmp);
+	adc(_memory->read_byte(_cpuRegister.HL));
 }
 
-void	Cpu_z80::ADC_A_A() //0x88
+void	Cpu_z80::ADC_A_A() //0x8f
 {
 	adc(_cpuRegister.A);
 }
@@ -967,14 +983,7 @@ void	Cpu_z80::SUB_L() //0x95
 
 void	Cpu_z80::SUB_HL() //0x96
 {
-	uint8_t tmp;
-
-	tmp = _memory->read_byte(_cpuRegister.HL);
-	_cpuRegister.n = 1;
-	_cpuRegister.h = static_cast<int>(testSub(_cpuRegister.A, tmp, 0x0f));
-	_cpuRegister.c = static_cast<int>(testSub(_cpuRegister.A, tmp, 0xff00));
-	_cpuRegister.A += tmp;
-	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
+	sub(_memory->read_byte(_cpuRegister.HL));
 }
 
 void	Cpu_z80::SUB_A() //0x97
@@ -1014,14 +1023,7 @@ void	Cpu_z80::SBC_A_L() //0x9d
 
 void	Cpu_z80::SBC_A_HL() //0x9e
 {
-	uint8_t tmp;
-
-	tmp = _memory->read_byte(_cpuRegister.HL) + _cpuRegister.c;
-	_cpuRegister.n = 0;
-	_cpuRegister.h = static_cast<int>(testAdd(_cpuRegister.A, tmp, 0xf0));
-	_cpuRegister.c = static_cast<int>(testAdd(_cpuRegister.A, tmp, 0xff00));
-	_cpuRegister.A += tmp;
-	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
+	sbc(_memory->read_byte(_cpuRegister.HL));
 }
 
 void	Cpu_z80::SBC_A_A() //0x9f
@@ -1207,7 +1209,7 @@ void	Cpu_z80::JP_NZ_n() //0xc2
 		JP_n();
 }
 
-void	Cpu_z80::JP_n()		//0xc3
+void	Cpu_z80::JP_n()	//0xc3
 {
 	_cpuRegister.PC = _memory->read_word(_cpuRegister.PC + 1);
 	setStepState(false);
@@ -1270,7 +1272,7 @@ void	Cpu_z80::CALL_n() //0xcd
 
 void	Cpu_z80::ADC_A_n() //0xce
 {
-	adc((_memory->read_byte(_cpuRegister.PC + 1) + _cpuRegister.c));
+	adc(_memory->read_byte(_cpuRegister.PC + 1));
 }
 
 void	Cpu_z80::RST_08H() //0xcf
@@ -1344,7 +1346,7 @@ void	Cpu_z80::CALL_C_n() //0xdc
 
 void	Cpu_z80::SBC_A_n()	//0xde
 {
-	sbc(_memory->read_byte(_cpuRegister.PC + 1) + _cpuRegister.c);
+	sbc(_memory->read_byte(_cpuRegister.PC + 1));
 }
 
 void	Cpu_z80::RST_18H() //0xdf
@@ -1391,11 +1393,12 @@ void	Cpu_z80::ADD_SP_n()	//0xe8
 {
 	int8_t	n;
 	uint8_t a = _memory->read_byte(_cpuRegister.PC + 1);
-	a = 0x00;
-	n = 0;
+	n = 0x00;
 	n |= a;
 	_cpuRegister.h = static_cast<int>(testAdd(_cpuRegister.SP, n, 0xf000));
 	_cpuRegister.c = static_cast<int>(testAdd(_cpuRegister.SP, n, 0xffff0000));
+	_cpuRegister.z = 0;
+	_cpuRegister.n = 0;
 	_cpuRegister.SP += n;
 }
 
@@ -1439,7 +1442,7 @@ void	Cpu_z80::POP_AF() //0xf1
 
 void	Cpu_z80::LD_A_CC()	//0xf2
 {
-	_cpuRegister.A = _memory->read_byte(0x0000 + _cpuRegister.c);
+	_cpuRegister.A = _memory->read_byte(0xff00 + _cpuRegister.c);
 }
 
 void	Cpu_z80::DI() //0xf3
@@ -1467,11 +1470,12 @@ void	Cpu_z80::LD_HL_SP_n()	//0xf8
 {
 	int8_t	n;
 	uint8_t a = _memory->read_byte(_cpuRegister.PC + 1);
-	a = 0x00;
-	n = 0;
+	n = 0x00;
 	n |= a;
 	_cpuRegister.h = static_cast<int>(testAdd(_cpuRegister.SP, n, 0xf000));
 	_cpuRegister.c = static_cast<int>(testAdd(_cpuRegister.SP, n, 0xffff0000));
+	_cpuRegister.z = 0;
+	_cpuRegister.n = 0;
 	_cpuRegister.HL = _cpuRegister.SP + n;
 }
 
@@ -1488,6 +1492,11 @@ void	Cpu_z80::LD_A_b() //0xfa
 	_cpuRegister.A = _memory->read_byte(nn);
 }
 
+void	Cpu_z80::EI()	//0xfb
+{
+	this->_setIME(true);
+}
+
 void	Cpu_z80::CP_n()	//0xfe
 {
 	CP(_memory->read_byte(_cpuRegister.PC + 1));
@@ -1498,19 +1507,8 @@ void	Cpu_z80::RST_38H() //0xff
 	RST(0x0038);
 }
 
-
-void	Cpu_z80::STOP()			//0x10     Not done yet
-{
-	this->_setHalt(true);
-	this->_setStop(true);
-}
 void	Cpu_z80::PREFIX_CB()	//0xcb     Not done yet
 {
-}
-
-void	Cpu_z80::EI()	//0xfb
-{
-	this->_setIME(true);
 }
 
 void Cpu_z80::_setOpcodeMap()
@@ -1756,9 +1754,9 @@ void Cpu_z80::_setOpcodeMap()
 		(t_opcode){0xed, 0x00, 0 , 0 , 0, NULL, "", 0x0000},
 		(t_opcode){0xee, 0x00, 8 , 8 , 2, std::bind(&Cpu_z80::XOR_n, this),    	"XOR n",		0x0000},
 		(t_opcode){0xef, 0x00, 16, 16, 1, std::bind(&Cpu_z80::RST_28H, this),   "RST 28H",		0x0000},
-		(t_opcode){0xf0, 0x00, 12, 12, 2, std::bind(&Cpu_z80::LDH_A_n, this),   "LDH A, (0xff00+n)",	0x0000},
+		(t_opcode){0xf0, 0x00, 12, 12, 2, std::bind(&Cpu_z80::LDH_A_n, this),   "LD A, (0xff00+n)",	0x0000},
 		(t_opcode){0xf1, 0x00, 12, 12, 1, std::bind(&Cpu_z80::POP_AF, this),    "POP AF",		0x0000},
-		(t_opcode){0xf2, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_A_CC, this),   "LD A,(C)",		0x0000},
+		(t_opcode){0xf2, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_A_CC, this),   "LD A, (0xff00+C)",		0x0000},
 		(t_opcode){0xf3, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::DI, this),   		"DI",			0x0000},
 		(t_opcode){0xf4, 0x00, 0 , 0 , 0, NULL,  "", 0x0000},
 		(t_opcode){0xf5, 0x00, 16, 16, 1, std::bind(&Cpu_z80::PUSH_AF, this),   "PUSH AF",		0x0000},
