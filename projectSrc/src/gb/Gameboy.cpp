@@ -183,30 +183,40 @@ bool	Gameboy::isBreakpoint(uint16_t addr)
 
 void	Gameboy::KeyPress(int key)
 {
-//	if ((_memory->read_byte(REGISTER_INPUT) & 0x30) == 0x30)
-//	{
-//		if (key == UP || key == DOWN || key == LEFT || key == RIGHT)
-//			setLowBit(_memory, REGISTER_INPUT, 4);
-//		else
-//			setLowBit(_memory, REGISTER_INPUT, 5);
-//	}
 	setHightBit(_memory, REGISTER_IF, 4);
+
 	switch(key)
 	{
 		case RIGHT:
+			_memory->key[0] &= 0x0e;
+			setLowBit(_memory, REGISTER_INPUT, 0);
+			break;
 		case A_BUTTON:
+			_memory->key[1] &= 0x0e;
 			setLowBit(_memory, REGISTER_INPUT, 0);
 			break;
 		case LEFT:
+			_memory->key[0] &= 0x0D;
+			setLowBit(_memory, REGISTER_INPUT, 1);
+			break;
 		case B_BUTTON:
+			_memory->key[1] &= 0x0D;
 			setLowBit(_memory, REGISTER_INPUT, 1);
 			break;
 		case UP:
+			_memory->key[0] &= 0x0B;
+			setLowBit(_memory, REGISTER_INPUT, 2);
+			break;
 		case SELECT:
+			_memory->key[1] &= 0x0B;
 			setLowBit(_memory, REGISTER_INPUT, 2);
 			break;
 		case DOWN:
+			_memory->key[0] &= 0x07;
+			setLowBit(_memory, REGISTER_INPUT, 3);
+			break;
 		case START:
+			_memory->key[1] &= 0x07;
 			setLowBit(_memory, REGISTER_INPUT, 3);
 			break;
 	}
@@ -217,19 +227,35 @@ void	Gameboy::KeyRelease(int key)
 	switch(key)
 	{
 		case RIGHT:
+			_memory->key[0] |= 0x01;
+			setHightBit(_memory, REGISTER_INPUT, 0);
+			break;
 		case A_BUTTON:
+			_memory->key[1] |= 0x01;
 			setHightBit(_memory, REGISTER_INPUT, 0);
 			break;
 		case LEFT:
+			_memory->key[0] |= 0x02;
+			setHightBit(_memory, REGISTER_INPUT, 1);
+			break;
 		case B_BUTTON:
+			_memory->key[1] |= 0x02;
 			setHightBit(_memory, REGISTER_INPUT, 1);
 			break;
 		case UP:
+			_memory->key[0] |= 0x04;
+			setHightBit(_memory, REGISTER_INPUT, 2);
+			break;
 		case SELECT:
+			_memory->key[1] |= 0x04;
 			setHightBit(_memory, REGISTER_INPUT, 2);
 			break;
 		case DOWN:
+			_memory->key[0] |= 0x08;
+			setHightBit(_memory, REGISTER_INPUT, 3);
+			break;
 		case START:
+			_memory->key[1] |= 0x08;
 			setHightBit(_memory, REGISTER_INPUT, 3);
 			break;
 	}

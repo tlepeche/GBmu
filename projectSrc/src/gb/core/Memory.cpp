@@ -49,6 +49,14 @@ void			Memory::transferData(uint16_t startAddr)
 	}
 }
 
+void			Memory::handleInput()
+{
+	if ((read_byte(0xff00) & 0x30) == 0x10)
+		write_byte(0xff00, 0x10 + key[1], true);
+	else if ((read_byte(0xff00) & 0x30) == 0x20)
+		write_byte(0xff00, 0x20 + key[0], true);
+}
+
 uint8_t			Memory::read_byte(uint16_t addr)
 {
 	switch (addr & 0xF000){
@@ -168,6 +176,7 @@ void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 					{
 						// P1
 						this->_m_io[(addr & 0xFF)] = (val & 0xF0) | (this->_m_io[(addr & 0xFF)] & 0x0F);
+						handleInput();
 					}
 					else if (!super && addr == 0xFF04)
 					{
