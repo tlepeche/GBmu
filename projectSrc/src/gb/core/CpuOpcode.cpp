@@ -368,26 +368,31 @@ void	Cpu_z80::LD_H_n() //0x26
 	LD_x_y(&(_cpuRegister.H), _memory->read_byte(_cpuRegister.PC + 1));
 }
 
-//TODO: check bon fonctionnement opcode
 void	Cpu_z80::DAA() //0x27
 {
-	std::cout << "call function DAA" << std::endl;
-	if (_cpuRegister.n == 0)
-	{
-		if (_cpuRegister.h || (_cpuRegister.A & 0x0f) > 9)
-			_cpuRegister.A += 0x06;
+	uint8_t tmpMS = _cpuRegister.A;
+	tmpMS >>= 4;
 
-		if (_cpuRegister.c || _cpuRegister.A > 0x9f)
-			_cpuRegister.A += 0x60;
-	}
-	else
+	uint8_t tmpLS = _cpuRegister.A;
+	tmpLS &= 0x0f;
+
+	_cpuRegister.c = 0;
+
+	if (tmpMS > 9)
 	{
-		if (_cpuRegister.h)
-			_cpuRegister.A = (_cpuRegister.A - 6) & 0xFF;
-		if (_cpuRegister.c)
-			_cpuRegister.A -= 0x60;
+		tmpMS = 9;
+		_cpuRegister.c = 1;
 	}
-	_cpuRegister.c = (_cpuRegister.A & 0xff00) ? 1 : 0;
+	if (tmpLS > 9)
+	{
+		tmpLS = 9;
+		_cpuRegister.c = 1;
+	}
+	_cpuRegister.A = tmpMS;
+	_cpuRegister.A <<= 4;
+	_cpuRegister.A += tmpLS;
+
+	_cpuRegister.h = 0;
 	_cpuRegister.z = _cpuRegister.A == 0 ? 1 : 0;
 }
 
