@@ -71,7 +71,7 @@ unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 	unsigned int tileAddr = tileSetAddr + tileId * TILE_H * 2;
 
 	unsigned int sy = (line + scy) % TILE_H;
-	unsigned int sx = (x + scx) % TILE_W; // peut etre (x + scx) % TILE_W
+	unsigned int sx = (x + scx) % TILE_W;
 	unsigned int rsx = BYTE_SIZE - sx - 1;
 
 	uint8_t	sdata1 = _memory->read_byte(tileAddr + (sy * 2));
