@@ -35,9 +35,9 @@ void		Rom::init(void)
 	uint8_t	flag_cgb;
 
 	flag_cgb = (this->_rom[CGBFLAG] & 0xFF);
-	if (flag_cgb == 0x00 || flag_cgb == 0x80)
+	if (flag_cgb == 0x00)
 		this->_hardware = GB;
-	else if (flag_cgb == 0xC0)
+	else if (flag_cgb == 0xC0 || flag_cgb == 0x80)
 		this->_hardware = GBC;
 	if (this->getBankEram(this->_rom[RAMSIZE]) > 0)
 		this->_eram = new uint8_t [this->getBankEram(this->_rom[RAMSIZE]) * 8192];
