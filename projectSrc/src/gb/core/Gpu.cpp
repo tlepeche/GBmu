@@ -65,13 +65,13 @@ unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 	unsigned int tileSetAddr = gpuC.tile_set ? TILES1_ADDR : TILES0_ADDR;
 	uint8_t tileId = _memory->read_byte(
 			tileMapAddr
-			+ (((line + scy) / TILE_W) * MAP_W)
-			+ (x / TILE_W) + scx); // peut etre ((x + scx) / TILE_W)
+			+ ((((line + scy) / TILE_H) * MAP_W)
+			+ ((x + scx) % (MAP_W * TILE_W)) / TILE_W));
 	if (!gpuC.tile_set) tileId += 128; // -128 -> 127 
 	unsigned int tileAddr = tileSetAddr + tileId * TILE_H * 2;
 
-	unsigned int sy = (line + scy) % TILE_W;
-	unsigned int sx = x % TILE_W; // peut etre (x + scx) % TILE_W
+	unsigned int sy = (line + scy) % TILE_H;
+	unsigned int sx = (x + scx) % TILE_W; // peut etre (x + scx) % TILE_W
 	unsigned int rsx = BYTE_SIZE - sx - 1;
 
 	uint8_t	sdata1 = _memory->read_byte(tileAddr + (sy * 2));
@@ -120,6 +120,7 @@ void	Gpu::step()
 	if (!gpuC.display)
 	{
 		_memory->write_byte(REGISTER_STAT, 0);
+		_memory->write_byte(REGISTER_STAT, gpuStat.stat & 0xfc);
 		_memory->write_byte(REGISTER_LY, 0);
 		_clock = 0;
 		return ;
