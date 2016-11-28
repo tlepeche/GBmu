@@ -63,10 +63,10 @@ uint8_t			Memory::read_byte(uint16_t addr)
 		case 0x0000:
 			if (this->_inBios)
 			{
-				if (addr <= 0xFF && this->_typeBios == GB)
+				if (addr <= 0xFF)
 					return this->_codeBios[addr];
-				else if (addr <= 0x900 && this->_typeBios == GBC) // TODO: check if not 900
-					return this->_codeBios[addr];
+				else if (addr >= 0x200 && addr < 0x900 && this->_typeBios == GBC)
+					return this->_codeBios[addr - 0x100];
 				else
 					return this->_rom.read(addr);
 			}
@@ -101,7 +101,9 @@ uint8_t			Memory::read_byte(uint16_t addr)
 			if ((addr & 0xF000) < 0xD000)
 				return this->_m_wram[0][(addr & 0x1FFF)];
 			else
-				return this->_m_wram[(this->_m_io[(SVBK & 0xFF)] & 0x03)][(addr & 0x1FFF)];
+				return this->_m_wram
+					[(this->_m_io[(SVBK & 0xFF)] & 0x07)]
+					[(addr & 0x1FFF)];
 			break;
 		case 0xF000:
 			switch (addr & 0x0F00){

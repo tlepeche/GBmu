@@ -32,7 +32,7 @@ Gameboy::Gameboy() :
 	_window->show();
 #ifdef DEBUG
 	gbDbSlot(); // Open Debug window
-	openRomSlot("/sgoinfre/goinfre/Misc/roms/Super Mario Land.gb"); // Run Roms
+	openRomSlot("/sgoinfre/goinfre/Misc/roms/Pokemon - Jaune.gbc"); // Run Roms
 #endif
 }
 
