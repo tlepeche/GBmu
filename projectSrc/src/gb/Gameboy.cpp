@@ -33,6 +33,7 @@ Gameboy::Gameboy() :
 #ifdef DEBUG
 	gbDbSlot(); // Open Debug window
 	openRomSlot("/sgoinfre/goinfre/Misc/roms/Super Mario Land.gb"); // Run Roms
+//	openRomSlot("/sgoinfre/goinfre/Misc/roms/Tetris.gb"); // Run Roms
 #endif
 }
 
