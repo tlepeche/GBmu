@@ -5,6 +5,7 @@
 #include "Rom.hpp"
 #include "Bios.hpp"
 #include "htype.hpp"
+#include "t_color15.hpp"
 // Define I/O Register Address
 
 // Port / Mode
@@ -70,6 +71,7 @@ class Memory {
 	private:
 		Rom					_rom;
 		Bios				_bios;
+		t_color15			_palettes[8][4]; // 8 Palettes ; 4 colors / palette
 		uint8_t				_m_wram[8][4096];
 		uint8_t				_m_vram[2][8192];
 		uint8_t				_m_oam[160];
