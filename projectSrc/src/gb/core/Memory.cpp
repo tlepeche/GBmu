@@ -14,6 +14,7 @@ void			Memory::reset(void)
 	memset(this->_m_oam, 0xFF, sizeof(_m_oam));
 	memset(this->_m_io, 0xFF, sizeof(_m_io));
 	memset(this->_m_zp, 0xFF, sizeof(_m_zp));
+	memset(this->_palettes, 0xFF, sizeof(_palettes));
 	this->_inBios = true;
 }
 
@@ -55,6 +56,16 @@ void			Memory::handleInput()
 		write_byte(0xff00, 0x10 + key[1], true);
 	else if ((read_byte(0xff00) & 0x30) == 0x20)
 		write_byte(0xff00, 0x20 + key[0], true);
+}
+
+t_color15		Memory::getColor15(uint8_t palId, uint8_t colorId)
+{
+	return _palettes[palId][colorId];
+}
+
+uint8_t			Memory::force_read_vram(uint16_t addr, uint8_t bank)
+{
+	return this->_m_vram[bank][addr];
 }
 
 uint8_t			Memory::read_byte(uint16_t addr)

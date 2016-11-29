@@ -61,11 +61,13 @@ class Memory {
 		void				write_byte(uint16_t addr, uint8_t val, bool super = false);
 		uint16_t			read_word(uint16_t addr);
 		void				write_word(uint16_t addr, uint16_t val, bool super = false);
+		uint8_t				force_read_vram(uint16_t addr, uint8_t bank);
 		int					loadRom(const char *file, htype hardware);
 		htype				getRomType(void);
 		void				setInBios(bool inBios);
 		void				transferData(uint16_t startAddr);
 		void				handleInput();
+		t_color15			getColor15(uint8_t palId, uint8_t colId);
 
 		std::array<uint8_t, 2>	key {{0x0f, 0x0f}};
 	private:
