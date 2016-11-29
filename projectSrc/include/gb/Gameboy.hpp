@@ -46,7 +46,7 @@ class Gameboy : public Machine, public QWidget
 		void			gstep();
 		virtual void	run();
 		void			updateGbDb();
-		void			reset();
+		virtual void	reset(void);
 		void			stopThread();
 
 		bool			isBreakpoint(uint16_t addr);
@@ -55,6 +55,7 @@ class Gameboy : public Machine, public QWidget
 	protected slots:
 		void	openRomSlot(std::string path);
 		void	gbDbSlot();
+		void	gbTypeSlot(htype hardware);
 		void	stepPressedSlot(unsigned int count);
 		void	framePressedSlot();
 		void	switchStepModeSlot();

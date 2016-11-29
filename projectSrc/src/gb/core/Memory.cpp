@@ -23,6 +23,11 @@ htype			Memory::getRomType(void)
 	return this->_rom.getHardware();
 }
 
+htype			Memory::getTypeBios(void)
+{
+	return this->_typeBios;
+}
+
 int				Memory::loadRom(const char *file, htype hardware)
 {
 	int		ret;
@@ -65,7 +70,7 @@ t_color15		Memory::getColor15(uint8_t palId, uint8_t colorId)
 
 uint8_t			Memory::force_read_vram(uint16_t addr, uint8_t bank)
 {
-	return this->_m_vram[bank][addr];
+	return this->_m_vram[bank & 0x1][addr & 0x1FFF];
 }
 
 uint8_t			Memory::read_byte(uint16_t addr)
@@ -76,7 +81,7 @@ uint8_t			Memory::read_byte(uint16_t addr)
 			{
 				if (addr <= 0xFF)
 					return this->_codeBios[addr];
-				else if (addr >= 0x200 && addr < 0x900 && this->_typeBios == GBC)
+				else if (addr >= 0x200 && addr < 0x900 && getTypeBios() == GBC)
 					return this->_codeBios[addr - 0x100];
 				else
 					return this->_rom.read(addr);

@@ -64,6 +64,7 @@ class Memory {
 		uint8_t				force_read_vram(uint16_t addr, uint8_t bank);
 		int					loadRom(const char *file, htype hardware);
 		htype				getRomType(void);
+		htype				getTypeBios(void);
 		void				setInBios(bool inBios);
 		void				transferData(uint16_t startAddr);
 		void				handleInput();

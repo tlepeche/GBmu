@@ -66,7 +66,8 @@ unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 	uint16_t tileIdAddr = tileMapAddr
 			+ (((line + scy) / TILE_H) * MAP_W)
 			+ (((x + scx) % (MAP_W * TILE_W)) / TILE_W);
-	uint8_t tileId = _memory->read_byte(tileIdAddr);
+	uint8_t	tileId = _memory->force_read_vram(tileIdAddr, 0);
+//	uint8_t tileId = _memory->read_byte(tileIdAddr);
 	if (!gpuC.tile_set) tileId += 128; // -128 -> 127 
 	unsigned int tileAddr = tileSetAddr + tileId * TILE_H * 2;
 
@@ -76,24 +77,20 @@ unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 
 	uint8_t	sdata1 = _memory->read_byte(tileAddr + (sy * 2));
 	uint8_t	sdata2 = _memory->read_byte(tileAddr + (sy * 2) + 1);
-	unsigned int colorId = ((sdata1 >> rsx) & 1) | (((sdata2 >> (rsx)) & 1) << 1);
-	unsigned int bgp = _memory->read_byte(REGISTER_BGP);
+	uint8_t colorId = ((sdata1 >> rsx) & 1) | (((sdata2 >> (rsx)) & 1) << 1);
+	uint8_t bgp = _memory->read_byte(REGISTER_BGP);
+	uint8_t	bgd = _memory->force_read_vram(tileIdAddr, 1);
 	unsigned int color;
-	if (_memory->getRomType() == GB) { // GB
+	if (_memory->getTypeBios() == GB || bgd & 0x10) { // GB
 		color = gbColors[(bgp >> (2 * colorId)) & 0x3];
 	} else { // GBC
 		uint8_t	bgd = _memory->force_read_vram(tileIdAddr, 1);
-		if (bgd & 0x10) {
-			uint16_t palId = bgd & 0x7;
-			t_color15 c15 = _memory->getColor15(palId, colorId);
-			color = 0x00 
-				| ((c15.r * 0xFF / 0x1F) << 16)
-				| ((c15.v * 0xFF / 0x1F) << 8)
-				| ((c15.b * 0xFF / 0x1F) << 0);
-		}
-		else {
-			color = gbColors[(bgp >> (2 * colorId)) & 0x3];
-		}
+		uint16_t palId = bgd & 0x7;
+		t_color15 c15 = _memory->getColor15(palId, colorId);
+		color = 0x00 
+			| ((c15.r * 0xFF / 0x1F) << 16)
+			| ((c15.v * 0xFF / 0x1F) << 8)
+			| ((c15.b * 0xFF / 0x1F) << 0);
 	}
 	return color;
 }
