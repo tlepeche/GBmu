@@ -92,7 +92,7 @@ void Cpu_z80::adc(uint8_t val)
 void Cpu_z80::sub(uint8_t val)
 {
 	_cpuRegister.n = 1;
-	_cpuRegister.h = static_cast<int>(testSub(_cpuRegister.A, val, 0x0f));
+	_cpuRegister.h = (val & 0x0f) > (_cpuRegister.A & 0x0f) ? 1 : 0;
 	_cpuRegister.c = static_cast<int>(testSub(_cpuRegister.A, val, 0xff00));
 	_cpuRegister.A -= val;
 	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
@@ -105,7 +105,7 @@ void	Cpu_z80::sbc(uint8_t val)
 
 	tmp = val + _cpuRegister.c;
 	_cpuRegister.n = 1;
-	_cpuRegister.h = static_cast<int>(testSub(_cpuRegister.A, tmp, 0x0f));
+	_cpuRegister.h = (val & 0x0f) > (_cpuRegister.A & 0x0f) ? 1 : 0;
 	_cpuRegister.c = static_cast<int>(testSub(_cpuRegister.A, tmp, 0xff00));
 	_cpuRegister.A -= tmp;
 	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
@@ -370,30 +370,27 @@ void	Cpu_z80::LD_H_n() //0x26
 
 void	Cpu_z80::DAA() //0x27
 {
-	uint8_t tmpMS = _cpuRegister.A;
-	tmpMS >>= 4;
+	uint16_t tmp = _cpuRegister.A;
 
-	uint8_t tmpLS = _cpuRegister.A;
-	tmpLS &= 0x0f;
-
-	_cpuRegister.c = 0;
-
-	if (tmpMS > 9)
-	{
-		tmpMS = 9;
-		_cpuRegister.c = 1;
+	if (_cpuRegister.n)
+   	{
+		if (_cpuRegister.h)
+			tmp = (tmp - 0x06) & 0xFF;
+		if (_cpuRegister.c)
+			tmp -= 0x60;
 	}
-	if (tmpLS > 9)
-	{
-		tmpLS = 9;
-		_cpuRegister.c = 1;
+	else
+   	{
+		if (_cpuRegister.h || (tmp & 0xF) > 9)
+			tmp += 0x06;
+		if (_cpuRegister.c || tmp > 0x9F)
+			tmp += 0x60;
 	}
-	_cpuRegister.A = tmpMS;
-	_cpuRegister.A <<= 4;
-	_cpuRegister.A += tmpLS;
 
+	_cpuRegister.A = tmp & 0x00FF;
 	_cpuRegister.h = 0;
 	_cpuRegister.z = _cpuRegister.A == 0 ? 1 : 0;
+	_cpuRegister.c =  (tmp >= 0x100) ? 1 : 0;
 }
 
 void	Cpu_z80::JR_Z_n() //0x28
