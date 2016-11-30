@@ -249,6 +249,8 @@ void Cpu_z80::init(htype hardware)
 	this->_memory->write_byte(REGISTER_BCPD, 0xFF);
 	this->_memory->write_byte(REGISTER_OCPS, 0xFF);
 	this->_memory->write_byte(REGISTER_OCPD, 0xFF);
+	
+	this->_memory->write_byte(0xFF56, 0x3F); // Register RP, IR disable
 
 	this->_opcodeInProgress = this->_getOpcode(this->_memory->read_byte(this->_cpuRegister.PC));
 	this->_setDataOpcode();
