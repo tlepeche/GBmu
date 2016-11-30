@@ -190,6 +190,12 @@ void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 						// if Stat is overwritten
 						if (addr == 0xFF41)
 						{
+							//protect 3 first byte form overwritting
+							if (!super)
+							{
+								val &= 0xF8;
+								val |= read_byte(0xFF41) & 0x07;
+							}
 							// Check coincidence
 							if (val & 0x44)
 								write_byte(0xFF0F, read_byte(0xFF0F) | 0x02);

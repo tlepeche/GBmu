@@ -5,10 +5,10 @@
 
 typedef	enum	s_gpuMode
 {
-	OAM_READ = 2,
-	VRAM_READ = 3,
 	HBLANK = 0,
-	VBLANK = 1
+	VBLANK = 1,
+	OAM_READ = 2,
+	VRAM_READ = 3
 }				t_gpuMode;
 
 typedef struct	s_gpuStat

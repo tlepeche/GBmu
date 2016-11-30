@@ -116,11 +116,11 @@ void	Gpu::step()
 	t_gpuStat gpuStat = {{_memory->read_byte(REGISTER_STAT)}};
 	t_gpuControl    gpuC = (t_gpuControl){{_memory->read_byte(REGISTER_LCDC)}};
 
+//	std::cout << "entree  > clock = " << _clock << ", mode = " << readGpuMode() << std::endl;
 
 	if (!gpuC.display)
 	{
-		_memory->write_byte(REGISTER_STAT, 0);
-		_memory->write_byte(REGISTER_STAT, gpuStat.stat & 0xfc);
+		_memory->write_byte(REGISTER_STAT, gpuStat.stat & 0xfc, true);
 		_memory->write_byte(REGISTER_LY, 0);
 		_clock = 0;
 		return ;
@@ -186,6 +186,7 @@ void	Gpu::step()
 				break ;
 		}
 	}
+//	std::cout << "sortie  > clock = " << _clock << ", mode = " << readGpuMode() << "\n" << std::endl;
 }
 
 void	Gpu::init()
@@ -208,7 +209,7 @@ t_gpuMode	Gpu::readGpuMode()
 void		Gpu::writeGpuMode(t_gpuMode mode)
 {
 	uint8_t	stat = _memory->read_byte(REGISTER_STAT);
-	_memory->write_byte(REGISTER_STAT, (stat & 0xFC ) | (mode & 0x3));
+	_memory->write_byte(REGISTER_STAT, (stat & 0xFC ) | (mode & 0x3), true);
 }
 
 bool	Gpu::findSprite(uint8_t line, uint8_t x, unsigned int spriteHeight, t_sprite *sprite)
@@ -226,13 +227,6 @@ bool	Gpu::findSprite(uint8_t line, uint8_t x, unsigned int spriteHeight, t_sprit
 		{
 			if (tmp.x_pos <= (x + 8) && (x + 8) < (tmp.x_pos + TILE_W))
 			{
-				unsigned int palId = findSpritePixel(tmp, line, x, spriteHeight);
-				uint8_t	pal = tmp.pal == 0
-					? _memory->read_byte(REGISTER_OBP0)
-					: _memory->read_byte(REGISTER_OBP1);
-				uint8_t colorId = pal >> (2 * palId) & 0x03;
-				if (colorId == 0)
-					continue;
 				if (!hasSprite || sprite->x_pos > tmp.x_pos)
 				{
 					*sprite = tmp;
@@ -248,8 +242,12 @@ unsigned int	Gpu::findSpritePixel(t_sprite sprite, uint8_t line, uint8_t x, uint
 {
 	uint8_t sx = sprite.x_flip ? TILE_W - (x - (sprite.x_pos - 8) + 1) : x - (sprite.x_pos - 8);
 	uint8_t sy = sprite.y_flip ? spriteHeight - (line - (sprite.y_pos - 16)) : line - (sprite.y_pos - 16);
-
-	uint16_t tileAddr = (TILES1_ADDR + (sprite.tile_nbr * spriteHeight * 2));
+	
+	uint16_t tileAddr;
+	if (spriteHeight == 8)
+		tileAddr = (TILES1_ADDR + (sprite.tile_nbr * spriteHeight * 2));
+	else
+		tileAddr = (TILES1_ADDR + ((sprite.tile_nbr >> 1) * spriteHeight * 2));
 	uint16_t start = tileAddr + sy * 2;
 	uint8_t sdata1 = _memory->read_byte(start);
 	uint8_t sdata2 = _memory->read_byte(start + 1);
@@ -274,10 +272,12 @@ unsigned int	Gpu::scanSprite(uint8_t line, uint8_t x, unsigned int pixel)
 				uint8_t	pal = sprite.pal == 0
 					? _memory->read_byte(REGISTER_OBP0)
 					: _memory->read_byte(REGISTER_OBP1);
-				uint8_t colorId = pal >> (2 * palId) & 0x03;
-				pixel = colorId == 0 ? pixel : gbColors[colorId];
+				if (palId != 0)
+				{
+					uint8_t colorId = pal >> (2 * palId) & 0x03;
+					pixel = gbColors[colorId];
+				}
 			}
-
 		}
 	}
 	return pixel;
