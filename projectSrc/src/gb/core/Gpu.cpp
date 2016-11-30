@@ -60,9 +60,20 @@ unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 	t_gpuControl	gpuC = (t_gpuControl){{_memory->read_byte(REGISTER_LCDC)}};
 	uint8_t			scy = _memory->read_byte(REGISTER_SCY);
 	uint8_t			scx = _memory->read_byte(REGISTER_SCX);
+	uint8_t			wx = _memory->read_byte(REGISTER_WX);
+	uint8_t			wy = _memory->read_byte(REGISTER_WY);
 
-	unsigned int tileMapAddr = gpuC.tile_map ? MAP1_ADDR : MAP0_ADDR;
 	unsigned int tileSetAddr = gpuC.tile_set ? TILES1_ADDR : TILES0_ADDR;
+	unsigned int tileMapAddr = gpuC.tile_map ? MAP1_ADDR : MAP0_ADDR;
+
+	if ((gpuC.window && wx <= 166 && wy <= 143)
+		&& ((int)wx) - 7 < (int)x && wy < line)
+	{
+		tileMapAddr = gpuC.wtile_map ? MAP1_ADDR : MAP0_ADDR;
+		scx = 0;
+		scy = 0;
+	}
+
 	uint16_t tileIdAddr = tileMapAddr
 		+ (((line + scy) / TILE_H) * MAP_W)
 		+ (((x + scx) % (MAP_W * TILE_W)) / TILE_W);
