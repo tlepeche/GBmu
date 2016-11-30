@@ -1,5 +1,4 @@
 #include "OpenGLWindow.hpp"
-#include "Machine.hpp"
 
 #include <QCoreApplication>
 #include <QOpenGLContext>
@@ -67,17 +66,17 @@ QMenuBar	*OpenGLWindow::genMenuBar()
 
 void	OpenGLWindow::gbTypeAUTOSlot()
 {
-	Machine::setHardware(AUTO);
+	emit gbTypeSign(AUTO);
 }
 
 void	OpenGLWindow::gbTypeGBSlot()
 {
-	Machine::setHardware(GB);
+	emit gbTypeSign(GB);
 }
 
 void	OpenGLWindow::gbTypeGBCSlot()
 {
-	Machine::setHardware(GBC);
+	emit gbTypeSign(GBC);
 }
 
 void	OpenGLWindow::openSlot()

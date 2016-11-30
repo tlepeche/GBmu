@@ -161,7 +161,7 @@ void	Cpu_z80::LD_B_n() //0x06
 
 void	Cpu_z80::RLCA() //0x07
 {
-	_cpuRegister.c = _cpuRegister.A & 0x80;
+	_cpuRegister.c = _cpuRegister.A & 0x80 ? 1 : 0;
 	_cpuRegister.A <<= 1;
 	if (_cpuRegister.c)
 		_cpuRegister.A += 1;

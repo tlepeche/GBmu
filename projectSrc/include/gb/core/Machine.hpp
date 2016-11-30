@@ -22,8 +22,8 @@ class Machine
 
 		bool			step(void);
 		virtual void	run(void);
-
-		static void		setHardware(htype hardware);
+		virtual	void	reset(void) = 0;
+		void			setHardware(htype hardware);
 
 		unsigned int	_cyclesMax;
 		unsigned int	_cyclesAcc;

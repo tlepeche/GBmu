@@ -41,7 +41,7 @@ bool Machine::step(void)
 	if (_cyclesAcc >= (uint32_t)(_cyclesMax / 59.7))
 	{
 		_cyclesAcc -= (uint32_t)(_cyclesMax / 59.7);
-		// usleep(16750);
+	//	usleep(16750);
 	}
 
 	if (_cpu->_cpuRegister.PC == 0x0100) // load Rom
@@ -58,4 +58,5 @@ void Machine::run(void)
 void Machine::setHardware(htype hardware)
 {
 	_hardware = hardware;
+	reset();
 }
