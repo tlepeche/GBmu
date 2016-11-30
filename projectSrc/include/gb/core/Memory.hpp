@@ -68,13 +68,15 @@ class Memory {
 		void				setInBios(bool inBios);
 		void				transferData(uint16_t startAddr);
 		void				handleInput();
-		t_color15			getColor15(uint8_t palId, uint8_t colId);
+		t_color15			getBgColor15(uint8_t palId, uint8_t colId);
+		t_color15			getObjColor15(uint8_t palId, uint8_t colId);
 
 		std::array<uint8_t, 2>	key {{0x0f, 0x0f}};
 	private:
 		Rom					_rom;
 		Bios				_bios;
-		t_color15			_palettes[8][4]; // 8 Palettes ; 4 colors / palette
+		t_color15			_bcp[8][4]; // 8 Palettes ; 4 colors / palette
+		t_color15			_ocp[8][4]; // 8 Palettes ; 4 colors / palette
 		uint8_t				_m_wram[8][4096];
 		uint8_t				_m_vram[2][8192];
 		uint8_t				_m_oam[160];

@@ -14,7 +14,8 @@ void			Memory::reset(void)
 	memset(this->_m_oam, 0xFF, sizeof(_m_oam));
 	memset(this->_m_io, 0xFF, sizeof(_m_io));
 	memset(this->_m_zp, 0xFF, sizeof(_m_zp));
-	memset(this->_palettes, 0xFF, sizeof(_palettes));
+	memset(this->_bcp, 0xFF, sizeof(_bcp));
+	memset(this->_ocp, 0xFF, sizeof(_ocp));
 	this->_inBios = true;
 }
 
@@ -63,9 +64,14 @@ void			Memory::handleInput()
 		write_byte(0xff00, 0x20 + key[0], true);
 }
 
-t_color15		Memory::getColor15(uint8_t palId, uint8_t colorId)
+t_color15		Memory::getBgColor15(uint8_t palId, uint8_t colorId)
 {
-	return _palettes[palId][colorId];
+	return _bcp[palId][colorId];
+}
+
+t_color15		Memory::getObjColor15(uint8_t palId, uint8_t colorId)
+{
+	return _ocp[palId][colorId];
 }
 
 uint8_t			Memory::force_read_vram(uint16_t addr, uint8_t bank)
@@ -148,17 +154,6 @@ uint8_t			Memory::read_byte(uint16_t addr)
 	return 0;
 }
 
-void			display_palette(t_color15 pal[8][4])
-{
-	t_color15	c;
-	dprintf(1, "-----------------------\n");
-	for (int i = 0; i < 8 ; ++i)
-		for (int ic = 0 ; ic < 4 ; ++ic) {
-			c = pal[i][ic];
-			dprintf(1, "[%d][%d] {%x, %x, %x}\n", i, ic, c.r, c.v, c.b);
-		}
-}
-
 void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 {
 	switch (addr & 0xF000){
@@ -234,17 +229,22 @@ void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 							transferData(val << 8);
 						// BCPS / BCPD
 						if (addr == REGISTER_BCPS) {
-							this->_m_io[REGISTER_BCPD & 0xFF] = ((uint8_t*)_palettes)[val & 0x3F];
+							this->_m_io[REGISTER_BCPD & 0xFF] = ((uint8_t*)_bcp)[val & 0x3F];
 						}
 						if (addr == REGISTER_BCPD) {
-							((uint8_t*)_palettes)[read_byte(REGISTER_BCPS) & 0x3F] = val;
+							((uint8_t*)_bcp)[read_byte(REGISTER_BCPS) & 0x3F] = val;
 							if (read_byte(REGISTER_BCPS) & 0x80)
 								write_byte(REGISTER_BCPS, ((((read_byte(REGISTER_BCPS) << 2) + 4) & 0xFF) >> 2) | 0x80);
-						//	dprintf(1, "%2x [%2x]{%d}:", val, read_byte(REGISTER_BCPS) & 0x3F, sizeof(t_color15));
-						//	display_palette(_palettes);
 						}
 						// OCPS / OCPD
-						// TODO as BCPS / BCPD
+						if (addr == REGISTER_OCPS) {
+							this->_m_io[REGISTER_OCPD & 0xFF] = ((uint8_t*)_ocp)[val & 0x3F];
+						}
+						if (addr == REGISTER_OCPD) {
+							((uint8_t*)_ocp)[read_byte(REGISTER_OCPS) & 0x3F] = val;
+							if (read_byte(REGISTER_OCPS) & 0x80)
+								write_byte(REGISTER_OCPS, ((((read_byte(REGISTER_OCPS) << 2) + 4) & 0xFF) >> 2) | 0x80);
+						}
 						this->_m_io[(addr & 0xFF)] = val;
 					}
 					else
