@@ -63,7 +63,7 @@ void	Timer::incTima(void)
 	if (tima == 0xFF)
 	{
 		_memory->write_byte(REGISTER_TIMA, tma);
-		_memory->write_byte(REGISTER_IF, INTER_TOVERF);
+		_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_TOVERF);
 	}
 	else
 		_memory->write_byte(REGISTER_TIMA, tima + 1);
