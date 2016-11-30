@@ -3,6 +3,7 @@
 
 #include <QWindow>
 #include <QOpenGLFunctions>
+#include "htype.hpp"
 
 #define WIN_WIDTH 160
 #define WIN_HEIGHT 144
@@ -48,6 +49,7 @@ class OpenGLWindow : public QWindow, protected QOpenGLFunctions
 
 	signals:
 		void openRomSign(std::string path);
+		void gbTypeSign(htype hardware);
 		void gbDbSign();
 		void keyPressSign(int key);
 		void keyReleaseSign(int key);

@@ -28,6 +28,7 @@ Gameboy::Gameboy() :
 	connect(_window, &OpenGLWindow::gbDbSign, this, &Gameboy::gbDbSlot);
 	connect(_window, &OpenGLWindow::keyPressSign, this, &Gameboy::KeyPress);
 	connect(_window, &OpenGLWindow::keyReleaseSign, this, &Gameboy::KeyRelease);
+	connect(_window, &OpenGLWindow::gbTypeSign, this, &Gameboy::gbTypeSlot);
 
 	_window->show();
 #ifdef DEBUG
@@ -75,7 +76,7 @@ void	Gameboy::run()
 	}
 }
 
-void	Gameboy::reset()
+void	Gameboy::reset(void)
 {
 	if (_willRun.load())
 	{
@@ -101,6 +102,11 @@ void	Gameboy::reset()
 	}
 	else
 		std::cerr << "Gameboy: No rom path defined" << std::endl;
+}
+
+void	Gameboy::gbTypeSlot(htype hardware)
+{
+	this->_hardware = hardware;
 }
 
 void	Gameboy::stepPressedSlot(unsigned int count)

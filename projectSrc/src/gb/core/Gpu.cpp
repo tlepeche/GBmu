@@ -63,10 +63,10 @@ unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 
 	unsigned int tileMapAddr = gpuC.tile_map ? MAP1_ADDR : MAP0_ADDR;
 	unsigned int tileSetAddr = gpuC.tile_set ? TILES1_ADDR : TILES0_ADDR;
-	uint8_t tileId = _memory->read_byte(
-			tileMapAddr
-			+ ((((line + scy) / TILE_H) * MAP_W)
-				+ ((x + scx) % (MAP_W * TILE_W)) / TILE_W));
+	uint16_t tileIdAddr = tileMapAddr
+		+ (((line + scy) / TILE_H) * MAP_W)
+		+ (((x + scx) % (MAP_W * TILE_W)) / TILE_W);
+	uint8_t	tileId = _memory->force_read_vram(tileIdAddr, 0);
 	if (!gpuC.tile_set) tileId += 128; // -128 -> 127 
 	unsigned int tileAddr = tileSetAddr + tileId * TILE_H * 2;
 
@@ -76,10 +76,22 @@ unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 
 	uint8_t	sdata1 = _memory->read_byte(tileAddr + (sy * 2));
 	uint8_t	sdata2 = _memory->read_byte(tileAddr + (sy * 2) + 1);
-	unsigned int colorId = ((sdata1 >> rsx) & 1) | (((sdata2 >> (rsx)) & 1) << 1);
-	unsigned int bgp = _memory->read_byte(REGISTER_BGP);
-	colorId = (bgp >> (2 * colorId)) & 0x3;
-	return gbColors[colorId];
+	uint8_t colorId = ((sdata1 >> rsx) & 1) | (((sdata2 >> (rsx)) & 1) << 1);
+	uint8_t bgp = _memory->read_byte(REGISTER_BGP);
+	uint8_t	bgd = _memory->force_read_vram(tileIdAddr, 1);
+	unsigned int color;
+	if (_memory->getTypeBios() == GB || bgd & 0x10) { // GB
+		color = gbColors[(bgp >> (2 * colorId)) & 0x3];
+	} else { // GBC
+		uint8_t	bgd = _memory->force_read_vram(tileIdAddr, 1);
+		uint16_t palId = bgd & 0x7;
+		t_color15 c15 = _memory->getBgColor15(palId, colorId);
+		color = 0x00 
+			| ((c15.r * 0xFF / 0x1F) << 16)
+			| ((c15.v * 0xFF / 0x1F) << 8)
+			| ((c15.b * 0xFF / 0x1F) << 0);
+	}
+	return color;
 }
 
 void	Gpu::scanActLine()
@@ -224,6 +236,9 @@ bool	Gpu::findSprite(uint8_t line, uint8_t x, unsigned int spriteHeight, t_sprit
 		{
 			if (tmp.x_pos <= (x + 8) && (x + 8) < (tmp.x_pos + TILE_W))
 			{
+				unsigned int colorId = findSpritePixel(tmp, line, x, spriteHeight);
+				if (colorId == 0)
+					continue;
 				if (!hasSprite || sprite->x_pos > tmp.x_pos)
 				{
 					*sprite = tmp;
@@ -239,7 +254,7 @@ unsigned int	Gpu::findSpritePixel(t_sprite sprite, uint8_t line, uint8_t x, uint
 {
 	uint8_t sx = sprite.x_flip ? TILE_W - (x - (sprite.x_pos - 8) + 1) : x - (sprite.x_pos - 8);
 	uint8_t sy = sprite.y_flip ? spriteHeight - (line - (sprite.y_pos - 16)) : line - (sprite.y_pos - 16);
-	
+
 	uint16_t tileAddr;
 	if (spriteHeight == 8)
 		tileAddr = (TILES1_ADDR + (sprite.tile_nbr * spriteHeight * 2));
@@ -265,14 +280,21 @@ unsigned int	Gpu::scanSprite(uint8_t line, uint8_t x, unsigned int pixel)
 		{
 			if (sprite.bckgrd_prio == 0 || pixel == gbColors[0])
 			{
-				unsigned int palId = findSpritePixel(sprite, line, x, spriteHeight);
+				unsigned int colorId = findSpritePixel(sprite, line, x, spriteHeight);
 				uint8_t	pal = sprite.pal == 0
 					? _memory->read_byte(REGISTER_OBP0)
 					: _memory->read_byte(REGISTER_OBP1);
-				if (palId != 0)
-				{
-					uint8_t colorId = pal >> (2 * palId) & 0x03;
-					pixel = gbColors[colorId];
+				if (_memory->getTypeBios() == GB) {
+					uint8_t palId = pal >> (2 * colorId) & 0x03;
+					pixel = gbColors[palId];
+				} else {
+					uint8_t palId = colorId;
+					uint8_t cpalId = sprite.cpal & 0x7;
+					t_color15 c15 = _memory->getObjColor15(cpalId, palId);
+					pixel = 0x00 
+						| ((c15.r * 0xFF / 0x1F) << 16)
+						| ((c15.v * 0xFF / 0x1F) << 8)
+						| ((c15.b * 0xFF / 0x1F) << 0);
 				}
 			}
 		}

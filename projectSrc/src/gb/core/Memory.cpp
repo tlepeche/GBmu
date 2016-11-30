@@ -14,12 +14,19 @@ void			Memory::reset(void)
 	memset(this->_m_oam, 0xFF, sizeof(_m_oam));
 	memset(this->_m_io, 0xFF, sizeof(_m_io));
 	memset(this->_m_zp, 0xFF, sizeof(_m_zp));
+	memset(this->_bcp, 0xFF, sizeof(_bcp));
+	memset(this->_ocp, 0xFF, sizeof(_ocp));
 	this->_inBios = true;
 }
 
 htype			Memory::getRomType(void)
 {
 	return this->_rom.getHardware();
+}
+
+htype			Memory::getTypeBios(void)
+{
+	return this->_typeBios;
 }
 
 int				Memory::loadRom(const char *file, htype hardware)
@@ -57,16 +64,31 @@ void			Memory::handleInput()
 		write_byte(0xff00, 0x20 + key[0], true);
 }
 
+t_color15		Memory::getBgColor15(uint8_t palId, uint8_t colorId)
+{
+	return _bcp[palId][colorId];
+}
+
+t_color15		Memory::getObjColor15(uint8_t palId, uint8_t colorId)
+{
+	return _ocp[palId][colorId];
+}
+
+uint8_t			Memory::force_read_vram(uint16_t addr, uint8_t bank)
+{
+	return this->_m_vram[bank & 0x1][addr & 0x1FFF];
+}
+
 uint8_t			Memory::read_byte(uint16_t addr)
 {
 	switch (addr & 0xF000){
 		case 0x0000:
 			if (this->_inBios)
 			{
-				if (addr <= 0xFF && this->_typeBios == GB)
+				if (addr <= 0xFF)
 					return this->_codeBios[addr];
-				else if (addr <= 0x900 && this->_typeBios == GBC) // TODO: check if not 900
-					return this->_codeBios[addr];
+				else if (addr >= 0x200 && addr < 0x900 && getTypeBios() == GBC)
+					return this->_codeBios[addr - 0x100];
 				else
 					return this->_rom.read(addr);
 			}
@@ -101,7 +123,9 @@ uint8_t			Memory::read_byte(uint16_t addr)
 			if ((addr & 0xF000) < 0xD000)
 				return this->_m_wram[0][(addr & 0x1FFF)];
 			else
-				return this->_m_wram[(this->_m_io[(SVBK & 0xFF)] & 0x03)][(addr & 0x1FFF)];
+				return this->_m_wram
+					[(this->_m_io[(SVBK & 0xFF)] & 0x07)]
+					[(addr & 0x1FFF)];
 			break;
 		case 0xF000:
 			switch (addr & 0x0F00){
@@ -215,8 +239,26 @@ void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 								this->_m_io[0x41] &= 0xfb;
 						}
 						//DMA
-						if (addr == 0xFF46)
+						if (addr == REGISTER_DMA)
 							transferData(val << 8);
+						// BCPS / BCPD
+						if (addr == REGISTER_BCPS) {
+							this->_m_io[REGISTER_BCPD & 0xFF] = ((uint8_t*)_bcp)[val & 0x3F];
+						}
+						if (addr == REGISTER_BCPD) {
+							((uint8_t*)_bcp)[read_byte(REGISTER_BCPS) & 0x3F] = val;
+							if (read_byte(REGISTER_BCPS) & 0x80)
+								write_byte(REGISTER_BCPS, ((((read_byte(REGISTER_BCPS) << 2) + 4) & 0xFF) >> 2) | 0x80);
+						}
+						// OCPS / OCPD
+						if (addr == REGISTER_OCPS) {
+							this->_m_io[REGISTER_OCPD & 0xFF] = ((uint8_t*)_ocp)[val & 0x3F];
+						}
+						if (addr == REGISTER_OCPD) {
+							((uint8_t*)_ocp)[read_byte(REGISTER_OCPS) & 0x3F] = val;
+							if (read_byte(REGISTER_OCPS) & 0x80)
+								write_byte(REGISTER_OCPS, ((((read_byte(REGISTER_OCPS) << 2) + 4) & 0xFF) >> 2) | 0x80);
+						}
 						this->_m_io[(addr & 0xFF)] = val;
 					}
 					else
