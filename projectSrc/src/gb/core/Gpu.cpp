@@ -64,10 +64,9 @@ unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 	unsigned int tileMapAddr = gpuC.tile_map ? MAP1_ADDR : MAP0_ADDR;
 	unsigned int tileSetAddr = gpuC.tile_set ? TILES1_ADDR : TILES0_ADDR;
 	uint16_t tileIdAddr = tileMapAddr
-			+ (((line + scy) / TILE_H) * MAP_W)
-			+ (((x + scx) % (MAP_W * TILE_W)) / TILE_W);
+		+ (((line + scy) / TILE_H) * MAP_W)
+		+ (((x + scx) % (MAP_W * TILE_W)) / TILE_W);
 	uint8_t	tileId = _memory->force_read_vram(tileIdAddr, 0);
-//	uint8_t tileId = _memory->read_byte(tileIdAddr);
 	if (!gpuC.tile_set) tileId += 128; // -128 -> 127 
 	unsigned int tileAddr = tileSetAddr + tileId * TILE_H * 2;
 
@@ -129,11 +128,9 @@ void	Gpu::step()
 	t_gpuStat gpuStat = {{_memory->read_byte(REGISTER_STAT)}};
 	t_gpuControl    gpuC = (t_gpuControl){{_memory->read_byte(REGISTER_LCDC)}};
 
-
 	if (!gpuC.display)
 	{
-		_memory->write_byte(REGISTER_STAT, 0);
-		_memory->write_byte(REGISTER_STAT, gpuStat.stat & 0xfc);
+		_memory->write_byte(REGISTER_STAT, gpuStat.stat & 0xfc, true);
 		_memory->write_byte(REGISTER_LY, 0);
 		_clock = 0;
 		return ;
@@ -221,7 +218,7 @@ t_gpuMode	Gpu::readGpuMode()
 void		Gpu::writeGpuMode(t_gpuMode mode)
 {
 	uint8_t	stat = _memory->read_byte(REGISTER_STAT);
-	_memory->write_byte(REGISTER_STAT, (stat & 0xFC ) | (mode & 0x3));
+	_memory->write_byte(REGISTER_STAT, (stat & 0xFC ) | (mode & 0x3), true);
 }
 
 bool	Gpu::findSprite(uint8_t line, uint8_t x, unsigned int spriteHeight, t_sprite *sprite)
@@ -258,7 +255,11 @@ unsigned int	Gpu::findSpritePixel(t_sprite sprite, uint8_t line, uint8_t x, uint
 	uint8_t sx = sprite.x_flip ? TILE_W - (x - (sprite.x_pos - 8) + 1) : x - (sprite.x_pos - 8);
 	uint8_t sy = sprite.y_flip ? spriteHeight - (line - (sprite.y_pos - 16)) : line - (sprite.y_pos - 16);
 
-	uint16_t tileAddr = (TILES1_ADDR + (sprite.tile_nbr * spriteHeight * 2));
+	uint16_t tileAddr;
+	if (spriteHeight == 8)
+		tileAddr = (TILES1_ADDR + (sprite.tile_nbr * spriteHeight * 2));
+	else
+		tileAddr = (TILES1_ADDR + ((sprite.tile_nbr >> 1) * spriteHeight * 2));
 	uint16_t start = tileAddr + sy * 2;
 	uint8_t sdata1 = _memory->read_byte(start);
 	uint8_t sdata2 = _memory->read_byte(start + 1);

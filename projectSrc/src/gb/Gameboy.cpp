@@ -33,8 +33,11 @@ Gameboy::Gameboy() :
 	_window->show();
 #ifdef DEBUG
 	gbDbSlot(); // Open Debug window
-//	openRomSlot("/sgoinfre/goinfre/Misc/roms/Pokemon - Jaune.gbc"); // Run Roms
-	openRomSlot("/sgoinfre/goinfre/Misc/roms/Tetris.gb"); // Run Roms
+//	openRomSlot("/sgoinfre/goinfre/Misc/roms/Metroid II - Return of Samus.gb"); // Run Roms
+//	openRomSlot("/sgoinfre/goinfre/Misc/roms/Kirby 2.gb"); // Run Roms
+	openRomSlot("/sgoinfre/goinfre/Misc/roms/Legend_of_Zelda_link_Awaking.gb"); // Run Roms
+//	openRomSlot("/sgoinfre/goinfre/Misc/roms/Super Mario Land.gb"); // Run Roms
+//	openRomSlot("/sgoinfre/goinfre/Misc/roms/Tetris.gb"); // Run Roms
 #endif
 }
 

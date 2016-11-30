@@ -210,6 +210,13 @@ void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 					else if ((addr & 0xFF) <= 0x7F)
 					{
 						// I/O
+
+						//protect 3 first byte of register STAT form overwritting
+						if (addr == REGISTER_STAT && !super)
+						{
+							val &= 0xF8;
+							val |= read_byte(REGISTER_STAT) & 0x07;
+						}
 						if ((addr == 0xFF44 || addr == 0xFF45) && read_byte(0xFF40) & 0x80)
 						{
 							if (read_byte(0xFF44) == read_byte(0xFF45))
