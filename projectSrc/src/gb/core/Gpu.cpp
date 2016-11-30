@@ -264,7 +264,7 @@ bool	Gpu::findSprite(uint8_t line, uint8_t x, unsigned int spriteHeight, t_sprit
 unsigned int	Gpu::findSpritePixel(t_sprite sprite, uint8_t line, uint8_t x, uint8_t spriteHeight)
 {
 	uint8_t sx = sprite.x_flip ? TILE_W - (x - (sprite.x_pos - 8) + 1) : x - (sprite.x_pos - 8);
-	uint8_t sy = sprite.y_flip ? spriteHeight - (line - (sprite.y_pos - 16)) : line - (sprite.y_pos - 16);
+	uint8_t sy = sprite.y_flip ? spriteHeight - (line - (sprite.y_pos - 16)) - 1 : line - (sprite.y_pos - 16);
 
 	uint16_t tileAddr;
 	if (spriteHeight == 8)
