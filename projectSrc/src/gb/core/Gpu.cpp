@@ -116,8 +116,6 @@ void	Gpu::step()
 	t_gpuStat gpuStat = {{_memory->read_byte(REGISTER_STAT)}};
 	t_gpuControl    gpuC = (t_gpuControl){{_memory->read_byte(REGISTER_LCDC)}};
 
-//	std::cout << "entree  > clock = " << _clock << ", mode = " << readGpuMode() << std::endl;
-
 	if (!gpuC.display)
 	{
 		_memory->write_byte(REGISTER_STAT, gpuStat.stat & 0xfc, true);
@@ -186,7 +184,6 @@ void	Gpu::step()
 				break ;
 		}
 	}
-//	std::cout << "sortie  > clock = " << _clock << ", mode = " << readGpuMode() << "\n" << std::endl;
 }
 
 void	Gpu::init()

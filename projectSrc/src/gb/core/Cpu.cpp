@@ -164,10 +164,7 @@ uint8_t Cpu_z80::executeNextOpcode(void)
 	if (this->_opcodeInProgress.functionOpcode == NULL)
 		printf("Function not yet implemented: opcode(%.2X), PC = 0x%02x\n", this->_opcodeInProgress.opcode, _cpuRegister.PC);
 	else
-	{
-//		dprintf(1, "0x%.2x\n", _opcodeInProgress.opcode);
 		this->_opcodeInProgress.functionOpcode();
-	}
 	uint8_t cycle = this->_getCycleOpcode();
 	this->_nextPtr();
 	setStepState(true);
