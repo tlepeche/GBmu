@@ -648,7 +648,6 @@ class Cpu_z80
 	uint16_t						getPCRegister(void);
 
 	private:
-		void								_resetInterrupt(void);
 		void								_setStop(bool state);
 		void								_setHalt(bool state);
 

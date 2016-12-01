@@ -193,64 +193,64 @@ void Cpu_z80::init(htype hardware)
 	this->_cpuRegister.SP = 0xFFFE;
 
 	//init register memory
-	this->_memory->write_byte(REGISTER_NR10, 0x80);
-	this->_memory->write_byte(REGISTER_NR11, 0xBF);
-	this->_memory->write_byte(REGISTER_NR12, 0xF3);
-	this->_memory->write_byte(REGISTER_NR14, 0xBF);
-	this->_memory->write_byte(REGISTER_NR21, 0x3F);
-	this->_memory->write_byte(REGISTER_NR22, 0x00);
-	this->_memory->write_byte(REGISTER_NR24, 0xBF);
-	this->_memory->write_byte(REGISTER_NR30, 0x7F);
-	this->_memory->write_byte(REGISTER_NR31, 0xFF);
-	this->_memory->write_byte(REGISTER_NR32, 0x9F);
-	this->_memory->write_byte(REGISTER_NR33, 0xBF);
-	this->_memory->write_byte(REGISTER_NR41, 0xFF);
-	this->_memory->write_byte(REGISTER_NR42, 0x00);
-	this->_memory->write_byte(REGISTER_NR43, 0x00);
-	this->_memory->write_byte(REGISTER_NR30_, 0xBF);
-	this->_memory->write_byte(REGISTER_NR50, 0x77);
-	this->_memory->write_byte(REGISTER_NR51, 0xF3);
-	this->_memory->write_byte(REGISTER_NR52, 0xF1);
+	this->_memory->write_byte(REGISTER_NR10, 0x80, true);
+	this->_memory->write_byte(REGISTER_NR11, 0xBF, true);
+	this->_memory->write_byte(REGISTER_NR12, 0xF3, true);
+	this->_memory->write_byte(REGISTER_NR14, 0xBF, true);
+	this->_memory->write_byte(REGISTER_NR21, 0x3F, true);
+	this->_memory->write_byte(REGISTER_NR22, 0x00, true);
+	this->_memory->write_byte(REGISTER_NR24, 0xBF, true);
+	this->_memory->write_byte(REGISTER_NR30, 0x7F, true);
+	this->_memory->write_byte(REGISTER_NR31, 0xFF, true);
+	this->_memory->write_byte(REGISTER_NR32, 0x9F, true);
+	this->_memory->write_byte(REGISTER_NR33, 0xBF, true);
+	this->_memory->write_byte(REGISTER_NR41, 0xFF, true);
+	this->_memory->write_byte(REGISTER_NR42, 0x00, true);
+	this->_memory->write_byte(REGISTER_NR43, 0x00, true);
+	this->_memory->write_byte(REGISTER_NR30_, 0xBF, true);
+	this->_memory->write_byte(REGISTER_NR50, 0x77, true);
+	this->_memory->write_byte(REGISTER_NR51, 0xF3, true);
+	this->_memory->write_byte(REGISTER_NR52, 0xF1, true);
 
 	// Other register
 	this->_memory->write_byte(REGISTER_P1, 0xCF, true);
-	this->_memory->write_byte(REGISTER_SB, 0x00);
-	this->_memory->write_byte(REGISTER_SC, 0x7E);
+	this->_memory->write_byte(REGISTER_SB, 0x00, true);
+	this->_memory->write_byte(REGISTER_SC, 0x7E, true);
 	this->_memory->write_byte(REGISTER_DIV, 0xD3, true); // bios: 0xD3 start: 0x81
-	this->_memory->write_byte(REGISTER_TIMA, 0x00);
-	this->_memory->write_byte(REGISTER_TMA, 0x00);
-	this->_memory->write_byte(REGISTER_TAC, 0xFC);
-	this->_memory->write_byte(REGISTER_KEY1, 0xFF);
-	this->_memory->write_byte(REGISTER_VBK, 0x00);
-	this->_memory->write_byte(REGISTER_HDMA1, 0xFF);
-	this->_memory->write_byte(REGISTER_HDMA2, 0xFF);
-	this->_memory->write_byte(REGISTER_HDMA3, 0xFF);
-	this->_memory->write_byte(REGISTER_HDMA4, 0xFF);
-	this->_memory->write_byte(REGISTER_HDMA5, 0xFF);
-	this->_memory->write_byte(REGISTER_SVBK, 0x01);
-	this->_memory->write_byte(REGISTER_IF, 0xE1);
-	this->_memory->write_byte(REGISTER_IE, 0x00);
+	this->_memory->write_byte(REGISTER_TIMA, 0x00, true);
+	this->_memory->write_byte(REGISTER_TMA, 0x00, true);
+	this->_memory->write_byte(REGISTER_TAC, 0xFC, true);
+	this->_memory->write_byte(REGISTER_KEY1, 0xFF, true);
+	this->_memory->write_byte(REGISTER_VBK, 0x00, true);
+	this->_memory->write_byte(REGISTER_HDMA1, 0xFF, true);
+	this->_memory->write_byte(REGISTER_HDMA2, 0xFF, true);
+	this->_memory->write_byte(REGISTER_HDMA3, 0xFF, true);
+	this->_memory->write_byte(REGISTER_HDMA4, 0xFF, true);
+	this->_memory->write_byte(REGISTER_HDMA5, 0xFF, true);
+	this->_memory->write_byte(REGISTER_SVBK, 0x01, true);
+	this->_memory->write_byte(REGISTER_IF, 0xE1, true);
+	this->_memory->write_byte(REGISTER_IE, 0x00, true);
 
 
-	this->_memory->write_byte(REGISTER_LCDC, 0x91);
-	this->_memory->write_byte(REGISTER_STAT, 0x80); // bios: 0x80 start: 0x81
-	this->_memory->write_byte(REGISTER_SCY, 0x00);
-	this->_memory->write_byte(REGISTER_SCX, 0x00);
-	this->_memory->write_byte(REGISTER_LY, 0x00); // bios: 0x00 start: 0x99
-	this->_memory->write_byte(REGISTER_LYC, 0x00);
-	this->_memory->write_byte(REGISTER_DMA, 0xFF);
-	this->_memory->write_byte(REGISTER_BGP, 0xFC); // edelangh: this is bullshit !!
-	this->_memory->write_byte(REGISTER_OBP0, 0xFF);
-	this->_memory->write_byte(REGISTER_OBP1, 0xFF);
-	this->_memory->write_byte(REGISTER_WY, 0x00);
-	this->_memory->write_byte(REGISTER_WX, 0x00);
+	this->_memory->write_byte(REGISTER_LCDC, 0x91, true);
+	this->_memory->write_byte(REGISTER_STAT, 0x80, true); // bios: 0x80 start: 0x81
+	this->_memory->write_byte(REGISTER_SCY, 0x00, true);
+	this->_memory->write_byte(REGISTER_SCX, 0x00, true);
+	this->_memory->write_byte(REGISTER_LY, 0x00, true); // bios: 0x00 start: 0x99
+	this->_memory->write_byte(REGISTER_LYC, 0x00, true);
+	this->_memory->write_byte(REGISTER_DMA, 0xFF, true);
+	this->_memory->write_byte(REGISTER_BGP, 0xFC, true); // edelangh: this is bullshit !!
+	this->_memory->write_byte(REGISTER_OBP0, 0xFF, true);
+	this->_memory->write_byte(REGISTER_OBP1, 0xFF, true);
+	this->_memory->write_byte(REGISTER_WY, 0x00, true);
+	this->_memory->write_byte(REGISTER_WX, 0x00, true);
 	/* TODO: WTF ? I dont see then in doc */
-	this->_memory->write_byte(REGISTER_BCPS, 0xFF);
-	this->_memory->write_byte(REGISTER_BCPD, 0xFF);
-	this->_memory->write_byte(REGISTER_OCPS, 0xFF);
-	this->_memory->write_byte(REGISTER_OCPD, 0xFF);
+	this->_memory->write_byte(REGISTER_BCPS, 0xFF, true);
+	this->_memory->write_byte(REGISTER_BCPD, 0xFF, true);
+	this->_memory->write_byte(REGISTER_OCPS, 0xFF, true);
+	this->_memory->write_byte(REGISTER_OCPD, 0xFF, true);
 	
-	this->_memory->write_byte(0xFF56, 0x3F); // Register RP, IR disable
+	this->_memory->write_byte(0xFF56, 0x3F, true); // Register RP, IR disable
 
 	this->_opcodeInProgress = this->_getOpcode(this->_memory->read_byte(this->_cpuRegister.PC));
 	this->_setDataOpcode();
@@ -270,11 +270,6 @@ void Cpu_z80::_setLowBit(uint16_t addr, uint8_t bit)
 void Cpu_z80::_setHightBit(uint16_t addr, uint8_t bit)
 {
 	this->_memory->write_byte(addr, (uint8_t)((0x01 << bit) | this->_memory->read_byte(addr)));
-}
-
-void Cpu_z80::_resetInterrupt(void)
-{
-	this->_memory->write_byte(REGISTER_IF, 0x00);
 }
 
 void Cpu_z80::execInterrupt(void)
