@@ -67,8 +67,8 @@ void			Memory::HDMA()
 						| (((uint16_t)(read_byte(0xFF54) & 0xF0) >> 4)));
 		uint16_t len = read_byte(0xFF55) & 0x7F;
 
-		// * 16
-		start <<= 4; dest <<= 4; len <<= 4;
+		len += 1;
+		start <<= 4; dest <<= 4; len <<= 4; // *16
 		dest += 0x8000;
 		for (auto curr = start ; curr < start + len ; ++curr, ++dest)
 			write_byte(dest, read_byte(curr));
