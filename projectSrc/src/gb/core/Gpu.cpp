@@ -60,9 +60,20 @@ unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 	t_gpuControl	gpuC = (t_gpuControl){{_memory->read_byte(REGISTER_LCDC)}};
 	uint8_t			scy = _memory->read_byte(REGISTER_SCY);
 	uint8_t			scx = _memory->read_byte(REGISTER_SCX);
+	uint8_t			wx = _memory->read_byte(REGISTER_WX);
+	uint8_t			wy = _memory->read_byte(REGISTER_WY);
 
-	unsigned int tileMapAddr = gpuC.tile_map ? MAP1_ADDR : MAP0_ADDR;
 	unsigned int tileSetAddr = gpuC.tile_set ? TILES1_ADDR : TILES0_ADDR;
+	unsigned int tileMapAddr = gpuC.tile_map ? MAP1_ADDR : MAP0_ADDR;
+
+	if ((gpuC.window && wx <= 166 && wy <= 143)
+		&& ((int)wx) - 7 < (int)x && wy < line)
+	{
+		tileMapAddr = gpuC.wtile_map ? MAP1_ADDR : MAP0_ADDR;
+		scx = 0;
+		scy = 0;
+	}
+
 	uint16_t tileIdAddr = tileMapAddr
 		+ (((line + scy) / TILE_H) * MAP_W)
 		+ (((x + scx) % (MAP_W * TILE_W)) / TILE_W);
@@ -253,7 +264,7 @@ bool	Gpu::findSprite(uint8_t line, uint8_t x, unsigned int spriteHeight, t_sprit
 unsigned int	Gpu::findSpritePixel(t_sprite sprite, uint8_t line, uint8_t x, uint8_t spriteHeight)
 {
 	uint8_t sx = sprite.x_flip ? TILE_W - (x - (sprite.x_pos - 8) + 1) : x - (sprite.x_pos - 8);
-	uint8_t sy = sprite.y_flip ? spriteHeight - (line - (sprite.y_pos - 16)) : line - (sprite.y_pos - 16);
+	uint8_t sy = sprite.y_flip ? spriteHeight - (line - (sprite.y_pos - 16)) - 1 : line - (sprite.y_pos - 16);
 
 	uint16_t tileAddr;
 	if (spriteHeight == 8)

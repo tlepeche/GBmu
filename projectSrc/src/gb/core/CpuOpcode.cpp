@@ -172,7 +172,7 @@ void	Cpu_z80::RLCA() //0x07
 
 void	Cpu_z80::LD_n_SP() //0x08
 {
-	_cpuRegister.SP = _memory->read_word(_cpuRegister.PC + 1);
+	_memory->write_word(_memory->read_word(_cpuRegister.PC + 1), _cpuRegister.SP);
 }
 
 void	Cpu_z80::ADD_HL_BC() //0x09
@@ -1483,7 +1483,7 @@ void	Cpu_z80::LD_HL_SP_n()	//0xf8
 
 void	Cpu_z80::LD_SP_HL()	//0xf9
 {
-	_memory->write_word(_cpuRegister.SP, _cpuRegister.HL);
+	_cpuRegister.SP = _cpuRegister.HL;
 }
 
 void	Cpu_z80::LD_A_b() //0xfa
