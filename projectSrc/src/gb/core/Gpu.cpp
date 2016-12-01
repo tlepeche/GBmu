@@ -63,38 +63,50 @@ unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 	uint8_t			wx = _memory->read_byte(REGISTER_WX);
 	uint8_t			wy = _memory->read_byte(REGISTER_WY);
 
-	unsigned int tileSetAddr = gpuC.tile_set ? TILES1_ADDR : TILES0_ADDR;
-	unsigned int tileMapAddr = gpuC.tile_map ? MAP1_ADDR : MAP0_ADDR;
+	uint16_t tileSetAddr = gpuC.tile_set ? TILES1_ADDR : TILES0_ADDR;
+	uint16_t tileMapAddr = gpuC.tile_map ? MAP1_ADDR : MAP0_ADDR;
 
-	if ((gpuC.window && wx <= 166 && wy <= 143)
-		&& ((int)wx) - 7 < (int)x && wy < line)
+	if ((gpuC.window && 6 < wx && wx <= 166 && wy <= 143)
+		&& ((int)wx) - 7 <= (int)x && wy <= line)
 	{
 		tileMapAddr = gpuC.wtile_map ? MAP1_ADDR : MAP0_ADDR;
 		scx = 0;
 		scy = 0;
+		x -= wx - 7;
+		line -= wy;
 	}
 
 	uint16_t tileIdAddr = tileMapAddr
-		+ (((line + scy) / TILE_H) * MAP_W)
+		+ ((((line + scy) % (MAP_W * TILE_H)) / TILE_H) * MAP_W)
 		+ (((x + scx) % (MAP_W * TILE_W)) / TILE_W);
 	uint8_t	tileId = _memory->force_read_vram(tileIdAddr, 0);
 	if (!gpuC.tile_set) tileId += 128; // -128 -> 127 
-	unsigned int tileAddr = tileSetAddr + tileId * TILE_H * 2;
+	uint16_t tileAddr = tileSetAddr + tileId * TILE_H * 2;
+	uint8_t bgp = _memory->read_byte(REGISTER_BGP);
+	uint8_t	bgd =
+		_memory->getRomType() == GB ? 0 :
+		_memory->force_read_vram(tileIdAddr, 1);
 
 	unsigned int sy = (line + scy) % TILE_H;
 	unsigned int sx = (x + scx) % TILE_W;
+	if (bgd & 0x20) sx = 7 - sx;
+	if (bgd & 0x40) sy = 7 - sy;
 	unsigned int rsx = BYTE_SIZE - sx - 1;
 
+	/*
+	uint8_t tileBank = bgd & 0x8 ? 1 : 0;
+	uint8_t	sdata1 = _memory->force_read_vram(tileAddr + (sy * 2), tileBank);
+	uint8_t	sdata2 = _memory->force_read_vram(tileAddr + (sy * 2) + 1, tileBank);
+	/*/
 	uint8_t	sdata1 = _memory->read_byte(tileAddr + (sy * 2));
 	uint8_t	sdata2 = _memory->read_byte(tileAddr + (sy * 2) + 1);
+	//*/
 	uint8_t colorId = ((sdata1 >> rsx) & 1) | (((sdata2 >> (rsx)) & 1) << 1);
-	uint8_t bgp = _memory->read_byte(REGISTER_BGP);
-	uint8_t	bgd = _memory->force_read_vram(tileIdAddr, 1);
 	unsigned int color;
+	//if (bgd & 0x8) return (0x0000FF00);
 	if (_memory->getTypeBios() == GB || bgd & 0x10) { // GB
 		color = gbColors[(bgp >> (2 * colorId)) & 0x3];
 	} else { // GBC
-		uint8_t	bgd = _memory->force_read_vram(tileIdAddr, 1);
 		uint16_t palId = bgd & 0x7;
 		t_color15 c15 = _memory->getBgColor15(palId, colorId);
 		color = 0x00 
@@ -111,12 +123,15 @@ void	Gpu::scanActLine()
 	unsigned int	pixel;
 	uint8_t			line = _memory->read_byte(REGISTER_LY);
 
+	if (line < WIN_HEIGHT)
 	for (int x = 0 ; x < WIN_WIDTH ; ++x) {
 		addrLine = line * WIN_WIDTH + x;
 		pixel = scanPixel(line, x);
 		pixel = scanSprite(line, x, pixel);
 		_window->drawPixel(addrLine, pixel);
 	}
+	else
+		std::cerr << "ERROR BAD LY" << std::endl;
 }
 
 #include "interrupt.hpp"
