@@ -4,6 +4,8 @@
 #include "htype.hpp"
 #include <array>
 #include <functional>
+#include <fstream>
+#include <iostream>
 
 #define LOGO			0x0104
 #define TITLE			0x0134
@@ -51,10 +53,13 @@ class Rom {
 		uint8_t							read(uint16_t addr);
 		void							write(uint16_t addr, uint8_t val);
 		void							reset(void);
+		void							save(void);
 
 	private:
 		char							*_rom;
 		uint8_t							*_eram;
+		std::fstream					_save;
+		char							*_pathsave;
 		htype							_hardware;
 		uint8_t							_bank;
 		uint8_t							_rambank;
@@ -67,7 +72,8 @@ class Rom {
 
 		Rom(void);
 		~Rom(void);
-		void							init(void);
+		void							init(const char *file);
+		char							*getNameSave(const char *nameFile);
 		uint8_t							getMbc(uint8_t octet);
 		uint8_t							getBankEram(uint8_t octet);
 		bool							_mbcRamAccess(void);

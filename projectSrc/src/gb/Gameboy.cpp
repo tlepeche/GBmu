@@ -43,6 +43,7 @@ Gameboy::Gameboy() :
 
 Gameboy::~Gameboy()
 {
+	this->_memory->saverom();
 	delete this->_windowDebug;
 	this->stopThread();
 }

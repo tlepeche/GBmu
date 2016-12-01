@@ -19,6 +19,11 @@ void			Memory::reset(void)
 	this->_inBios = true;
 }
 
+void			Memory::saverom(void)
+{
+	this->_rom.save();
+}
+
 htype			Memory::getRomType(void)
 {
 	return this->_rom.getHardware();

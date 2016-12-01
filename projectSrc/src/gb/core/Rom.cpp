@@ -6,6 +6,7 @@ Rom::Rom(void)
 {
 	this->_eram = NULL;
 	this->_rom = NULL;
+	this->_pathsave = NULL;
 	this->_mbcPtrRead = {
 		std::bind(&Rom::_readRom, this, std::placeholders::_1),
 		std::bind(&Rom::_readMbc1, this, std::placeholders::_1),
@@ -28,9 +29,35 @@ Rom::~Rom(void)
 		delete[] this->_rom;
 	if (this->_eram != NULL)
 		delete[] this->_eram;
+	if (this->_pathsave != NULL)
+		delete[] this->_pathsave;
 }
 
-void		Rom::init(void)
+void		Rom::save(void)
+{
+	if (this->_eram != NULL)
+	{
+		this->_save.open(this->_pathsave, std::fstream::out | std::fstream::binary);
+		if (this->_save.is_open())
+		{
+			uint32_t	size = this->getBankEram(this->_rom[RAMSIZE]) * 8192;
+			this->_save.write((const char *)this->_eram, size);
+			this->_save.close();
+		}
+	}
+}
+
+char		*Rom::getNameSave(const char *nameFile)
+{
+	std::string		namesave;
+	namesave.append(nameFile);
+	namesave.replace(namesave.rfind(".gb"), 5, ".save");
+	char			*str = new char[namesave.length() + 1];
+	strncpy(str, namesave.c_str(), namesave.length() + 1);
+	return str;
+}
+
+void		Rom::init(const char *file)
 {
 	uint8_t	flag_cgb;
 
@@ -44,6 +71,16 @@ void		Rom::init(void)
 		uint32_t	size = this->getBankEram(this->_rom[RAMSIZE]) * 8192;
 		this->_eram = new uint8_t [size];
 		memset(this->_eram, 0x00, size);
+		if (this->_pathsave != NULL)
+			delete[] this->_pathsave;
+		this->_pathsave = this->getNameSave(file);
+		this->_save.open(this->_pathsave, std::fstream::in | std::fstream::binary);
+		if (this->_save.is_open())
+		{
+			uint32_t	size = this->getBankEram(this->_rom[RAMSIZE]) * 8192;
+			this->_save.read((char *)this->_eram, size);
+			this->_save.close();
+		}
 	}
 	this->_bank = 0;
 	this->_rambank = 0;
@@ -70,7 +107,7 @@ int			Rom::load(const char *file)
 		romFile.seekg(0, std::ios::beg);
 		romFile.read(this->_rom, rom_size);
 		romFile.close();
-		this->init();
+		this->init(file);
 		if (this->_mbc == 0xFF || !this->_checkHeader())
 			return -2;
 		return 0;
