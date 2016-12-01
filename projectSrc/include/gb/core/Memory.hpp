@@ -56,6 +56,7 @@ class Machine;
 class Memory {
 	friend		Machine;
 	public:
+		void				saverom(void);
 		void				reset(void);
 		uint8_t				read_byte(uint16_t addr);
 		void				write_byte(uint16_t addr, uint8_t val, bool super = false);

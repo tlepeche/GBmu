@@ -6,6 +6,7 @@ Rom::Rom(void)
 {
 	this->_eram = NULL;
 	this->_rom = NULL;
+	this->_pathsave = NULL;
 	this->_mbcPtrRead = {
 		std::bind(&Rom::_readRom, this, std::placeholders::_1),
 		std::bind(&Rom::_readMbc1, this, std::placeholders::_1),
@@ -28,9 +29,35 @@ Rom::~Rom(void)
 		delete[] this->_rom;
 	if (this->_eram != NULL)
 		delete[] this->_eram;
+	if (this->_pathsave != NULL)
+		delete[] this->_pathsave;
 }
 
-void		Rom::init(void)
+void		Rom::save(void)
+{
+	if (this->_eram != NULL && this->_mbc != MBC2)
+	{
+		this->_save.open(this->_pathsave, std::fstream::out | std::fstream::binary);
+		if (this->_save.is_open())
+		{
+			uint32_t	size = this->getBankEram(this->_rom[RAMSIZE]) * 8192;
+			this->_save.write((const char *)this->_eram, size);
+			this->_save.close();
+		}
+	}
+}
+
+char		*Rom::getNameSave(const char *nameFile)
+{
+	std::string		namesave;
+	namesave.append(nameFile);
+	namesave.replace(namesave.rfind(".gb"), 5, ".save");
+	char			*str = new char[namesave.length() + 1];
+	strncpy(str, namesave.c_str(), namesave.length() + 1);
+	return str;
+}
+
+void		Rom::init(const char *file)
 {
 	uint8_t	flag_cgb;
 
@@ -39,12 +66,31 @@ void		Rom::init(void)
 		this->_hardware = GB;
 	else if (flag_cgb == 0xC0 || flag_cgb == 0x80)
 		this->_hardware = GBC;
+	this->_mbc = this->getMbc(this->_rom[CARTRIDGE]);
 	if (this->getBankEram(this->_rom[RAMSIZE]) > 0)
-		this->_eram = new uint8_t [this->getBankEram(this->_rom[RAMSIZE]) * 8192];
+	{
+		uint32_t	size = this->getBankEram(this->_rom[RAMSIZE]) * 8192;
+		this->_eram = new uint8_t [size];
+		memset(this->_eram, 0x00, size);
+		if (this->_pathsave != NULL)
+			delete[] this->_pathsave;
+		this->_pathsave = this->getNameSave(file);
+		this->_save.open(this->_pathsave, std::fstream::in | std::fstream::binary);
+		if (this->_save.is_open())
+		{
+			uint32_t	size = this->getBankEram(this->_rom[RAMSIZE]) * 8192;
+			this->_save.read((char *)this->_eram, size);
+			this->_save.close();
+		}
+	}
+	else if (this->_mbc == MBC2)
+	{
+		this->_eram = new uint8_t [0x200];
+		memset(this->_eram, 0x00, 0x200);
+	}
 	this->_bank = 0;
 	this->_rambank = 0;
 	this->_write_protect = 0;
-	this->_mbc = this->getMbc(this->_rom[CARTRIDGE]);
 }
 
 int			Rom::load(const char *file)
@@ -66,7 +112,7 @@ int			Rom::load(const char *file)
 		romFile.seekg(0, std::ios::beg);
 		romFile.read(this->_rom, rom_size);
 		romFile.close();
-		this->init();
+		this->init(file);
 		if (this->_mbc == 0xFF || !this->_checkHeader())
 			return -2;
 		return 0;
@@ -107,6 +153,8 @@ uint8_t		Rom::getBankEram(uint8_t octet)
 		return 4;
 	else if (octet == 4)
 		return 16;
+	else if (octet == 5)
+		return 8;
 	return 0;
 }
 
@@ -202,7 +250,7 @@ uint8_t		Rom::_readMbc1(uint16_t addr)
 	else if (addr < 0x8000)
 		return this->_rom[(addr - 0x4000) + (this->_bank * 0x4000)];
 	else if (addr >= 0xA000 && addr < 0xC000 && this->_mbcRamAccess())
-		return this->_eram[addr + (this->_rambank * 0x2000)];
+		return this->_eram[(addr & 0x1FFF) + (this->_rambank * 0x2000)];
 	return 0;
 }
 
@@ -213,7 +261,7 @@ uint8_t		Rom::_readMbc2(uint16_t addr)
 	else if (addr < 0x8000)
 		return this->_rom[(addr - 0x4000) + (this->_bank * 0x4000)];
 	else if (addr >= 0xA000 && addr < 0xA200 && this->_mbcRamAccess())
-		return this->_eram[addr];
+		return this->_eram[(addr & 0x01FF)];
 	return 0;
 }
 
@@ -226,7 +274,7 @@ uint8_t		Rom::_readMbc3(uint16_t addr)
 	else if (addr >= 0xA000 && addr < 0xC000 && this->_mbcRamAccess())
 	{
 		if (this->_rambank <= 0x03 && this->_mbcRamAccess())
-			return this->_eram[addr + (this->_rambank * 0x2000)];
+			return this->_eram[(addr & 0x1FFF) + (this->_rambank * 0x2000)];
 		else if (this->_mbcTimerAccess())
 			return *(&this->_timer.reg.rtc_s + (this->_rambank - 0x08));
 	}
@@ -240,7 +288,7 @@ uint8_t		Rom::_readMbc5(uint16_t addr)
 	else if (addr < 0x8000)
 		return this->_rom[(addr - 0x4000) + (this->_bank * 0x4000)];
 	else if (addr >= 0xA000 && addr < 0xC000 && this->_mbcRamAccess())
-		return this->_eram[addr + (this->_rambank * 0x2000)];
+		return this->_eram[(addr & 0x1FFF) + (this->_rambank * 0x2000)];
 	return 0;
 }
 
@@ -297,7 +345,7 @@ void		Rom::_writeMbc1(uint16_t addr, uint8_t val)
 		case 0xB000:
 			// ERAM
 			if (this->_mbcRamAccess())
-				this->_eram[addr + (this->_rambank * 0x2000)] = val;
+				this->_eram[(addr & 0x1FFF) + (this->_rambank * 0x2000)] = val;
 			break;
 		default:
 			break;
@@ -314,18 +362,14 @@ void		Rom::_writeMbc2(uint16_t addr, uint8_t val)
 		case 0x2000:
 			// Rom bank code
 			if ((addr & 0x0F00) == 0x0100)
-			{
-				val &= 0x0F;
-				this->_bank &= 0xF0;
-				this->_bank |= val;
-			}
+				this->_bank = val & 0x0F;
 			break;
 		case 0xA000:
 			// ERAM
 			if ((addr & 0x0F00) <= 0x0100)
 			{
 				if (this->_mbcRamAccess())
-					this->_eram[addr] = val;
+					this->_eram[(addr & 0x1FF)] = val;
 			}
 			break;
 		default:
@@ -370,7 +414,7 @@ void		Rom::_writeMbc3(uint16_t addr, uint8_t val)
 			if (this->_mbcRamAccess())
 			{
 				if (this->_rambank <= 0x03)
-					this->_eram[addr + (this->_rambank * 0x2000)] = val;
+					this->_eram[(addr & 0x1FFF) + (this->_rambank * 0x2000)] = val;
 				else
 					*(&this->_timer.reg.rtc_s + (this->_rambank - 0x08)) = val;
 			}
@@ -414,7 +458,7 @@ void		Rom::_writeMbc5(uint16_t addr, uint8_t val)
 		case 0xB000:
 			// ERAM
 			if (this->_mbcRamAccess())
-				this->_eram[addr + (this->_rambank * 0x2000)] = val;
+				this->_eram[(addr & 0x1FFF) + (this->_rambank * 0x2000)] = val;
 			break;
 		default:
 			break;
