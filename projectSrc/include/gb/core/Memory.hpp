@@ -68,6 +68,7 @@ class Memory {
 		htype				getTypeBios(void);
 		void				setInBios(bool inBios);
 		void				transferData(uint16_t startAddr);
+		void				HDMA();
 		void				handleInput();
 		t_color15			getBgColor15(uint8_t palId, uint8_t colId);
 		t_color15			getObjColor15(uint8_t palId, uint8_t colId);

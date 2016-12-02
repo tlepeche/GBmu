@@ -59,6 +59,26 @@ void			Memory::transferData(uint16_t startAddr)
 		write_byte(0xfe00 + a, read_byte(currAddr));
 		a++;
 	}
+
+}
+
+void			Memory::HDMA()
+{
+	if (getRomType() == GBC/* && read_byte(0xFF55) & 0x80*/)
+	{
+		uint16_t start =  (((uint16_t)(read_byte(0xFF51) & 0xFF) << 4)
+						| (((uint16_t)(read_byte(0xFF52) & 0xF0) >> 4)));
+		uint16_t dest =   (((uint16_t)(read_byte(0xFF53) & 0x1F) << 4)
+						| (((uint16_t)(read_byte(0xFF54) & 0xF0) >> 4)));
+		uint16_t len = read_byte(0xFF55) & 0x7F;
+
+		len += 1;
+		start <<= 4; dest <<= 4; len <<= 4; // *16
+		dest += 0x8000;
+		for (auto curr = start ; curr < start + len ; ++curr, ++dest)
+			write_byte(dest, read_byte(curr));
+		write_byte(0xFF55, read_byte(0xFF55) | 0x80, true);
+	}
 }
 
 void			Memory::handleInput()
@@ -237,8 +257,12 @@ void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 								this->_m_io[0x41] &= 0xfb;
 						}
 						//DMA
-						if (addr == REGISTER_DMA)
+						if (addr == REGISTER_DMA && !super)
 							transferData(val << 8);
+						if (addr == 0xFF55 && !super) {
+							this->_m_io[(addr & 0xFF)] = val;
+							HDMA();
+						}
 						// BCPS / BCPD
 						if (addr == REGISTER_BCPS) {
 							this->_m_io[REGISTER_BCPD & 0xFF] = ((uint8_t*)_bcp)[val & 0x3F];
