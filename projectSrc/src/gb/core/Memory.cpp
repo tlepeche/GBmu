@@ -86,7 +86,6 @@ void			Memory::HDMA()
 	if (getRomType() == GBC/* && read_byte(0xFF55) & 0x80*/)
 	{
 		uint8_t hdma5 = read_byte(0xFF55);
-		dprintf(1, "HDMA{%2X}\n", hdma5);
 		if (hdma5 & 0x80)
 			this->_hdmaInProgress = ((uint16_t)hdma5 & 0x7F) + 1;
 		else
