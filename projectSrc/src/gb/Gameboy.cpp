@@ -15,11 +15,11 @@ void setHightBit(Memory *memory, uint16_t addr, uint8_t bit)
 	memory->write_byte(addr, (uint8_t)((0x01 << bit) | memory->read_byte(addr)), true);
 }
 
-Gameboy::Gameboy() :
+Gameboy::Gameboy(const char *path) :
 	_window(OpenGLWindow::Instance())
 	, _windowDebug(nullptr)
 	, _thread(nullptr)
-	, _romPath("")
+	, _romPath(path)
 {
 	_stepMode.store(false);
 	_willRun.store(false);
@@ -33,11 +33,7 @@ Gameboy::Gameboy() :
 	_window->show();
 #ifdef DEBUG
 	gbDbSlot(); // Open Debug window
-//	openRomSlot("/sgoinfre/goinfre/Misc/roms/Metroid II - Return of Samus.gb"); // Run Roms
-//	openRomSlot("/sgoinfre/goinfre/Misc/roms/Kirby 2.gb"); // Run Roms
-	openRomSlot("/sgoinfre/goinfre/Misc/roms/Legend_of_Zelda_link_Awaking.gb"); // Run Roms
-//	openRomSlot("/sgoinfre/goinfre/Misc/roms/Super Mario Land.gb"); // Run Roms
-//	openRomSlot("/sgoinfre/goinfre/Misc/roms/Tetris.gb"); // Run Roms
+	reset();
 #endif
 }
 

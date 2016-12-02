@@ -40,7 +40,7 @@ class Gameboy : public Machine, public QWidget
 
 		std::string			_romPath;
 
-		Gameboy();
+		Gameboy(const char *path = "/sgoinfre/goinfre/Misc/roms/Legend of Zelda, The - Oracle of Seasons.gbc");
 		virtual	~Gameboy();
 
 		void			gstep();
