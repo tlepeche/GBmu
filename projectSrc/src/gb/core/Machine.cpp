@@ -36,7 +36,6 @@ bool Machine::step(void)
 	_cyclesAcc += cycles;
 	_clock->step(cycles);
 	_gpu->accClock(cycles);
-
 	_gpu->step();
 	if (_cyclesAcc >= (uint32_t)(_cyclesMax / 59.7))
 	{

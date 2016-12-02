@@ -42,6 +42,7 @@ int				Memory::loadRom(const char *file, htype hardware)
 	hardware = (hardware == AUTO) ? this->_rom.getHardware() : hardware;
 	this->_codeBios = this->_bios.load(hardware);
 	this->_typeBios = hardware;
+	this->_hdmaInProgress = 0;
 	return ret;
 }
 
@@ -59,24 +60,37 @@ void			Memory::transferData(uint16_t startAddr)
 		write_byte(0xfe00 + a, read_byte(currAddr));
 		a++;
 	}
+}
 
+void			Memory::HDMAprogress(uint16_t len)
+{
+		uint16_t start =  (((uint16_t)(read_byte(0xFF51) & 0xFF) << 4)
+						| (((uint16_t)(read_byte(0xFF52) & 0xF0) >> 4)));
+		uint16_t dest =   (((uint16_t)(read_byte(0xFF53) & 0x1F) << 4)
+						| (((uint16_t)(read_byte(0xFF54) & 0xF0) >> 4)));
+		start <<= 4; dest <<= 4; // *16
+		dest += 0x8000;
+		for (auto curr = start ; curr < start + (len << 4) ; ++curr, ++dest)
+			write_byte(dest, read_byte(curr));
+
+		// Dec hdma5
+		uint8_t hdma5 = read_byte(0xFF55);
+		if (len >= hdma5)
+			write_byte(0xFF55, 0x80, true); // End
+		else
+			write_byte(0xFF55, hdma5 - len, true); // cte
 }
 
 void			Memory::HDMA()
 {
 	if (getRomType() == GBC/* && read_byte(0xFF55) & 0x80*/)
 	{
-		uint16_t start =  (((uint16_t)(read_byte(0xFF51) & 0xFF) << 4)
-						| (((uint16_t)(read_byte(0xFF52) & 0xF0) >> 4)));
-		uint16_t dest =   (((uint16_t)(read_byte(0xFF53) & 0x1F) << 4)
-						| (((uint16_t)(read_byte(0xFF54) & 0xF0) >> 4)));
-		uint16_t len = read_byte(0xFF55) & 0x7F;
-
-		len += 1;
-		start <<= 4; dest <<= 4; len <<= 4; // *16
-		dest += 0x8000;
-		for (auto curr = start ; curr < start + len ; ++curr, ++dest)
-			write_byte(dest, read_byte(curr));
+		uint8_t hdma5 = read_byte(0xFF55);
+		dprintf(1, "HDMA{%2X}\n", hdma5);
+		if (hdma5 & 0x80)
+			this->_hdmaInProgress = ((uint16_t)hdma5 & 0x7F) + 1;
+		else
+			HDMAprogress(((uint16_t)hdma5 & 0x7F) + 1);
 		write_byte(0xFF55, read_byte(0xFF55) | 0x80, true);
 	}
 }
@@ -263,6 +277,8 @@ void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 							this->_m_io[(addr & 0xFF)] = val;
 							HDMA();
 						}
+						if (_hdmaInProgress > 0 && addr == 0xFF41 && (val & 0x3) == 0) // HBLANK == 0
+							HDMAprogress((_hdmaInProgress--, 1));
 						// BCPS / BCPD
 						if (addr == REGISTER_BCPS) {
 							this->_m_io[REGISTER_BCPD & 0xFF] = ((uint8_t*)_bcp)[val & 0x3F];

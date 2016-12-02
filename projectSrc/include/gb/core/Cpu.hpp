@@ -42,7 +42,6 @@ class Cpu_z80
 	private:
 	Cpu_z80(Memory *memory);
 	virtual ~Cpu_z80(void);
-	static Cpu_z80					_instance;
 
 	/*
 	 ** ################################################################

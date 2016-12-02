@@ -69,6 +69,7 @@ class Memory {
 		void				setInBios(bool inBios);
 		void				transferData(uint16_t startAddr);
 		void				HDMA();
+		void				HDMAprogress(uint16_t len);
 		void				handleInput();
 		t_color15			getBgColor15(uint8_t palId, uint8_t colId);
 		t_color15			getObjColor15(uint8_t palId, uint8_t colId);
@@ -88,6 +89,7 @@ class Memory {
 		htype				_typeBios;
 		const uint8_t		*_codeBios;
 
+		uint16_t			_hdmaInProgress;
 		Memory(void);
 		~Memory(void);
 };
