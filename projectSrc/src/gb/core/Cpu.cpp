@@ -132,7 +132,7 @@ bool Cpu_z80::getIME(void)
 bool Cpu_z80::isInterrupt(void)
 {
 	uint8_t _IE = _memory->read_byte(REGISTER_IE);
-	return (getIME() && this->_memory->read_byte(REGISTER_IF) & INTER_MASK & _IE);
+	return ((getIME() || getHalt()) && this->_memory->read_byte(REGISTER_IF) & INTER_MASK & _IE);
 }
 
 bool Cpu_z80::_getInterrupt(uint8_t interrupt)
