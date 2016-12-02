@@ -33,7 +33,7 @@ Gameboy::Gameboy(const char *path) :
 	_window->show();
 #ifdef DEBUG
 	gbDbSlot(); // Open Debug window
-	//reset();
+	reset();
 #endif
 }
 
