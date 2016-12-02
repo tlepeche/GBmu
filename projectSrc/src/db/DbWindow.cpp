@@ -15,7 +15,7 @@ QTimer timer;
 #include <iostream>
 #include <sstream>
 
-	static inline
+static inline
 void customSetItem(QTableWidget* table, int x, int y, const char *format, int value)
 {
 	char	buffer[32];

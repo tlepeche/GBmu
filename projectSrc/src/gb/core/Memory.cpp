@@ -64,21 +64,21 @@ void			Memory::transferData(uint16_t startAddr)
 
 void			Memory::HDMAprogress(uint16_t len)
 {
-		uint16_t start =  (((uint16_t)(read_byte(0xFF51) & 0xFF) << 4)
-						| (((uint16_t)(read_byte(0xFF52) & 0xF0) >> 4)));
-		uint16_t dest =   (((uint16_t)(read_byte(0xFF53) & 0x1F) << 4)
-						| (((uint16_t)(read_byte(0xFF54) & 0xF0) >> 4)));
-		start <<= 4; dest <<= 4; // *16
-		dest += 0x8000;
-		for (auto curr = start ; curr < start + (len << 4) ; ++curr, ++dest)
-			write_byte(dest, read_byte(curr));
+	uint16_t start =  (((uint16_t)(read_byte(0xFF51) & 0xFF) << 4)
+			| (((uint16_t)(read_byte(0xFF52) & 0xF0) >> 4)));
+	uint16_t dest =   (((uint16_t)(read_byte(0xFF53) & 0x1F) << 4)
+			| (((uint16_t)(read_byte(0xFF54) & 0xF0) >> 4)));
+	start <<= 4; dest <<= 4; // *16
+	dest += 0x8000;
+	for (auto curr = start ; curr < start + (len << 4) ; ++curr, ++dest)
+		write_byte(dest, read_byte(curr));
 
-		// Dec hdma5
-		uint8_t hdma5 = read_byte(0xFF55);
-		if (len >= hdma5)
-			write_byte(0xFF55, 0x80, true); // End
-		else
-			write_byte(0xFF55, hdma5 - len, true); // cte
+	// Dec hdma5
+	uint8_t hdma5 = read_byte(0xFF55);
+	if (len >= hdma5)
+		write_byte(0xFF55, 0x80, true); // End
+	else
+		write_byte(0xFF55, hdma5 - len, true); // cte
 }
 
 void			Memory::HDMA()
@@ -86,8 +86,12 @@ void			Memory::HDMA()
 	if (getRomType() == GBC/* && read_byte(0xFF55) & 0x80*/)
 	{
 		uint8_t hdma5 = read_byte(0xFF55);
-		if (hdma5 & 0x80)
-			this->_hdmaInProgress = ((uint16_t)hdma5 & 0x7F) + 1;
+		if (hdma5 & 0x80) {
+			if (_hdmaInProgress > 0)
+				_hdmaInProgress = 0;
+			else
+				this->_hdmaInProgress = ((uint16_t)hdma5 & 0x7F) + 1;
+		}
 		else
 			HDMAprogress(((uint16_t)hdma5 & 0x7F) + 1);
 		write_byte(0xFF55, read_byte(0xFF55) | 0x80, true);
@@ -249,52 +253,57 @@ void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 					{
 						// I/O
 
-						//protect 3 first byte of register STAT form overwritting
-						if (addr == REGISTER_STAT && !super)
+						if (!super)
 						{
-							val &= 0xF8;
-							val |= read_byte(REGISTER_STAT) & 0x07;
-						}
-						if ((addr == 0xFF44 || addr == 0xFF45) && read_byte(0xFF40) & 0x80)
-						{
-							if (read_byte(0xFF44) == read_byte(0xFF45))
-								this->_m_io[0x41] |= 0x04;// Coincidence	
-							else
-								this->_m_io[0x41] &= 0xfb;
-						}
-						else if (addr == 0xFF40 && (val & 0x80))
-						{
-							if (read_byte(0xFF44) == read_byte(0xFF45))
-								this->_m_io[0x41] |= 0x04;	
-							else
-								this->_m_io[0x41] &= 0xfb;
-						}
-						//DMA
-						if (addr == REGISTER_DMA && !super)
-							transferData(val << 8);
-						if (addr == 0xFF55 && !super) {
-							this->_m_io[(addr & 0xFF)] = val;
-							HDMA();
-						}
-						if (_hdmaInProgress > 0 && addr == 0xFF41 && (val & 0x3) == 0) // HBLANK == 0
-							HDMAprogress((_hdmaInProgress--, 1));
-						// BCPS / BCPD
-						if (addr == REGISTER_BCPS) {
-							this->_m_io[REGISTER_BCPD & 0xFF] = ((uint8_t*)_bcp)[val & 0x3F];
-						}
-						if (addr == REGISTER_BCPD) {
-							((uint8_t*)_bcp)[read_byte(REGISTER_BCPS) & 0x3F] = val;
-							if (read_byte(REGISTER_BCPS) & 0x80)
-								write_byte(REGISTER_BCPS, ((((read_byte(REGISTER_BCPS) << 2) + 4) & 0xFF) >> 2) | 0x80);
-						}
-						// OCPS / OCPD
-						if (addr == REGISTER_OCPS) {
-							this->_m_io[REGISTER_OCPD & 0xFF] = ((uint8_t*)_ocp)[val & 0x3F];
-						}
-						if (addr == REGISTER_OCPD) {
-							((uint8_t*)_ocp)[read_byte(REGISTER_OCPS) & 0x3F] = val;
-							if (read_byte(REGISTER_OCPS) & 0x80)
-								write_byte(REGISTER_OCPS, ((((read_byte(REGISTER_OCPS) << 2) + 4) & 0xFF) >> 2) | 0x80);
+							//protect 3 first byte of register STAT form overwritting
+							if (addr == REGISTER_STAT)
+							{
+								val &= 0xF8;
+								val |= read_byte(REGISTER_STAT) & 0x07;
+							}
+							if ((addr == 0xFF44 || addr == 0xFF45) && read_byte(0xFF40) & 0x80)
+							{
+								if (read_byte(0xFF44) == read_byte(0xFF45))
+									this->_m_io[0x41] |= 0x04;// Coincidence	
+								else
+									this->_m_io[0x41] &= 0xfb;
+							}
+							else if (addr == 0xFF40 && (val & 0x80))
+							{
+								if (read_byte(0xFF44) == read_byte(0xFF45))
+									this->_m_io[0x41] |= 0x04;	
+								else
+									this->_m_io[0x41] &= 0xfb;
+							}
+							//DMA
+							if (addr == REGISTER_DMA) {
+								transferData(val << 8);
+
+							}
+							if (addr == 0xFF55) {
+								this->_m_io[(addr & 0xFF)] = val;
+								HDMA();
+							}
+							if (_hdmaInProgress > 0 && addr == 0xFF41 && (val & 0x3) == 0) // HBLANK == 0
+								HDMAprogress((_hdmaInProgress--, 1));
+							// BCPS / BCPD
+							if (addr == REGISTER_BCPS) {
+								this->_m_io[REGISTER_BCPD & 0xFF] = ((uint8_t*)_bcp)[val & 0x3F];
+							}
+							if (addr == REGISTER_BCPD) {
+								((uint8_t*)_bcp)[read_byte(REGISTER_BCPS) & 0x3F] = val;
+								if (read_byte(REGISTER_BCPS) & 0x80)
+									write_byte(REGISTER_BCPS, ((((read_byte(REGISTER_BCPS) << 2) + 4) & 0xFF) >> 2) | 0x80);
+							}
+							// OCPS / OCPD
+							if (addr == REGISTER_OCPS) {
+								this->_m_io[REGISTER_OCPD & 0xFF] = ((uint8_t*)_ocp)[val & 0x3F];
+							}
+							if (addr == REGISTER_OCPD) {
+								((uint8_t*)_ocp)[read_byte(REGISTER_OCPS) & 0x3F] = val;
+								if (read_byte(REGISTER_OCPS) & 0x80)
+									write_byte(REGISTER_OCPS, ((((read_byte(REGISTER_OCPS) << 2) + 4) & 0xFF) >> 2) | 0x80);
+							}
 						}
 						this->_m_io[(addr & 0xFF)] = val;
 					}

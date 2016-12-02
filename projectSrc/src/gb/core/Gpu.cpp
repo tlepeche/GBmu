@@ -286,8 +286,9 @@ unsigned int	Gpu::findSpritePixel(t_sprite sprite, uint8_t line, uint8_t x, uint
 	else
 		tileAddr = (TILES1_ADDR + ((sprite.tile_nbr >> 1) * spriteHeight * 2));
 	uint16_t start = tileAddr + sy * 2;
-	uint8_t sdata1 = _memory->read_byte(start);
-	uint8_t sdata2 = _memory->read_byte(start + 1);
+	uint8_t bank = _memory->getRomType() == GB ? 0 : sprite.bank;
+	uint8_t sdata1 = _memory->force_read_vram(start, bank); 
+	uint8_t sdata2 = _memory->force_read_vram(start + 1, bank); 
 	unsigned int rx = BYTE_SIZE - sx - 1;
 	unsigned int _colorId = ((sdata1 >> rx) & 1) | (((sdata2 >> rx) & 1) << 1);
 	return _colorId;
