@@ -177,7 +177,7 @@ void	Cpu_z80::LD_n_SP() //0x08
 
 void	Cpu_z80::ADD_HL_BC() //0x09
 {
-	if (((_cpuRegister.HL & 0x0f) + (_cpuRegister.DE & 0x0f)) > 0x0f)
+	if (((_cpuRegister.HL & 0x0fff) + (_cpuRegister.BC & 0x0fff)) > 0x0fff)
 		_cpuRegister.h = 1;
 	else
 		_cpuRegister.h = 0;
@@ -282,7 +282,7 @@ void	Cpu_z80::JR_n() //0x18
 
 void	Cpu_z80::ADD_HL_DE() //0x19
 {
-	if (((_cpuRegister.HL & 0x0f) + (_cpuRegister.DE & 0x0f)) > 0x0f)
+	if (((_cpuRegister.HL & 0x0fff) + (_cpuRegister.DE & 0x0fff)) > 0x0fff)
 		_cpuRegister.h = 1;
 	else
 		_cpuRegister.h = 0;
@@ -373,14 +373,14 @@ void	Cpu_z80::DAA() //0x27
 	uint16_t tmp = _cpuRegister.A;
 
 	if (_cpuRegister.n)
-   	{
+	{
 		if (_cpuRegister.h)
 			tmp = (tmp - 0x06) & 0xFF;
 		if (_cpuRegister.c)
 			tmp -= 0x60;
 	}
 	else
-   	{
+	{
 		if (_cpuRegister.h || (tmp & 0xF) > 9)
 			tmp += 0x06;
 		if (_cpuRegister.c || tmp > 0x9F)
@@ -401,7 +401,7 @@ void	Cpu_z80::JR_Z_n() //0x28
 
 void	Cpu_z80::ADD_HL_HL() //0x29
 {
-	if (((_cpuRegister.HL & 0x0f) + (_cpuRegister.DE & 0x0f)) > 0x0f)
+	if (((_cpuRegister.HL & 0x0fff) + (_cpuRegister.HL & 0x0fff)) > 0x0fff)
 		_cpuRegister.h = 1;
 	else
 		_cpuRegister.h = 0;
@@ -510,7 +510,7 @@ void	Cpu_z80::JR_C_n() //0x38
 
 void	Cpu_z80::ADD_HL_SP() //0x39
 {
-	if (((_cpuRegister.HL & 0x0f) + (_cpuRegister.DE & 0x0f)) > 0x0f)
+	if (((_cpuRegister.HL & 0x0fff) + (_cpuRegister.SP & 0x0fff)) > 0x0fff)
 		_cpuRegister.h = 1;
 	else
 		_cpuRegister.h = 0;
@@ -1586,7 +1586,7 @@ void Cpu_z80::_setOpcodeMap()
 		(t_opcode){0x43, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_B_E, this),    "LD B, E",		0x0000},
 		(t_opcode){0x44, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_B_H, this),    "LD B, H",		0x0000},
 		(t_opcode){0x45, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_B_L, this),    "LD B, L",		0x0000},
-		(t_opcode){0x46, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_B_HL, this),   "LD B, HL",		0x0000},
+		(t_opcode){0x46, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_B_HL, this),   "LD B, (HL)",	0x0000},
 		(t_opcode){0x47, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_B_A, this),    "LD B, A",		0x0000},
 		(t_opcode){0x48, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_C_B, this),    "LD C, B",		0x0000},
 		(t_opcode){0x49, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_C_C, this),    "LD C, C",		0x0000},
@@ -1594,7 +1594,7 @@ void Cpu_z80::_setOpcodeMap()
 		(t_opcode){0x4b, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_C_E, this),    "LD C, E",		0x0000},
 		(t_opcode){0x4c, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_C_H, this),    "LD C, H",		0x0000},
 		(t_opcode){0x4d, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_C_L, this),    "LD C, L",		0x0000},
-		(t_opcode){0x4e, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_C_HL, this),   "LD C, HL",		0x0000},
+		(t_opcode){0x4e, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_C_HL, this),   "LD C, (HL)",	0x0000},
 		(t_opcode){0x4f, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_C_A, this),    "LD C, A",		0x0000},
 		(t_opcode){0x50, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_D_B, this),    "LD D, B",		0x0000},
 		(t_opcode){0x51, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_D_C, this),    "LD D, C",		0x0000},
@@ -1642,7 +1642,7 @@ void Cpu_z80::_setOpcodeMap()
 		(t_opcode){0x7b, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_A_E, this),    "LD A, E",		0x0000},
 		(t_opcode){0x7c, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_A_H, this),    "LD A, H",		0x0000},
 		(t_opcode){0x7d, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_A_L, this),    "LD A, L",		0x0000},
-		(t_opcode){0x7e, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_A_HL, this),   "LD A, Hl",		0x0000},
+		(t_opcode){0x7e, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_A_HL, this),   "LD A, (HL)",	0x0000},
 		(t_opcode){0x7f, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_A_A, this),    "LD A, A",		0x0000},
 		(t_opcode){0x80, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::ADD_A_B, this),   "ADD A, B",		0x0000},
 		(t_opcode){0x81, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::ADD_A_C, this),   "ADD A, C",		0x0000},

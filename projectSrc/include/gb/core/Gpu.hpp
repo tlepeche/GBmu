@@ -44,6 +44,7 @@ class Gpu
 	private:
 		Gpu(Memory *memory);
 		~Gpu();
+		uint8_t	_colorId;
 
 	public:
 		void	step();

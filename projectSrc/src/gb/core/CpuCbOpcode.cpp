@@ -154,7 +154,7 @@ void	Cpu_z80::RLC_HL() //0x06
 
 void	Cpu_z80::RLC_A() //0x07
 {
-	rotateRight(&_cpuRegister.A);
+	rotateLeft(&_cpuRegister.A);
 }
 
 void	Cpu_z80::RRC_B() //0x08
