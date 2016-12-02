@@ -93,7 +93,7 @@ unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 	if (bgd & 0x40) sy = 7 - sy;
 	unsigned int rsx = BYTE_SIZE - sx - 1;
 
-	/*
+	//*
 	uint8_t tileBank = bgd & 0x8 ? 1 : 0;
 	uint8_t	sdata1 = _memory->force_read_vram(tileAddr + (sy * 2), tileBank);
 	uint8_t	sdata2 = _memory->force_read_vram(tileAddr + (sy * 2) + 1, tileBank);
@@ -179,7 +179,6 @@ void	Gpu::step()
 				{
 					_clock -= 172;
 					writeGpuMode(HBLANK);
-
 					scanActLine();
 				}
 				break ;
