@@ -108,18 +108,6 @@ void OpenGLWindow::keyPressEvent(QKeyEvent* e)
 	emit keyPressSign(e->key());
 }
 
-// Format_RGB32 Format_Mono
-/*
-   void OpenGLWindow::changeFormat(QImage::Format f)
-   {
-   QImage* old = frameBuffer;
-
-   frameBuffer = new QImage(160, 140, f);
-
-   delete old;
-   }
-   */
-
 void OpenGLWindow::drawPixel(uint16_t addr, uint8_t r, uint8_t g, uint8_t b)
 {
 	drawPixel(addr, ((uint32_t)r << 16) | ((uint32_t)g << 8) | ((uint32_t)b << 0));
@@ -170,8 +158,8 @@ bool OpenGLWindow::event(QEvent *event)
 {
 	switch (event->type()) {
 		case QEvent::UpdateRequest:
-			m_update_pending = false;
 			renderNow();
+			m_update_pending = false;
 			return true;
 		default:
 			return QWindow::event(event);

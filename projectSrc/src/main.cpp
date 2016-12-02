@@ -2,10 +2,18 @@
 #include <QApplication>
 #include "Gameboy.hpp"
 
-int		main(int argc __attribute__ (( unused )), char **argv __attribute__ (( unused )))
+int		main(int argc, char *argv[])
 {
 	QApplication	a(argc, argv);
-	Gameboy			gb;
 
-	return (a.exec());
+	if (argc > 1)
+	{
+		Gameboy			gb(argv[1]);
+		return (a.exec());
+	}
+	else
+	{
+		Gameboy			gb;
+		return (a.exec());
+	}
 }
