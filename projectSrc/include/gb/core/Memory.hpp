@@ -74,7 +74,7 @@ class Memory {
 		void				handleInput();
 		t_color15			getBgColor15(uint8_t palId, uint8_t colId);
 		t_color15			getObjColor15(uint8_t palId, uint8_t colId);
-
+		uint8_t				*getOamBuffer();
 		std::array<uint8_t, 2>	key {{0x0f, 0x0f}};
 	private:
 		Rom					_rom;

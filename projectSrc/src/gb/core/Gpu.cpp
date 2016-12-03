@@ -228,6 +228,7 @@ void	Gpu::init()
 	_clock = 0;
 	_window = OpenGLWindow::Instance();
 	_window->initialize();
+	_oamBuffer = _memory->getOamBuffer();
 }
 
 void	Gpu::accClock(unsigned int clock)
@@ -248,25 +249,22 @@ void		Gpu::writeGpuMode(t_gpuMode mode)
 
 bool	Gpu::findSprite(uint8_t line, uint8_t x, unsigned int spriteHeight, t_sprite *sprite)
 {
-	t_sprite		tmp;
+	t_sprite		*tmp;
 	bool			hasSprite = false;
-
-	for (uint16_t addr = OAM_ADDR ; addr <= 0xfe9f ; addr += 4)
+	
+	for (uint8_t i = 0 ; i < 40 ; ++i)
 	{
-		tmp.y_pos = _memory->read_byte(addr);
-		tmp.x_pos = _memory->read_byte(addr + 1);
-		tmp.tile_nbr = _memory->read_byte(addr + 2);
-		tmp.options = _memory->read_byte(addr + 3);
-		if (tmp.y_pos <= (line + 16) && (line + 16U) < (tmp.y_pos + spriteHeight))
+		tmp = ((t_sprite*)_oamBuffer) + i;
+		if (tmp->y_pos <= (line + 16) && (line + 16U) < (tmp->y_pos + spriteHeight))
 		{
-			if (tmp.x_pos <= (x + 8) && (x + 8) < (tmp.x_pos + TILE_W))
+			if (tmp->x_pos <= (x + 8) && (x + 8) < (tmp->x_pos + TILE_W))
 			{
-				unsigned int _colorId = findSpritePixel(tmp, line, x, spriteHeight);
+				unsigned int _colorId = findSpritePixel(*tmp, line, x, spriteHeight);
 				if (_colorId == 0)
 					continue;
-				if (!hasSprite || sprite->x_pos > tmp.x_pos)
+				if (!hasSprite || sprite->x_pos > tmp->x_pos)
 				{
-					*sprite = tmp;
+					*sprite = *tmp;
 					hasSprite = true;
 				}
 			}
