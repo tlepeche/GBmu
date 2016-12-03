@@ -82,19 +82,17 @@ void	Gameboy::reset(void)
 	
 	if (_romPath.length())
 	{
-		_willRun.store(true);
 		this->_memory->reset();
 		this->_clock->reset();
 		this->_cyclesAcc = 0;
-		if (_memory->loadRom(_romPath.c_str(), this->_hardware))
-			_willRun.store(false);
-		else
+		if (_memory->loadRom(_romPath.c_str(), this->_hardware) == 0)
 		{
 			htype		hardRom;
 			hardRom = (this->_hardware == AUTO) ? this->_memory->getRomType() : this->_hardware;
 			this->_cpu->init(hardRom);
 			this->_gpu->init(); // TODO pour passer hardware au gpu: this->_gpu->init(hardRom)
 			_thread = new std::thread(&Gameboy::run, this);
+			_willRun.store(true);
 		}
 	}
 	else

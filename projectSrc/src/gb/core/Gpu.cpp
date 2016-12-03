@@ -257,7 +257,7 @@ bool	Gpu::findSprite(uint8_t line, uint8_t x, unsigned int spriteHeight, t_sprit
 		tmp.x_pos = _memory->read_byte(addr + 1);
 		tmp.tile_nbr = _memory->read_byte(addr + 2);
 		tmp.options = _memory->read_byte(addr + 3);
-		if (tmp.y_pos <= (line + 16) && (line + 16) < (tmp.y_pos + spriteHeight))
+		if (tmp.y_pos <= (line + 16) && (line + 16U) < (tmp.y_pos + spriteHeight))
 		{
 			if (tmp.x_pos <= (x + 8) && (x + 8) < (tmp.x_pos + TILE_W))
 			{

@@ -188,6 +188,7 @@ void DbWindow::updateDisassembler(t_register& r, Memory& mem)
 	uint16_t	pc;
 
 	pc = r.PC;
+	if (mem.isBiosLoaded())
 	for (int i = 0; i < tableDisassembler->rowCount(); ++i)
 	{
 		char	buffer[32] = "%.2X";

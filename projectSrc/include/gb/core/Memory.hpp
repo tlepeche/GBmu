@@ -66,6 +66,7 @@ class Memory {
 		int					loadRom(const char *file, htype hardware);
 		htype				getRomType(void);
 		htype				getTypeBios(void);
+		bool				isBiosLoaded();
 		void				setInBios(bool inBios);
 		void				transferData(uint16_t startAddr);
 		void				HDMA();
