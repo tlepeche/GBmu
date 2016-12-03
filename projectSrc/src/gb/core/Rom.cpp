@@ -79,8 +79,8 @@ void		Rom::init(const char *file)
 		this->_save.open(this->_pathsave, std::fstream::in | std::fstream::binary);
 		if (this->_save.is_open())
 		{
-			uint32_t	size = this->getBankEram(this->_rom[RAMSIZE]) * 8192;
-			this->_save.read((char *)this->_eram, size);
+			uint32_t	sizeSave = this->getBankEram(this->_rom[RAMSIZE]) * 8192;
+			this->_save.read((char *)this->_eram, sizeSave);
 			this->_save.close();
 		}
 	}

@@ -47,8 +47,12 @@ Gameboy::~Gameboy()
 void	Gameboy::stopThread()
 {
 	_willRun.store(false);
-	_thread->join();
-	delete _thread;
+	if (_thread)
+	{
+		_thread->join();
+		delete _thread;
+		_thread = nullptr;
+	}
 }
 
 void	Gameboy::gstep()
