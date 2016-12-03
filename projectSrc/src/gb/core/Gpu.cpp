@@ -257,7 +257,7 @@ bool	Gpu::findSprite(uint8_t line, uint8_t x, unsigned int spriteHeight, t_sprit
 		tmp = ((t_sprite*)_oamBuffer) + i;
 		if (tmp->y_pos <= (line + 16) && (line + 16U) < (tmp->y_pos + spriteHeight))
 		{
-			if (tmp->x_pos <= (x + 8) && (x + 8) < (tmp->x_pos + TILE_W))
+			if (tmp->x_pos <= (x + 8) && x < tmp->x_pos)
 			{
 				unsigned int _colorId = findSpritePixel(*tmp, line, x, spriteHeight);
 				if (_colorId == 0)
