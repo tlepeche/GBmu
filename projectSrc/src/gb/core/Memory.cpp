@@ -3,7 +3,7 @@
 #include "Memory.hpp"
 #include "registerAddr.hpp"
 
-Memory::Memory(void) {}
+Memory::Memory(void) : _codeBios(nullptr) {}
 
 Memory::~Memory(void) {}
 
@@ -39,11 +39,19 @@ int				Memory::loadRom(const char *file, htype hardware)
 	int		ret;
 
 	ret = this->_rom.load(file);
-	hardware = (hardware == AUTO) ? this->_rom.getHardware() : hardware;
-	this->_codeBios = this->_bios.load(hardware);
-	this->_typeBios = hardware;
-	this->_hdmaInProgress = 0;
+	if (ret == 0)
+	{
+		hardware = (hardware == AUTO) ? this->_rom.getHardware() : hardware;
+		this->_codeBios = this->_bios.load(hardware);
+		this->_typeBios = hardware;
+		this->_hdmaInProgress = 0;
+	}
 	return ret;
+}
+
+bool			Memory::isBiosLoaded()
+{
+	return (this->_codeBios != nullptr);
 }
 
 void			Memory::setInBios(bool inBios)
@@ -123,7 +131,7 @@ uint8_t			Memory::force_read_vram(uint16_t addr, uint8_t bank)
 
 uint8_t			Memory::read_byte(uint16_t addr)
 {
-	switch (addr & 0xF000){
+	switch (addr & 0xF000) {
 		case 0x0000:
 			if (this->_inBios)
 			{

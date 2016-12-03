@@ -1,12 +1,13 @@
 #include <fstream>
 #include <iostream>
 #include "Rom.hpp"
+#include <string.h>
 
-Rom::Rom(void)
+Rom::Rom(void) :
+	_rom(nullptr),
+	_eram(nullptr),
+	_pathsave(nullptr)
 {
-	this->_eram = NULL;
-	this->_rom = NULL;
-	this->_pathsave = NULL;
 	this->_mbcPtrRead = {
 		std::bind(&Rom::_readRom, this, std::placeholders::_1),
 		std::bind(&Rom::_readMbc1, this, std::placeholders::_1),
@@ -78,8 +79,8 @@ void		Rom::init(const char *file)
 		this->_save.open(this->_pathsave, std::fstream::in | std::fstream::binary);
 		if (this->_save.is_open())
 		{
-			uint32_t	size = this->getBankEram(this->_rom[RAMSIZE]) * 8192;
-			this->_save.read((char *)this->_eram, size);
+			uint32_t	sizeSave = this->getBankEram(this->_rom[RAMSIZE]) * 8192;
+			this->_save.read((char *)this->_eram, sizeSave);
 			this->_save.close();
 		}
 	}
@@ -107,6 +108,7 @@ int			Rom::load(const char *file)
 	romFile.open(file, std::ios::in | std::ios::ate | std::ios::binary);
 	if (romFile.is_open())
 	{
+		std::cout << "=== FILE OPENED ===" << std::endl;
 		rom_size = romFile.tellg();
 		this->_rom = new char [rom_size];
 		romFile.seekg(0, std::ios::beg);
