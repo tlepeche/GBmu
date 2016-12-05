@@ -1405,7 +1405,7 @@ void	Cpu_z80::ADD_SP_n()	//0xe8
 	uint8_t a = _memory->read_byte(_cpuRegister.PC + 1);
 	n = 0x00;
 	n |= a;
-	if (((_cpuRegister.SP & 0x0fff) + (n & 0x0f)) > 0x0fff)
+	if (((_cpuRegister.SP & 0x000f) + (n & 0x0f)) > 0x000f)
 		_cpuRegister.h = 1;
 	else
 		_cpuRegister.h = 0;
