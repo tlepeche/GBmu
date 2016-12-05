@@ -46,6 +46,7 @@ Gameboy::~Gameboy()
 
 void	Gameboy::stopThread()
 {
+	_stepMode.store(true);
 	_willRun.store(false);
 	if (_thread)
 	{
@@ -64,16 +65,12 @@ void	Gameboy::gstep()
 
 void	Gameboy::run()
 {
-	if (_willRun)
+	while (_willRun.load())
 	{
-		if (_stepMode)
-		{
-		}
-		else
+		if (!_stepMode.load())
 		{
 			gstep();
 		}
-		run();
 	}
 }
 
@@ -95,8 +92,8 @@ void	Gameboy::reset(void)
 			hardRom = (this->_hardware == AUTO) ? this->_memory->getRomType() : this->_hardware;
 			this->_cpu->init(hardRom);
 			this->_gpu->init(); // TODO pour passer hardware au gpu: this->_gpu->init(hardRom)
-			_thread = new std::thread(&Gameboy::run, this);
 			_willRun.store(true);
+			_thread = new std::thread(&Gameboy::run, this);
 		}
 	}
 	else

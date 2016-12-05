@@ -18,6 +18,7 @@ Cpu_z80::Cpu_z80(Memory *memory) :
 {
 	_setOpcodeMap();
 	_setCbOpcodeMap();
+	this->init();
 }
 
 Cpu_z80::~Cpu_z80(void)
@@ -192,6 +193,7 @@ void Cpu_z80::init(htype hardware)
 	this->_holdIME = false;
 	this->_halt = false;
 	this->_stop = false;
+	this->_isSpeed = false;
 
 	//init register cpu
 	this->_cpuRegister.A = hardware == GB ? 0x01 : 0x11;

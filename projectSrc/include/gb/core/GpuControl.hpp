@@ -16,8 +16,6 @@ typedef struct s_gpuControl
 			uint8_t		window:1;
 			uint8_t		wtile_map:1;
 			uint8_t		display:1; // 0x80
-
-
 		};
 	};
 }			t_gpuControl;
