@@ -389,7 +389,7 @@ void	Cpu_z80::DAA() //0x27
 
 	_cpuRegister.A = tmp & 0x00FF;
 	_cpuRegister.h = 0;
-	_cpuRegister.z |= _cpuRegister.A == 0 ? 1 : 0; //TODO: a tester si |= ou plutot =
+	_cpuRegister.z = _cpuRegister.A == 0 ? 1 : 0;
 	_cpuRegister.c |= (tmp >= 0x100) ? 1 : 0;
 }
 
