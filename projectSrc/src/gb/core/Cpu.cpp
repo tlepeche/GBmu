@@ -102,7 +102,7 @@ bool Cpu_z80::getHalt(void)
 	return this->_halt;
 }
 
-void Cpu_z80::_setStop(bool state)
+void Cpu_z80::setStop(bool state)
 {
 	this->_stop = state;
 }
@@ -166,6 +166,8 @@ uint8_t Cpu_z80::nbCycleNextOpCode(void)
 void	Cpu_z80::setSwitchSpeed(void)
 {
 	this->_isSpeed = !this->_isSpeed;
+	uint8_t Key1Val = this->_isSpeed ? 0x80 : 0x00;
+	_memory->write_byte(REGISTER_KEY1, Key1Val, true);
 }
 
 #include <unistd.h>
@@ -284,11 +286,11 @@ void Cpu_z80::_setHightBit(uint16_t addr, uint8_t bit)
 
 void Cpu_z80::execInterrupt(void)
 {
-	this->_setIME(false);
 	this->_setHalt(false);
-
 	uint8_t _IE = _memory->read_byte(REGISTER_IE);
 	// Get interrupt here
+	if (getIME() == false)
+		return ;
 	if ((this->_memory->read_byte(REGISTER_IF) & INTER_VBLANK) > 0x00
 			&& _IE & INTER_VBLANK)
 	{
@@ -345,7 +347,7 @@ void Cpu_z80::execInterrupt(void)
 			&& _IE & INTER_TPIN)
 	{
 		// push PC on stack
-		this->_setStop(false);
+		this->setStop(false);
 		this->_cpuRegister.SP -= 2;
 		this->_memory->write_word(_cpuRegister.SP, _cpuRegister.PC);
 		// set low interrupt

@@ -199,34 +199,42 @@ void	Gameboy::KeyPress(int key)
 		case RIGHT:
 			_memory->key[0] &= 0x0e;
 			setLowBit(_memory, REGISTER_INPUT, 0);
+			_cpu->setStop(false);
 			break;
 		case A_BUTTON:
 			_memory->key[1] &= 0x0e;
 			setLowBit(_memory, REGISTER_INPUT, 0);
+			_cpu->setStop(false);
 			break;
 		case LEFT:
 			_memory->key[0] &= 0x0D;
 			setLowBit(_memory, REGISTER_INPUT, 1);
+			_cpu->setStop(false);
 			break;
 		case B_BUTTON:
 			_memory->key[1] &= 0x0D;
 			setLowBit(_memory, REGISTER_INPUT, 1);
+			_cpu->setStop(false);
 			break;
 		case UP:
 			_memory->key[0] &= 0x0B;
 			setLowBit(_memory, REGISTER_INPUT, 2);
+			_cpu->setStop(false);
 			break;
 		case SELECT:
 			_memory->key[1] &= 0x0B;
 			setLowBit(_memory, REGISTER_INPUT, 2);
+			_cpu->setStop(false);
 			break;
 		case DOWN:
 			_memory->key[0] &= 0x07;
 			setLowBit(_memory, REGISTER_INPUT, 3);
+			_cpu->setStop(false);
 			break;
 		case START:
 			_memory->key[1] &= 0x07;
 			setLowBit(_memory, REGISTER_INPUT, 3);
+			_cpu->setStop(false);
 			break;
 	}
 }
@@ -238,34 +246,42 @@ void	Gameboy::KeyRelease(int key)
 		case RIGHT:
 			_memory->key[0] |= 0x01;
 			setHightBit(_memory, REGISTER_INPUT, 0);
+			_cpu->setStop(false);
 			break;
 		case A_BUTTON:
 			_memory->key[1] |= 0x01;
 			setHightBit(_memory, REGISTER_INPUT, 0);
+			_cpu->setStop(false);
 			break;
 		case LEFT:
 			_memory->key[0] |= 0x02;
 			setHightBit(_memory, REGISTER_INPUT, 1);
+			_cpu->setStop(false);
 			break;
 		case B_BUTTON:
 			_memory->key[1] |= 0x02;
 			setHightBit(_memory, REGISTER_INPUT, 1);
+			_cpu->setStop(false);
 			break;
 		case UP:
 			_memory->key[0] |= 0x04;
 			setHightBit(_memory, REGISTER_INPUT, 2);
+			_cpu->setStop(false);
 			break;
 		case SELECT:
 			_memory->key[1] |= 0x04;
 			setHightBit(_memory, REGISTER_INPUT, 2);
+			_cpu->setStop(false);
 			break;
 		case DOWN:
 			_memory->key[0] |= 0x08;
 			setHightBit(_memory, REGISTER_INPUT, 3);
+			_cpu->setStop(false);
 			break;
 		case START:
 			_memory->key[1] |= 0x08;
 			setHightBit(_memory, REGISTER_INPUT, 3);
+			_cpu->setStop(false);
 			break;
 	}
 }
