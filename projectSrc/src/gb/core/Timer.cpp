@@ -14,9 +14,6 @@ Timer::Timer(Memory *memory) :
 	_divider(0),
 	_cyclesAcc(0)
 {
-	this->_memory->write_byte(REGISTER_TIMA, 0x00);
-	this->_memory->write_byte(REGISTER_TMA, 0x00);
-	this->_memory->write_byte(REGISTER_TAC, 0x00);
 	this->reset();
 }
 

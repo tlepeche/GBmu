@@ -108,7 +108,6 @@ int			Rom::load(const char *file)
 	romFile.open(file, std::ios::in | std::ios::ate | std::ios::binary);
 	if (romFile.is_open())
 	{
-		std::cout << "=== FILE OPENED ===" << std::endl;
 		rom_size = romFile.tellg();
 		this->_rom = new char [rom_size];
 		romFile.seekg(0, std::ios::beg);

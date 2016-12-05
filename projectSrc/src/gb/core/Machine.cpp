@@ -22,44 +22,44 @@ Machine::Machine(void) :
 	_cpu = new Cpu_z80(_memory);
 	_gpu = new Gpu(_memory);
 	_clock = new Timer(_memory);
-	this->_cpu->init();
 }
 
 bool Machine::step(void)
 {
-if (_cpu->getStop() == false)
-{
-	uint8_t cycles = 0;
-	cycles = _cpu->getHalt() ? 4 : _cpu->executeNextOpcode();
-	if (_cpu->isInterrupt()) {
-		_cpu->execInterrupt();
-		cycles = 16;
-	}
-	cycles /= (_cpu->isGBCSpeed() ? 2 : 1);
-	_cyclesAcc += cycles;
-	_clock->step(cycles);
-	_gpu->accClock(cycles);
-	_gpu->step();
-	if (_cyclesAcc >= (uint32_t)(_cyclesMax / 59.7))
+	if (_cpu->getStop() == false)
 	{
-		_cyclesAcc -= (uint32_t)(_cyclesMax / 59.7);
-	//	usleep(16750);
-	}
+		uint8_t cycles = 0;
+		cycles = _cpu->getHalt() ? 4 : _cpu->executeNextOpcode();
+		if (_cpu->isInterrupt()) {
+			_cpu->execInterrupt();
+			cycles = 16;
+		}
+		cycles /= (_cpu->isGBCSpeed() ? 2 : 1);
+		_cyclesAcc += cycles;
+		_clock->step(cycles);
+		_gpu->accClock(cycles);
+		_gpu->step();
+		if (_cyclesAcc >= (uint32_t)(_cyclesMax / 59.7))
+		{
+			_cyclesAcc -= (uint32_t)(_cyclesMax / 59.7);
+			//	usleep(16750);
+		}
 
-	if ((_memory->read_byte(0xFF02) & 0x80) && (_memory->read_byte(0xFF02) & 0x7f) > 0)
-	{
-		_memory->write_byte(0xFF02, 0);
-		_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_TIOE);
+		if ((_memory->read_byte(0xFF02) & 0x80) && (_memory->read_byte(0xFF02) & 0x7f) > 0)
+		{
+			_memory->write_byte(0xFF02, 0);
+			_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_TIOE);
+		}
+		if (_cpu->_cpuRegister.PC == 0x0100) // load Rom
+			_memory->setInBios(false);
+		return (true);
 	}
-	if (_cpu->_cpuRegister.PC == 0x0100) // load Rom
-		_memory->setInBios(false);
-	return (true);
-}
-return (false);
+	return (false);
 }
 
 void Machine::run(void)
 {
+	std::cout << "Actually i won't be called" << std::endl;
 	while (true)
 		this->step();
 }
