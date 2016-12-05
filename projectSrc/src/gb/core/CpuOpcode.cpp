@@ -1441,7 +1441,7 @@ void	Cpu_z80::LDH_A_n() //0xf0
 
 void	Cpu_z80::POP_AF() //0xf1 
 {
-	_cpuRegister.AF = _memory->read_word(_cpuRegister.SP) & 0xF0;
+	_cpuRegister.AF = _memory->read_word(_cpuRegister.SP) & 0xFFF0;
 	_cpuRegister.SP += 2;
 }
 
