@@ -33,6 +33,7 @@ bool Machine::step(void)
 		_cpu->execInterrupt();
 		cycles = 16;
 	}
+	cycles /= (_cpu->isGBCSpeed() ? 2 : 1);
 	_cyclesAcc += cycles;
 	_clock->step(cycles);
 	_gpu->accClock(cycles);

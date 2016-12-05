@@ -32,6 +32,11 @@ uint32_t Cpu_z80::getClockSpeed(void)
 	return CLOCKSPEED;
 }
 
+bool	Cpu_z80::isGBCSpeed(void)
+{
+	return (this->_isSpeed);
+}
+
 /*
  ** ################################################################
  ** METHOD opcode
@@ -156,6 +161,11 @@ void Cpu_z80::_nextPtr(void) {
 uint8_t Cpu_z80::nbCycleNextOpCode(void)
 {
 	return this->_getCycleOpcode();
+}
+
+void	Cpu_z80::setSwitchSpeed(void)
+{
+	this->_isSpeed = !this->_isSpeed;
 }
 
 #include <unistd.h>
