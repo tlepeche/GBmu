@@ -1,4 +1,5 @@
 #include "Cpu.hpp"
+#include "registerAddr.hpp"
 
 /*
  ** ############################################
@@ -167,7 +168,7 @@ void	Cpu_z80::RLCA() //0x07
 		_cpuRegister.A += 1;
 	_cpuRegister.h = 0;
 	_cpuRegister.n = 0;
-	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
+	_cpuRegister.z = 0;
 }
 
 void	Cpu_z80::LD_n_SP() //0x08
@@ -219,13 +220,20 @@ void	Cpu_z80::RRCA() //0x0f
 		_cpuRegister.A += 0x80;
 	_cpuRegister.h = 0;
 	_cpuRegister.n = 0;
-	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
+	_cpuRegister.z = 0;
 }
 
 void	Cpu_z80::STOP() //0x10
 {
-	this->_setHalt(true);
-	this->_setStop(true);
+	if (_memory->getRomType() == GBC)
+	{
+		if (_memory->read_byte(REGISTER_KEY1) & 0x01)
+			setSwitchSpeed();
+		else
+			this->setStop(true);
+	}
+	else
+		this->setStop(true);
 }
 
 void	Cpu_z80::LD_DE_n() //0x11
@@ -268,7 +276,7 @@ void	Cpu_z80::RLA() //0x17
 	_cpuRegister.A += carry;
 	_cpuRegister.n = 0;
 	_cpuRegister.h = 0;
-	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
+	_cpuRegister.z = 0;
 }
 
 void	Cpu_z80::JR_n() //0x18
@@ -327,7 +335,7 @@ void	Cpu_z80::RRA() //0x1f
 		_cpuRegister.A += 0x80;
 	_cpuRegister.n = 0;
 	_cpuRegister.h = 0;
-	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
+	_cpuRegister.z = 0;
 }
 
 void	Cpu_z80::JR_NZ_n() //0x20
@@ -390,7 +398,7 @@ void	Cpu_z80::DAA() //0x27
 	_cpuRegister.A = tmp & 0x00FF;
 	_cpuRegister.h = 0;
 	_cpuRegister.z = _cpuRegister.A == 0 ? 1 : 0;
-	_cpuRegister.c =  (tmp >= 0x100) ? 1 : 0;
+	_cpuRegister.c |= (tmp >= 0x100) ? 1 : 0;
 }
 
 void	Cpu_z80::JR_Z_n() //0x28
@@ -1441,13 +1449,13 @@ void	Cpu_z80::LDH_A_n() //0xf0
 
 void	Cpu_z80::POP_AF() //0xf1 
 {
-	_cpuRegister.AF = _memory->read_word(_cpuRegister.SP);
+	_cpuRegister.AF = _memory->read_word(_cpuRegister.SP) & 0xFFF0;
 	_cpuRegister.SP += 2;
 }
 
 void	Cpu_z80::LD_A_CC()	//0xf2
 {
-	_cpuRegister.A = _memory->read_byte(0xff00 + _cpuRegister.c);
+	_cpuRegister.A = _memory->read_byte(0xff00 + _cpuRegister.C);
 }
 
 void	Cpu_z80::DI() //0xf3
@@ -1608,7 +1616,7 @@ void Cpu_z80::_setOpcodeMap()
 		(t_opcode){0x53, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_D_E, this),    "LD D, E",		0x0000},
 		(t_opcode){0x54, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_D_H, this),    "LD D, H",		0x0000},
 		(t_opcode){0x55, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_D_L, this),    "LD D, L",		0x0000},
-		(t_opcode){0x56, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_D_HL, this),   "LD D, HL",		0x0000},
+		(t_opcode){0x56, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_D_HL, this),   "LD D, (HL)",		0x0000},
 		(t_opcode){0x57, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_D_A, this),    "LD D, A",		0x0000},
 		(t_opcode){0x58, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_E_B, this),    "LD E, B",		0x0000},
 		(t_opcode){0x59, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_E_C, this),    "LD E, C",		0x0000},
@@ -1616,7 +1624,7 @@ void Cpu_z80::_setOpcodeMap()
 		(t_opcode){0x5b, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_E_E, this),    "LD E, E",		0x0000},
 		(t_opcode){0x5c, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_E_H, this),    "LD E, H",		0x0000},
 		(t_opcode){0x5d, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_E_L, this),    "LD E, L",		0x0000},
-		(t_opcode){0x5e, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_E_HL, this),   "LD E, HL",		0x0000},
+		(t_opcode){0x5e, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_E_HL, this),   "LD E, (HL)",	0x0000},
 		(t_opcode){0x5f, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_E_A, this),    "LD E, A",		0x0000},
 		(t_opcode){0x60, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_H_B, this),    "LD H, B",		0x0000},
 		(t_opcode){0x61, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_H_C, this),    "LD H, C",		0x0000},
@@ -1624,7 +1632,7 @@ void Cpu_z80::_setOpcodeMap()
 		(t_opcode){0x63, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_H_E, this),    "LD H, E",		0x0000},
 		(t_opcode){0x64, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_H_H, this),    "LD H, H",		0x0000},
 		(t_opcode){0x65, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_H_L, this),    "LD H, L",		0x0000},
-		(t_opcode){0x66, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_H_HL, this),   "LD H, HL",		0x0000},
+		(t_opcode){0x66, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_H_HL, this),   "LD H, (HL)",	0x0000},
 		(t_opcode){0x67, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_H_A, this),    "LD H, A",		0x0000},
 		(t_opcode){0x68, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_L_B, this),    "LD L, B",		0x0000},
 		(t_opcode){0x69, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_L_C, this),    "LD L, C",		0x0000},
@@ -1634,14 +1642,14 @@ void Cpu_z80::_setOpcodeMap()
 		(t_opcode){0x6d, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_L_L, this),    "LD L, L",		0x0000},
 		(t_opcode){0x6e, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_L_HL, this),   "LD L, HL",		0x0000},
 		(t_opcode){0x6f, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_L_A, this),    "LD L, A",		0x0000},
-		(t_opcode){0x70, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_HL_B, this),   "LD HL, B",		0x0000},
-		(t_opcode){0x71, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_HL_C, this),   "LD HL, C",		0x0000},
-		(t_opcode){0x72, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_HL_D, this),   "LD HL, D",		0x0000},
-		(t_opcode){0x73, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_HL_E, this),   "LD HL, E",		0x0000},
-		(t_opcode){0x74, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_HL_H, this),   "LD HL, H",		0x0000},
-		(t_opcode){0x75, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_HL_L, this),   "LD HL, L",		0x0000},
+		(t_opcode){0x70, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_HL_B, this),   "LD (HL), B",	0x0000},
+		(t_opcode){0x71, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_HL_C, this),   "LD (HL), C",	0x0000},
+		(t_opcode){0x72, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_HL_D, this),   "LD (HL), D",	0x0000},
+		(t_opcode){0x73, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_HL_E, this),   "LD (HL), E",	0x0000},
+		(t_opcode){0x74, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_HL_H, this),   "LD (HL), H",	0x0000},
+		(t_opcode){0x75, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_HL_L, this),   "LD (HL), L",	0x0000},
 		(t_opcode){0x76, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::HALT, this),    	"HALT",			0x0000},
-		(t_opcode){0x77, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_HL_A, this),   "LD HL, A",		0x0000},
+		(t_opcode){0x77, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::LD_HL_A, this),   "LD (HL), A",	0x0000},
 		(t_opcode){0x78, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_A_B, this),    "LD A, B",		0x0000},
 		(t_opcode){0x79, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_A_C, this),    "LD A, C",		0x0000},
 		(t_opcode){0x7a, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::LD_A_D, this),    "LD A, D",		0x0000},
@@ -1688,7 +1696,7 @@ void Cpu_z80::_setOpcodeMap()
 		(t_opcode){0xa3, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::AND_E, this),    	"AND E",		0x0000},
 		(t_opcode){0xa4, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::AND_H, this),    	"AND H",		0x0000},
 		(t_opcode){0xa5, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::AND_L, this),    	"AND L",		0x0000},
-		(t_opcode){0xa6, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::AND_HL, this),   	"AND HL",		0x0000},
+		(t_opcode){0xa6, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::AND_HL, this),   	"AND (HL)",		0x0000},
 		(t_opcode){0xa7, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::AND_A, this),    	"AND A",		0x0000},
 		(t_opcode){0xa8, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::XOR_B, this),    	"XOR B",		0x0000},
 		(t_opcode){0xa9, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::XOR_C, this),    	"XOR C",		0x0000},
@@ -1696,7 +1704,7 @@ void Cpu_z80::_setOpcodeMap()
 		(t_opcode){0xab, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::XOR_E, this),    	"XOR E",		0x0000},
 		(t_opcode){0xac, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::XOR_H, this),    	"XOR H",		0x0000},
 		(t_opcode){0xad, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::XOR_L, this),    	"XOR L",		0x0000},
-		(t_opcode){0xae, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::XOR_HL, this),    "XOR HL",		0x0000},
+		(t_opcode){0xae, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::XOR_HL, this),    "XOR (HL)",		0x0000},
 		(t_opcode){0xaf, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::XOR_A, this),    	"XOR A",		0x0000},
 		(t_opcode){0xb0, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::OR_B, this),    	"OR B",			0x0000},
 		(t_opcode){0xb1, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::OR_C, this),    	"OR C",			0x0000},
@@ -1712,7 +1720,7 @@ void Cpu_z80::_setOpcodeMap()
 		(t_opcode){0xbb, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::CP_E, this),    	"CP E",			0x0000},
 		(t_opcode){0xbc, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::CP_H, this),    	"CP H",			0x0000},
 		(t_opcode){0xbd, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::CP_L, this),    	"CP L",			0x0000},
-		(t_opcode){0xbe, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::CP_HL, this),    	"CP HL",		0x0000},
+		(t_opcode){0xbe, 0x00, 8 , 8 , 1, std::bind(&Cpu_z80::CP_HL, this),    	"CP (HL)",		0x0000},
 		(t_opcode){0xbf, 0x00, 4 , 4 , 1, std::bind(&Cpu_z80::CP_A, this),    	"CP A",			0x0000},
 		(t_opcode){0xc0, 0x80, 20 , 8 , 1, std::bind(&Cpu_z80::RET_NZ, this),    "RET NZ",		0x0000},
 		(t_opcode){0xc1, 0x00, 12, 12, 1, std::bind(&Cpu_z80::POP_BC, this),    "POP BC",		0x0000},

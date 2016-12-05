@@ -27,12 +27,15 @@ Machine::Machine(void) :
 
 bool Machine::step(void)
 {
+if (_cpu->getStop() == false)
+{
 	uint8_t cycles = 0;
 	cycles = _cpu->getHalt() ? 4 : _cpu->executeNextOpcode();
 	if (_cpu->isInterrupt()) {
 		_cpu->execInterrupt();
 		cycles = 16;
 	}
+	cycles /= (_cpu->isGBCSpeed() ? 2 : 1);
 	_cyclesAcc += cycles;
 	_clock->step(cycles);
 	_gpu->accClock(cycles);
@@ -51,6 +54,8 @@ bool Machine::step(void)
 	if (_cpu->_cpuRegister.PC == 0x0100) // load Rom
 		_memory->setInBios(false);
 	return (true);
+}
+return (false);
 }
 
 void Machine::run(void)

@@ -254,7 +254,7 @@ void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 					if (!super && addr == 0xFF00)
 					{
 						// P1
-						this->_m_io[(addr & 0xFF)] = (val & 0xF0) | (this->_m_io[(addr & 0xFF)] & 0x0F);
+						this->_m_io[(addr & 0xFF)] = 0xC0 + (val & 0x30) | (this->_m_io[(addr & 0xFF)] & 0x0F);
 						handleInput();
 					}
 					else if (!super && addr == 0xFF04)
@@ -262,31 +262,23 @@ void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 						// DIV
 						this->_m_io[(addr & 0xFF)] = 0x00;
 					}
+
 					else if ((addr & 0xFF) <= 0x7F)
 					{
 						// I/O
-
 						if (!super)
 						{
+							if (addr == REGISTER_KEY1)
+								val &= 0x7F;
+							if (addr == REGISTER_IF)
+								val = (read_byte(REGISTER_IF) & 0xF0) + (val & 0x0F);
 							//protect 3 first byte of register STAT form overwritting
 							if (addr == REGISTER_STAT)
 							{
 								val &= 0xF8;
 								val |= read_byte(REGISTER_STAT) & 0x07;
-							}
-							if ((addr == 0xFF44 || addr == 0xFF45) && read_byte(0xFF40) & 0x80)
-							{
-								if (read_byte(0xFF44) == read_byte(0xFF45))
-									this->_m_io[0x41] |= 0x04;// Coincidence	
-								else
-									this->_m_io[0x41] &= 0xfb;
-							}
-							else if (addr == 0xFF40 && (val & 0x80))
-							{
-								if (read_byte(0xFF44) == read_byte(0xFF45))
-									this->_m_io[0x41] |= 0x04;	
-								else
-									this->_m_io[0x41] &= 0xfb;
+								if ((val & 0x40) && read_byte(REGISTER_LY) == read_byte(REGISTER_LYC))
+									this->_m_io[0x0f] |= 0x02;
 							}
 							//DMA
 							if (addr == REGISTER_DMA) {
@@ -318,7 +310,25 @@ void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 									write_byte(REGISTER_OCPS, ((((read_byte(REGISTER_OCPS) << 2) + 4) & 0xFF) >> 2) | 0x80);
 							}
 						}
+
+						//Memory writting
 						this->_m_io[(addr & 0xFF)] = val;
+
+						//Coincidence
+						if (!super && (addr == 0xFF44 || addr == 0xFF45) && read_byte(0xFF40) & 0x80)
+						{
+							if (read_byte(0xFF44) == read_byte(0xFF45))
+								this->_m_io[0x41] |= 0x04;	
+							else
+								this->_m_io[0x41] &= 0xfb;
+						}
+						else if (!super && addr == 0xFF40 && (val & 0x80))
+						{
+							if (read_byte(0xFF44) == read_byte(0xFF45))
+								this->_m_io[0x41] |= 0x04;	
+							else
+								this->_m_io[0x41] &= 0xfb;
+						}
 					}
 					else
 					{
