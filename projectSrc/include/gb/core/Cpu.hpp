@@ -648,9 +648,9 @@ class Cpu_z80
 		bool							getHalt(void);
 		bool							getStop(void);
 		uint16_t						getPCRegister(void);
+		void							setStop(bool state);
 
 	private:
-		void								_setStop(bool state);
 		void								_setHalt(bool state);
 
 

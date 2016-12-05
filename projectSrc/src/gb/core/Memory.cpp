@@ -264,7 +264,7 @@ void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 						if (!super)
 						{
 							if (addr == REGISTER_KEY1)
-								val &= 0x8F;
+								val &= 0x7F;
 							if (addr == REGISTER_IF)
 								val = (read_byte(REGISTER_IF) & 0xF0) + (val & 0x0F);
 							//protect 3 first byte of register STAT form overwritting

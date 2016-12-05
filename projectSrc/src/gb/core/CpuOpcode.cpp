@@ -1,4 +1,5 @@
 #include "Cpu.hpp"
+#include "registerAddr.hpp"
 
 /*
  ** ############################################
@@ -224,8 +225,15 @@ void	Cpu_z80::RRCA() //0x0f
 
 void	Cpu_z80::STOP() //0x10
 {
-	this->_setHalt(true);
-	this->_setStop(true);
+	if (_memory->getRomType() == GBC)
+	{
+		if (_memory->read_byte(REGISTER_KEY1) & 0x01)
+			setSwitchSpeed();
+		else
+			this->setStop(true);
+	}
+	else
+		this->setStop(true);
 }
 
 void	Cpu_z80::LD_DE_n() //0x11
