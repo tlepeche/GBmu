@@ -129,6 +129,11 @@ uint8_t			Memory::force_read_vram(uint16_t addr, uint8_t bank)
 	return this->_m_vram[bank & 0x1][addr & 0x1FFF];
 }
 
+uint8_t			*Memory::getOamBuffer()
+{
+	return (uint8_t*)this->_m_oam;
+}
+
 uint8_t			Memory::read_byte(uint16_t addr)
 {
 	switch (addr & 0xF000) {

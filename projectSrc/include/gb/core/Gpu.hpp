@@ -45,7 +45,7 @@ class Gpu
 		Gpu(Memory *memory);
 		~Gpu();
 		uint8_t	_colorId;
-
+		uint8_t	*_oamBuffer;
 	public:
 		void	step();
 		void	init();
