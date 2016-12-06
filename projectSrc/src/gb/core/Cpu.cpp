@@ -138,7 +138,8 @@ bool Cpu_z80::getIME(void)
 bool Cpu_z80::isInterrupt(void)
 {
 	uint8_t _IE = _memory->read_byte(REGISTER_IE);
-	return ((getIME() || getHalt()) && this->_memory->read_byte(REGISTER_IF) & INTER_MASK & _IE);
+	return ((getIME() || getHalt()) && (this->_memory->read_byte(REGISTER_IF) & INTER_MASK & _IE)
+			&& (_spBeforeInterrupt == 0xFFFF));
 }
 
 bool Cpu_z80::_getInterrupt(uint8_t interrupt)
@@ -181,6 +182,8 @@ uint8_t Cpu_z80::executeNextOpcode(void)
 	uint8_t cycle = this->_getCycleOpcode();
 	this->_nextPtr();
 	setStepState(true);
+	if (_spBeforeInterrupt != 0xFFFF && _cpuRegister.SP == _spBeforeInterrupt)
+		_spBeforeInterrupt = 0xFFFF;
 	return cycle;
 }
 
@@ -194,7 +197,7 @@ void Cpu_z80::init(htype hardware)
 	this->_halt = false;
 	this->_stop = false;
 	this->_isSpeed = false;
-
+	this->_spBeforeInterrupt = 0xFFFF;
 	//init register cpu
 	this->_cpuRegister.A = hardware == GB ? 0x01 : 0x11;
 	this->_cpuRegister.F = 0xB0;
@@ -254,15 +257,15 @@ void Cpu_z80::init(htype hardware)
 	this->_memory->write_byte(REGISTER_LYC, 0x00, true);
 	this->_memory->write_byte(REGISTER_DMA, 0xFF, true);
 	this->_memory->write_byte(REGISTER_BGP, 0xFC, true); // edelangh: this is bullshit !!
-	this->_memory->write_byte(REGISTER_OBP0, 0xFF, true);
-	this->_memory->write_byte(REGISTER_OBP1, 0xFF, true);
+	this->_memory->write_byte(REGISTER_OBP0, 0x00, true);
+	this->_memory->write_byte(REGISTER_OBP1, 0x00, true);
 	this->_memory->write_byte(REGISTER_WY, 0x00, true);
 	this->_memory->write_byte(REGISTER_WX, 0x00, true);
 	/* TODO: WTF ? I dont see then in doc */
-	this->_memory->write_byte(REGISTER_BCPS, 0xFF, true);
+	this->_memory->write_byte(REGISTER_BCPS, 0xC0, true);
 	this->_memory->write_byte(REGISTER_BCPD, 0xFF, true);
-	this->_memory->write_byte(REGISTER_OCPS, 0xFF, true);
-	this->_memory->write_byte(REGISTER_OCPD, 0xFF, true);
+	this->_memory->write_byte(REGISTER_OCPS, 0xC1, true);
+	this->_memory->write_byte(REGISTER_OCPD, 0x00, true);
 	
 	this->_memory->write_byte(0xFF56, 0x3F, true); // Register RP, IR disable
 
@@ -286,6 +289,22 @@ void Cpu_z80::_setHightBit(uint16_t addr, uint8_t bit)
 	this->_memory->write_byte(addr, (uint8_t)((0x01 << bit) | this->_memory->read_byte(addr)));
 }
 
+void Cpu_z80::runInterrupt(uint16_t addr, uint8_t interrupt)
+{
+	// push PC on stack
+	this->_spBeforeInterrupt = this->_cpuRegister.SP;
+	this->_cpuRegister.SP -= 2;
+	this->_memory->write_word(_cpuRegister.SP, _cpuRegister.PC);
+	// set low interrupt
+	this->_memory->write_byte(REGISTER_IF,
+			_memory->read_byte(REGISTER_IF) & (INTER_MASK ^ interrupt));
+	// Go to 0x40
+	this->_cpuRegister.PC = addr;
+	this->_loadPtr(this->_cpuRegister.PC);
+}
+
+#define TEST_INTERRUPT(X) ((this->_memory->read_byte(REGISTER_IF) & X) > 0 && _IE & X)
+
 void Cpu_z80::execInterrupt(void)
 {
 	this->_setHalt(false);
@@ -293,72 +312,25 @@ void Cpu_z80::execInterrupt(void)
 	// Get interrupt here
 	if (getIME() == false)
 		return ;
-	if ((this->_memory->read_byte(REGISTER_IF) & INTER_VBLANK) > 0x00
-			&& _IE & INTER_VBLANK)
+
+	if (TEST_INTERRUPT(INTER_VBLANK))
+		this->runInterrupt(0x40, INTER_VBLANK);
+
+	else if (TEST_INTERRUPT(INTER_LCDC))
+		runInterrupt(0x48, INTER_LCDC);
+
+	else if (TEST_INTERRUPT(INTER_TOVERF))
+		runInterrupt(0x50, INTER_TOVERF);
+
+	else if (TEST_INTERRUPT(INTER_TIOE))
+		runInterrupt(0x58, INTER_TIOE);
+
+	else if (TEST_INTERRUPT(INTER_TPIN))
 	{
-		// push PC on stack
-		this->_cpuRegister.SP -= 2;
-		this->_memory->write_word(_cpuRegister.SP, _cpuRegister.PC);
-		// set low interrupt
-		this->_memory->write_byte(REGISTER_IF,
-				_memory->read_byte(REGISTER_IF) & (INTER_MASK ^ INTER_VBLANK));
-		// Go to 0x40
-		this->_cpuRegister.PC = 0x40;
-		this->_loadPtr(this->_cpuRegister.PC);
-	}
-	else if ((this->_memory->read_byte(REGISTER_IF) & INTER_LCDC) > 0x00
-			&& _IE & INTER_LCDC)
-	{
-		// push PC on stack
-		this->_cpuRegister.SP -= 2;
-		this->_memory->write_word(_cpuRegister.SP, _cpuRegister.PC);
-		// set low interrupt
-		this->_memory->write_byte(REGISTER_IF,
-				_memory->read_byte(REGISTER_IF) & (INTER_MASK ^ INTER_LCDC));
-		// Go to 0x48
-		this->_cpuRegister.PC = 0x48;
-		this->_loadPtr(this->_cpuRegister.PC);
-	}
-	else if ((this->_memory->read_byte(REGISTER_IF) & INTER_TOVERF) > 0x00
-			&& _IE & INTER_TOVERF)
-	{
-		// push PC on stack
-		this->_cpuRegister.SP -= 2;
-		this->_memory->write_word(_cpuRegister.SP, _cpuRegister.PC);
-		// set low interrupt
-		this->_memory->write_byte(REGISTER_IF,
-				_memory->read_byte(REGISTER_IF) & (INTER_MASK ^ INTER_TOVERF));
-		// Go to 0x50
-		this->_cpuRegister.PC = 0x50;
-		this->_loadPtr(this->_cpuRegister.PC);
-	}
-	else if ((this->_memory->read_byte(REGISTER_IF) & INTER_TIOE) > 0x00
-			&& _IE & INTER_TIOE)
-	{
-		// push PC on stack
-		this->_cpuRegister.SP -= 2;
-		this->_memory->write_word(_cpuRegister.SP, _cpuRegister.PC);
-		// set low interrupt
-		this->_memory->write_byte(REGISTER_IF,
-				_memory->read_byte(REGISTER_IF) & (INTER_MASK ^ INTER_TIOE));
-		// Go to 0x58
-		this->_cpuRegister.PC = 0x58;
-		this->_loadPtr(this->_cpuRegister.PC);
-	}
-	else if ((this->_memory->read_byte(REGISTER_IF) & INTER_TPIN) > 0x00
-			&& _IE & INTER_TPIN)
-	{
-		// push PC on stack
+		runInterrupt(0x60, INTER_TPIN);
 		this->setStop(false);
-		this->_cpuRegister.SP -= 2;
-		this->_memory->write_word(_cpuRegister.SP, _cpuRegister.PC);
-		// set low interrupt
-		this->_memory->write_byte(REGISTER_IF,
-				_memory->read_byte(REGISTER_IF) & (INTER_MASK ^ INTER_TPIN));
-		// Go to 0x60
-		this->_cpuRegister.PC = 0x60;
-		this->_loadPtr(this->_cpuRegister.PC);
 	}
+
 	else {
 		this->_setIME(true);
 	}

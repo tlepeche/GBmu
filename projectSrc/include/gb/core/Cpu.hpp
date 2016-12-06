@@ -643,6 +643,7 @@ class Cpu_z80
 	 */
 	public:
 		void							execInterrupt(void);
+		void							runInterrupt(uint16_t addr, uint8_t interrupt);
 		bool							isInterrupt(void);
 		bool							_getInterrupt(uint8_t interrupt);
 		bool							getHalt(void);
@@ -667,7 +668,7 @@ class Cpu_z80
 		bool							_stop = false;
 		bool							_IME = true;
 		bool							_holdIME = true;
-
+		uint16_t						_spBeforeInterrupt = 0xFFFF;
 		public:
 		unsigned int					_addrLength;
 		t_opcode						_opcodeInProgress; // TODO: go private
