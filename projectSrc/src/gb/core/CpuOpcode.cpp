@@ -1405,11 +1405,11 @@ void	Cpu_z80::ADD_SP_n()	//0xe8
 	uint8_t a = _memory->read_byte(_cpuRegister.PC + 1);
 	n = 0x00;
 	n |= a;
-	if (((_cpuRegister.SP & 0x000f) + (n & 0x0f)) > 0x000f)
+	if (((_cpuRegister.SP & 0x000f) + (a & 0x0f)) > 0x000f)
 		_cpuRegister.h = 1;
 	else
 		_cpuRegister.h = 0;
-	_cpuRegister.c = static_cast<int>(testAdd(_cpuRegister.SP, n, 0xffff0000));
+	_cpuRegister.c = static_cast<int>(testAdd(_cpuRegister.SP & 0x00ff, a, 0xff00));
 	_cpuRegister.z = 0;
 	_cpuRegister.n = 0;
 	_cpuRegister.SP += n;
@@ -1485,11 +1485,11 @@ void	Cpu_z80::LD_HL_SP_n()	//0xf8
 	uint8_t a = _memory->read_byte(_cpuRegister.PC + 1);
 	n = 0x00;
 	n |= a;
-	if (((_cpuRegister.SP & 0x0fff) + (n & 0x0f)) > 0x0fff)
+	if (((_cpuRegister.SP & 0x000f) + (a & 0x0f)) > 0x000f)
 		_cpuRegister.h = 1;
 	else
 		_cpuRegister.h = 0;
-	_cpuRegister.c = static_cast<int>(testAdd(_cpuRegister.SP, n, 0xffff0000));
+	_cpuRegister.c = static_cast<int>(testAdd(_cpuRegister.SP & 0x00ff, a, 0xff00));
 	_cpuRegister.z = 0;
 	_cpuRegister.n = 0;
 	_cpuRegister.HL = _cpuRegister.SP + n;
