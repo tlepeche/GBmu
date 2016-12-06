@@ -1,29 +1,29 @@
 #include "OpenGLWindow.hpp"
 
 #include <QCoreApplication>
-#include <QOpenGLContext>
-#include <QOpenGLPaintDevice>
 #include <QPainter>
 #include <QMenuBar>
 #include <QKeyEvent>
-
+#include <QTimer>
+#include <QDragEnterEvent>
+#include <QMimeData>
+#include <QActionGroup>
 #include <QFileDialog>
 
 #include <iostream>
 
-// GOOD tuto
-// http://doc.qt.io/qt-5/qtwidgets-mainwindows-menus-example.html
+QTimer timerScreen;
 
-	OpenGLWindow::OpenGLWindow(QWindow *parent)
-	: QWindow(parent)
-	, m_update_pending(false)
-	, m_animating(false)
+OpenGLWindow::OpenGLWindow(QWidget *parent)
+	: QWidget(parent)
 	, _menuBar(this->genMenuBar())
 	, frameBuffer(new QImage(WIN_WIDTH, WIN_HEIGHT, QImage::Format_RGB32))
-	, m_context(0)
-	  , m_device(0)
 {
-	setSurfaceType(QWindow::OpenGLSurface);
+	setAcceptDrops(true);
+	resize(500,500);
+
+	connect(&timerScreen, &QTimer::timeout, this, &OpenGLWindow::updateSlot);
+	timerScreen.start(16);
 }
 
 OpenGLWindow	*OpenGLWindow::Instance()
@@ -56,10 +56,43 @@ QMenuBar	*OpenGLWindow::genMenuBar()
 	connect(type0, &QAction::triggered, this, &OpenGLWindow::gbTypeAUTOSlot);
 	connect(type1, &QAction::triggered, this, &OpenGLWindow::gbTypeGBSlot);
 	connect(type2, &QAction::triggered, this, &OpenGLWindow::gbTypeGBCSlot);
+
+	QActionGroup*	gmod = new QActionGroup(this);
+	gmod->addAction(type0);
+	gmod->addAction(type1);
+	gmod->addAction(type2);
+	gmod->setExclusive(true);
+	type0->setCheckable(true);
+	type0->setChecked(true);
+	type1->setCheckable(true);
+	type2->setCheckable(true);
 	hard->addAction(type0);
 	hard->addAction(type1);
 	hard->addAction(type2);
 	menuBar->addMenu(hard);
+
+	QMenu*		com		= new QMenu(tr("Commande"));
+	QAction*	com0	= new QAction(tr("PLAY"));
+	QAction*	com1	= new QAction(tr("PAUSE"));
+	QAction*	com2	= new QAction(tr("STOP"));
+
+	connect(com0, &QAction::triggered, this, &OpenGLWindow::gbComPlaySlot);
+	connect(com1, &QAction::triggered, this, &OpenGLWindow::gbComPauseSlot);
+	connect(com2, &QAction::triggered, this, &OpenGLWindow::gbComStopSlot);
+
+	QActionGroup*	gcom = new QActionGroup(this);
+	gcom->setExclusive(true);
+	gcom->addAction(com0);
+	gcom->addAction(com1);
+	gcom->addAction(com2);
+	com0->setCheckable(true);
+	com1->setCheckable(true);
+	com2->setCheckable(true);
+	com2->setChecked(true);
+	com->addAction(com0); com0->setShortcut(tr("Ctrl+P"));
+	com->addAction(com1); com1->setShortcut(tr("Ctrl+O"));
+	com->addAction(com2); com2->setShortcut(tr("Ctrl+S"));
+	menuBar->addMenu(com);
 
 	return menuBar;
 }
@@ -79,6 +112,21 @@ void	OpenGLWindow::gbTypeGBCSlot()
 	emit gbTypeSign(GBC);
 }
 
+void	OpenGLWindow::gbComPlaySlot()
+{
+	emit	gbComPlay();
+}
+
+void	OpenGLWindow::gbComPauseSlot()
+{
+	emit	gbComPause();
+}
+
+void	OpenGLWindow::gbComStopSlot()
+{
+	emit	gbComStop();
+}
+
 void	OpenGLWindow::openSlot()
 {
 	QString path = QFileDialog::getOpenFileName(NULL, tr("Open XML File 1"), "/home", tr("XML Files (*.xml, *)"));
@@ -94,7 +142,6 @@ void	OpenGLWindow::gbDbSlot()
 OpenGLWindow::~OpenGLWindow()
 {
 	delete _menuBar;
-	delete m_device;
 	delete frameBuffer;
 }
 
@@ -118,13 +165,6 @@ void OpenGLWindow::drawPixel(uint16_t addr, uint32_t color)
 	((uint32_t*)frameBuffer->bits())[addr] = color;
 }
 
-void OpenGLWindow::render(QPainter *painter)
-{
-	Q_UNUSED(painter);
-
-	painter->drawImage(0, 0, frameBuffer->scaled(size()));
-}
-
 void OpenGLWindow::initialize()
 {
 	unsigned int defaultColor = 0x00000000;
@@ -132,82 +172,27 @@ void OpenGLWindow::initialize()
 	for (int y = 0 ; y < WIN_HEIGHT; ++y)
 		for (int x = 0 ; x < WIN_WIDTH; ++x)
 			drawPixel(y * WIN_WIDTH + x, defaultColor);
-	renderLater();
 }
 
-void OpenGLWindow::render()
+void OpenGLWindow::dragEnterEvent(QDragEnterEvent *event)
 {
-	if (!m_device)
-		m_device = new QOpenGLPaintDevice;
-
-
-	m_device->setSize(size());
-	QPainter painter(m_device);
-	render(&painter);
+	event->acceptProposedAction();
 }
 
-void OpenGLWindow::renderLater()
+void OpenGLWindow::dropEvent(QDropEvent *event)
 {
-	if (!m_update_pending) {
-		m_update_pending = true;
-		QCoreApplication::postEvent(this, new QEvent(QEvent::UpdateRequest));
-	}
+	const QMimeData *mimeData = event->mimeData();
+	emit openRomSign(mimeData->urls().at(0).toLocalFile().toStdString());
 }
 
-bool OpenGLWindow::event(QEvent *event)
+void OpenGLWindow::paintEvent(__attribute__((unused)) QPaintEvent *event)
 {
-	switch (event->type()) {
-		case QEvent::UpdateRequest:
-			renderNow();
-			m_update_pending = false;
-			return true;
-		default:
-			return QWindow::event(event);
-	}
+	QPainter painter(this);
+	painter.drawImage(0, 0, frameBuffer->scaled(size()));
+	painter.end();
 }
 
-void OpenGLWindow::exposeEvent(QExposeEvent *event)
+void OpenGLWindow::updateSlot(void)
 {
-	Q_UNUSED(event);
-
-	if (isExposed())
-		renderNow();
-}
-
-void OpenGLWindow::renderNow()
-{
-	if (!isExposed())
-		return;
-
-	bool needsInitialize = false;
-
-	if (!m_context) {
-		m_context = new QOpenGLContext(this);
-		m_context->setFormat(requestedFormat());
-		m_context->create();
-
-		needsInitialize = true;
-	}
-
-	m_context->makeCurrent(this);
-
-	if (needsInitialize) {
-		initializeOpenGLFunctions();
-		initialize();
-	}
-
-	render();
-
-	m_context->swapBuffers(this);
-
-	if (m_animating)
-		renderLater();
-}
-
-void OpenGLWindow::setAnimating(bool animating)
-{
-	m_animating = animating;
-
-	if (animating)
-		renderLater();
+	update();
 }

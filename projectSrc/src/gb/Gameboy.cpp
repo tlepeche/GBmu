@@ -35,6 +35,9 @@ Gameboy::Gameboy(const char *path) :
 	connect(_window, &OpenGLWindow::keyPressSign, this, &Gameboy::KeyPress);
 	connect(_window, &OpenGLWindow::keyReleaseSign, this, &Gameboy::KeyRelease);
 	connect(_window, &OpenGLWindow::gbTypeSign, this, &Gameboy::gbTypeSlot);
+	connect(_window, &OpenGLWindow::gbComPlay, this, &Gameboy::switchStepModeSlot);
+	connect(_window, &OpenGLWindow::gbComPause, this, &Gameboy::switchStepModeSlot);
+	connect(_window, &OpenGLWindow::gbComStop, this, &Gameboy::resetPressedSlot);
 
 	_window->show();
 #ifdef DEBUG
