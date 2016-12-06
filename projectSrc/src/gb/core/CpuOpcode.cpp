@@ -83,8 +83,14 @@ void Cpu_z80::adc(uint8_t val)
 
 	tmp = val + _cpuRegister.c;
 	_cpuRegister.n = 0;
-	_cpuRegister.h = static_cast<int>(testAdd(_cpuRegister.A & 0x0f, tmp & 0x0f, 0xf0));
-	_cpuRegister.c = static_cast<int>(testAdd(_cpuRegister.A, tmp, 0xff00));
+	if (((_cpuRegister.A & 0x0f) + (val & 0x0f) + _cpuRegister.c) > 0x0f)
+		_cpuRegister.h = 1;
+	else
+		_cpuRegister.h = 0;
+	if ((_cpuRegister.A + val + _cpuRegister.c) & 0xff00)
+		_cpuRegister.c = 1;
+	else
+		_cpuRegister.c = 0;
 	_cpuRegister.A += tmp;
 	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
 }
@@ -106,8 +112,11 @@ void	Cpu_z80::sbc(uint8_t val)
 
 	tmp = val + _cpuRegister.c;
 	_cpuRegister.n = 1;
-	_cpuRegister.h = (val & 0x0f) > (_cpuRegister.A & 0x0f) ? 1 : 0;
-	_cpuRegister.c = static_cast<int>(testSub(_cpuRegister.A, tmp, 0xff00));
+	_cpuRegister.h = ((val & 0x0f) + _cpuRegister.c) > (_cpuRegister.A & 0x0f) ? 1 : 0;
+	if ((_cpuRegister.A - val - _cpuRegister.c) & 0xff00)
+		_cpuRegister.c = 1;
+	else
+		_cpuRegister.c = 0;
 	_cpuRegister.A -= tmp;
 	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
 }
@@ -1405,11 +1414,11 @@ void	Cpu_z80::ADD_SP_n()	//0xe8
 	uint8_t a = _memory->read_byte(_cpuRegister.PC + 1);
 	n = 0x00;
 	n |= a;
-	if (((_cpuRegister.SP & 0x000f) + (n & 0x0f)) > 0x000f)
+	if (((_cpuRegister.SP & 0x000f) + (a & 0x0f)) > 0x000f)
 		_cpuRegister.h = 1;
 	else
 		_cpuRegister.h = 0;
-	_cpuRegister.c = static_cast<int>(testAdd(_cpuRegister.SP, n, 0xffff0000));
+	_cpuRegister.c = static_cast<int>(testAdd(_cpuRegister.SP & 0x00ff, a, 0xff00));
 	_cpuRegister.z = 0;
 	_cpuRegister.n = 0;
 	_cpuRegister.SP += n;
@@ -1485,11 +1494,11 @@ void	Cpu_z80::LD_HL_SP_n()	//0xf8
 	uint8_t a = _memory->read_byte(_cpuRegister.PC + 1);
 	n = 0x00;
 	n |= a;
-	if (((_cpuRegister.SP & 0x0fff) + (n & 0x0f)) > 0x0fff)
+	if (((_cpuRegister.SP & 0x000f) + (a & 0x0f)) > 0x000f)
 		_cpuRegister.h = 1;
 	else
 		_cpuRegister.h = 0;
-	_cpuRegister.c = static_cast<int>(testAdd(_cpuRegister.SP, n, 0xffff0000));
+	_cpuRegister.c = static_cast<int>(testAdd(_cpuRegister.SP & 0x00ff, a, 0xff00));
 	_cpuRegister.z = 0;
 	_cpuRegister.n = 0;
 	_cpuRegister.HL = _cpuRegister.SP + n;
@@ -1752,7 +1761,7 @@ void Cpu_z80::_setOpcodeMap()
 		(t_opcode){0xdb, 0x00, 0 , 0 , 0, NULL, "",	0x0000},
 		(t_opcode){0xdc, 0x10, 12, 24, 3, std::bind(&Cpu_z80::CALL_C_n, this),  "CALL C, nn",	0x0000},
 		(t_opcode){0xdd, 0x00, 0 , 0 , 0, NULL, "",	0x0000},
-		(t_opcode){0xde, 0x00, 8 , 8 , 2, std::bind(&Cpu_z80::SBC_A_n, this),   "SBC A, nn",	0x0000},
+		(t_opcode){0xde, 0x00, 8 , 8 , 2, std::bind(&Cpu_z80::SBC_A_n, this),   "SBC A, n",	0x0000},
 		(t_opcode){0xdf, 0x00, 16, 16, 1, std::bind(&Cpu_z80::RST_18H, this),   "RST 18H",		0x0000},
 		(t_opcode){0xe0, 0x00, 12, 12, 2, std::bind(&Cpu_z80::LDH_n_A, this),   "LD (0xff00+n), A",	0x0000},
 		(t_opcode){0xe1, 0x00, 12, 12, 1, std::bind(&Cpu_z80::POP_HL, this),    "POP HL",		0x0000},
