@@ -62,6 +62,11 @@ bool			Memory::isBiosLoaded()
 	return (this->_codeBios != nullptr);
 }
 
+bool			Memory::getInBios(void)
+{
+	return this->_inBios;
+}
+
 void			Memory::setInBios(bool inBios)
 {
 	this->_inBios = inBios;

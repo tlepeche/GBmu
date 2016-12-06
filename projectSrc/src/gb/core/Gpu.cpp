@@ -84,8 +84,9 @@ unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 	uint16_t tileAddr = tileSetAddr + tileId * TILE_H * 2;
 	uint8_t bgp = _memory->read_byte(REGISTER_BGP);
 	uint8_t	bgd =
-		_memory->getRomType() == GB ? 0 :
-		_memory->force_read_vram(tileIdAddr, 1);
+		(_memory->getInBios() ? _memory->getTypeBios() == GB : _memory->getRomType() == GB)
+			? 0
+			: _memory->force_read_vram(tileIdAddr, 1);
 
 	unsigned int sy = (line + scy) % TILE_H;
 	unsigned int sx = (x + scx) % TILE_W;
