@@ -1,29 +1,26 @@
 #include "OpenGLWindow.hpp"
 
 #include <QCoreApplication>
-#include <QOpenGLContext>
-#include <QOpenGLPaintDevice>
 #include <QPainter>
 #include <QMenuBar>
 #include <QKeyEvent>
+#include <QTimer>
 
 #include <QFileDialog>
 
 #include <iostream>
 
-// GOOD tuto
-// http://doc.qt.io/qt-5/qtwidgets-mainwindows-menus-example.html
+QTimer timerScreen;
 
-	OpenGLWindow::OpenGLWindow(QWindow *parent)
-	: QWindow(parent)
-	, m_update_pending(false)
-	, m_animating(false)
+OpenGLWindow::OpenGLWindow(QWidget *parent)
+	: QWidget(parent)
 	, _menuBar(this->genMenuBar())
 	, frameBuffer(new QImage(WIN_WIDTH, WIN_HEIGHT, QImage::Format_RGB32))
-	, m_context(0)
-	  , m_device(0)
 {
-	setSurfaceType(QWindow::OpenGLSurface);
+	resize(500,500);
+
+	connect(&timerScreen, &QTimer::timeout, this, &OpenGLWindow::updateSlot);
+	timerScreen.start(16);
 }
 
 OpenGLWindow	*OpenGLWindow::Instance()
@@ -94,7 +91,6 @@ void	OpenGLWindow::gbDbSlot()
 OpenGLWindow::~OpenGLWindow()
 {
 	delete _menuBar;
-	delete m_device;
 	delete frameBuffer;
 }
 
@@ -118,13 +114,6 @@ void OpenGLWindow::drawPixel(uint16_t addr, uint32_t color)
 	((uint32_t*)frameBuffer->bits())[addr] = color;
 }
 
-void OpenGLWindow::render(QPainter *painter)
-{
-	Q_UNUSED(painter);
-
-	painter->drawImage(0, 0, frameBuffer->scaled(size()));
-}
-
 void OpenGLWindow::initialize()
 {
 	unsigned int defaultColor = 0x00000000;
@@ -132,18 +121,6 @@ void OpenGLWindow::initialize()
 	for (int y = 0 ; y < WIN_HEIGHT; ++y)
 		for (int x = 0 ; x < WIN_WIDTH; ++x)
 			drawPixel(y * WIN_WIDTH + x, defaultColor);
-	renderLater();
-}
-
-void OpenGLWindow::render()
-{
-	if (!m_device)
-		m_device = new QOpenGLPaintDevice;
-
-
-	m_device->setSize(size());
-	QPainter painter(m_device);
-	render(&painter);
 }
 
 void OpenGLWindow::renderLater()
@@ -166,48 +143,14 @@ bool OpenGLWindow::event(QEvent *event)
 	}
 }
 
-void OpenGLWindow::exposeEvent(QExposeEvent *event)
+void OpenGLWindow::paintEvent(__attribute__((unused)) QPaintEvent *event)
 {
-	Q_UNUSED(event);
-
-	if (isExposed())
-		renderNow();
+	QPainter painter(this);
+	painter.drawImage(0, 0, frameBuffer->scaled(size()));
+	painter.end();
 }
 
-void OpenGLWindow::renderNow()
+void OpenGLWindow::updateSlot(void)
 {
-	if (!isExposed())
-		return;
-
-	bool needsInitialize = false;
-
-	if (!m_context) {
-		m_context = new QOpenGLContext(this);
-		m_context->setFormat(requestedFormat());
-		m_context->create();
-
-		needsInitialize = true;
-	}
-
-	m_context->makeCurrent(this);
-
-	if (needsInitialize) {
-		initializeOpenGLFunctions();
-		initialize();
-	}
-
-	render();
-
-	m_context->swapBuffers(this);
-
-	if (m_animating)
-		renderLater();
-}
-
-void OpenGLWindow::setAnimating(bool animating)
-{
-	m_animating = animating;
-
-	if (animating)
-		renderLater();
+	update();
 }

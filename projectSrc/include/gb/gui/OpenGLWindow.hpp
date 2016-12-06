@@ -1,44 +1,34 @@
 #ifndef OPENGLWINDOW_H
 #define OPENGLWINDOW_H
 
-#include <QWindow>
-#include <QOpenGLFunctions>
+#include <QWidget>
 #include "htype.hpp"
 
 #define WIN_WIDTH 160
 #define WIN_HEIGHT 144
 
-class QPainter;
-class QOpenGLContext;
-class QOpenGLPaintDevice;
 class QMenuBar;
 
-class OpenGLWindow : public QWindow, protected QOpenGLFunctions
+class OpenGLWindow : public QWidget
 {
 	Q_OBJECT
 	private:
-		explicit OpenGLWindow(QWindow *parent = 0);
+		explicit OpenGLWindow(QWidget *parent = 0);
 		~OpenGLWindow();
+
+		void paintEvent(QPaintEvent *event) override;
 
 	public:
 		static OpenGLWindow	*Instance();
-
-		virtual void render(QPainter *painter);
-		virtual void render();
 
 		virtual void initialize();
 
 		virtual void keyReleaseEvent(QKeyEvent *e) override;
 		virtual void keyPressEvent(QKeyEvent *e) override;
-		void setAnimating(bool animating);
-		//void changeFormat(QImage::Format f);
 		void drawPixel(uint16_t addr, uint8_t r, uint8_t g, uint8_t b);
 		void drawPixel(uint16_t addr, uint32_t color);
 
 		QMenuBar*	genMenuBar(void);
-	public slots:
-		void renderLater();
-		void renderNow();
 
 	private slots:
 		void openSlot();
@@ -46,6 +36,7 @@ class OpenGLWindow : public QWindow, protected QOpenGLFunctions
 		void gbTypeAUTOSlot();
 		void gbTypeGBSlot();
 		void gbTypeGBCSlot();
+		void updateSlot();
 
 	signals:
 		void openRomSign(std::string path);
@@ -54,20 +45,9 @@ class OpenGLWindow : public QWindow, protected QOpenGLFunctions
 		void keyPressSign(int key);
 		void keyReleaseSign(int key);
 
-
-	protected:
-		bool event(QEvent *event) Q_DECL_OVERRIDE;
-
-		void exposeEvent(QExposeEvent *event) Q_DECL_OVERRIDE;
-
 	private:
-		bool m_update_pending;
-		bool m_animating;
-
 		QMenuBar			*_menuBar;
 		QImage				*frameBuffer;
-		QOpenGLContext 		*m_context;
-		QOpenGLPaintDevice	*m_device;
 };
 
 #endif // OPENGLWINDOW_H
