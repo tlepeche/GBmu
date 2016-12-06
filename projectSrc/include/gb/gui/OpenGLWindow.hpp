@@ -38,6 +38,9 @@ class OpenGLWindow : public QWidget
 		void gbTypeAUTOSlot();
 		void gbTypeGBSlot();
 		void gbTypeGBCSlot();
+		void gbComPlaySlot();
+		void gbComPauseSlot();
+		void gbComStopSlot();
 		void updateSlot();
 
 	signals:
@@ -46,6 +49,9 @@ class OpenGLWindow : public QWidget
 		void gbDbSign();
 		void keyPressSign(int key);
 		void keyReleaseSign(int key);
+		void gbComPlay();
+		void gbComPause();
+		void gbComStop();
 
 	private:
 		QMenuBar			*_menuBar;

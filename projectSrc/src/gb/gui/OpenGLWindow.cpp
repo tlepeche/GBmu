@@ -7,7 +7,7 @@
 #include <QTimer>
 #include <QDragEnterEvent>
 #include <QMimeData>
-
+#include <QActionGroup>
 #include <QFileDialog>
 
 #include <iostream>
@@ -56,10 +56,43 @@ QMenuBar	*OpenGLWindow::genMenuBar()
 	connect(type0, &QAction::triggered, this, &OpenGLWindow::gbTypeAUTOSlot);
 	connect(type1, &QAction::triggered, this, &OpenGLWindow::gbTypeGBSlot);
 	connect(type2, &QAction::triggered, this, &OpenGLWindow::gbTypeGBCSlot);
+
+	QActionGroup*	gmod = new QActionGroup(this);
+	gmod->addAction(type0);
+	gmod->addAction(type1);
+	gmod->addAction(type2);
+	gmod->setExclusive(true);
+	type0->setCheckable(true);
+	type0->setChecked(true);
+	type1->setCheckable(true);
+	type2->setCheckable(true);
 	hard->addAction(type0);
 	hard->addAction(type1);
 	hard->addAction(type2);
 	menuBar->addMenu(hard);
+
+	QMenu*		com		= new QMenu(tr("Commande"));
+	QAction*	com0	= new QAction(tr("PLAY"));
+	QAction*	com1	= new QAction(tr("PAUSE"));
+	QAction*	com2	= new QAction(tr("STOP"));
+
+	connect(com0, &QAction::triggered, this, &OpenGLWindow::gbComPlaySlot);
+	connect(com1, &QAction::triggered, this, &OpenGLWindow::gbComPauseSlot);
+	connect(com2, &QAction::triggered, this, &OpenGLWindow::gbComStopSlot);
+
+	QActionGroup*	gcom = new QActionGroup(this);
+	gcom->setExclusive(true);
+	gcom->addAction(com0);
+	gcom->addAction(com1);
+	gcom->addAction(com2);
+	com0->setCheckable(true);
+	com1->setCheckable(true);
+	com2->setCheckable(true);
+	com2->setChecked(true);
+	com->addAction(com0); com0->setShortcut(tr("Ctrl+P"));
+	com->addAction(com1); com1->setShortcut(tr("Ctrl+O"));
+	com->addAction(com2); com2->setShortcut(tr("Ctrl+S"));
+	menuBar->addMenu(com);
 
 	return menuBar;
 }
@@ -77,6 +110,21 @@ void	OpenGLWindow::gbTypeGBSlot()
 void	OpenGLWindow::gbTypeGBCSlot()
 {
 	emit gbTypeSign(GBC);
+}
+
+void	OpenGLWindow::gbComPlaySlot()
+{
+	emit	gbComPlay();
+}
+
+void	OpenGLWindow::gbComPauseSlot()
+{
+	emit	gbComPause();
+}
+
+void	OpenGLWindow::gbComStopSlot()
+{
+	emit	gbComStop();
 }
 
 void	OpenGLWindow::openSlot()
