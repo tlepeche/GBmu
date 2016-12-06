@@ -69,6 +69,7 @@ class Memory {
 		htype				getTypeBios(void);
 		bool				isBiosLoaded();
 		void				setInBios(bool inBios);
+		bool				getInBios(void);
 		void				transferData(uint16_t startAddr);
 		void				HDMA();
 		void				HDMAprogress(uint16_t len);
