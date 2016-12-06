@@ -1,11 +1,13 @@
 #ifndef _MACHINE_HPP
 #define _MACHINE_HPP
 
-#include "Cpu.hpp"
-#include "Gpu.hpp"
-#include "Memory.hpp"
-#include "Timer.hpp"
 #include "htype.hpp"
+
+class Audio;
+class Memory;
+class Timer;
+class Cpu_z80;
+class Gpu;
 
 class Machine
 {
@@ -15,6 +17,7 @@ class Machine
 		Cpu_z80			*_cpu;
 		Gpu				*_gpu;
 		static htype	_hardware;
+		Audio			*_audio;
 
 	public:
 		Machine(void);

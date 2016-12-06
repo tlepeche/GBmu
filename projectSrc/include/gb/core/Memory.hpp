@@ -52,6 +52,7 @@
 #define OCPD	0xFF6B
 
 class Machine;
+class Audio;
 
 class Memory {
 	friend		Machine;
@@ -75,10 +76,13 @@ class Memory {
 		t_color15			getBgColor15(uint8_t palId, uint8_t colId);
 		t_color15			getObjColor15(uint8_t palId, uint8_t colId);
 		uint8_t				*getOamBuffer();
+		void				setAudio(Audio *audio);
+
 		std::array<uint8_t, 2>	key {{0x0f, 0x0f}};
 	private:
 		Rom					_rom;
 		Bios				_bios;
+		Audio				*_audio;
 		t_color15			_bcp[8][4]; // 8 Palettes ; 4 colors / palette
 		t_color15			_ocp[8][4]; // 8 Palettes ; 4 colors / palette
 		uint8_t				_m_wram[8][4096];
