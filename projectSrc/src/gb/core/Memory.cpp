@@ -9,13 +9,13 @@ Memory::~Memory(void) {}
 
 void			Memory::reset(void)
 {
-	memset(this->_m_wram, 0xFF, sizeof(_m_wram));
-	memset(this->_m_vram, 0xFF, sizeof(_m_vram));
-	memset(this->_m_oam, 0xFF, sizeof(_m_oam));
-	memset(this->_m_io, 0xFF, sizeof(_m_io));
-	memset(this->_m_zp, 0xFF, sizeof(_m_zp));
-	memset(this->_bcp, 0xFF, sizeof(_bcp));
-	memset(this->_ocp, 0xFF, sizeof(_ocp));
+	memset(this->_m_wram, 0x00, sizeof(_m_wram));
+	memset(this->_m_vram, 0x00, sizeof(_m_vram));
+	memset(this->_m_oam, 0x00, sizeof(_m_oam));
+	memset(this->_m_io, 0x00, sizeof(_m_io));
+	memset(this->_m_zp, 0x00, sizeof(_m_zp));
+	memset(this->_bcp, 0x00, sizeof(_bcp));
+	memset(this->_ocp, 0x00, sizeof(_ocp));
 	this->_inBios = true;
 }
 
@@ -309,6 +309,8 @@ void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 								if (read_byte(REGISTER_OCPS) & 0x80)
 									write_byte(REGISTER_OCPS, ((((read_byte(REGISTER_OCPS) << 2) + 4) & 0xFF) >> 2) | 0x80);
 							}
+							if (addr == REGISTER_SVBK)
+								val = val > 0 && val < 8 ? val : 1;
 						}
 
 						//Memory writting

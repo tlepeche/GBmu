@@ -15,7 +15,7 @@ QTimer timer;
 #include <iostream>
 #include <sstream>
 
-static inline
+	static inline
 void customSetItem(QTableWidget* table, int x, int y, const char *format, int value)
 {
 	char	buffer[32];
@@ -41,7 +41,7 @@ DbWindow::DbWindow(t_register* r, Memory* mem, std::list<uint16_t> *breakpoint) 
 	_r(r),
 	_mem(mem),
 	_breakpoints(breakpoint),
-	_start(0xD000),
+	_start(0xFF70),
 	_stepCount(1)
 {
 	ui->setupUi(this);

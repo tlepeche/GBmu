@@ -61,6 +61,12 @@ void	Gameboy::gstep()
 	step();
 	if (isBreakpoint(_cpu->_cpuRegister.PC))
 		_stepMode.store(true);
+	if ((_memory->read_byte(0xff80) == 0xa8) &&
+		(_memory->read_byte(0xff81) == 0x08) &&
+		(_memory->read_byte(0xff82) == 0x82) &&
+		_cpu->_cpuRegister.PC == 0xc674)
+		_stepMode.store(true);
+
 }
 
 void	Gameboy::run()
