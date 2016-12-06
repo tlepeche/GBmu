@@ -61,10 +61,12 @@ void	Cpu_z80::shiftLeft(uint8_t *reg)
 
 void	Cpu_z80::shiftRight(uint8_t *reg)
 {
+	uint8_t msb = *reg & 0x80 ? 0x80 : 0x00;
 	_cpuRegister.c = *reg & 0x01 ? 1 : 0;
 	_cpuRegister.n = 0;
 	_cpuRegister.h = 0;
 	*reg >>= 1;
+	*reg += msb;
 	_cpuRegister.z = (*reg == 0) ? 1 : 0;
 }
 
@@ -1491,7 +1493,7 @@ void Cpu_z80::_setCbOpcodeMap()
 		(t_opcode){0x0b, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RRC_E, this),   "RRC E",	0x0000},
 		(t_opcode){0x0c, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RRC_H, this),   "RRC H",	0x0000},
 		(t_opcode){0x0d, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RRC_L, this),   "RRC L",	0x0000},
-		(t_opcode){0x0e, 0x00, 16, 16, 2, std::bind(&Cpu_z80::RRC_HL, this),  "RRC HL",	0x0000},
+		(t_opcode){0x0e, 0x00, 16, 16, 2, std::bind(&Cpu_z80::RRC_HL, this),"RRC (HL)",	0x0000},
 		(t_opcode){0x0f, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RRC_A, this),   "RRC A",	0x0000},
 		(t_opcode){0x10, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RL_B, this),	"RL B",		0x0000},
 		(t_opcode){0x11, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RL_C, this),	"RL C",		0x0000},
@@ -1499,7 +1501,7 @@ void Cpu_z80::_setCbOpcodeMap()
 		(t_opcode){0x13, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RL_E, this),  	"RL E",		0x0000},
 		(t_opcode){0x14, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RL_H, this),  	"RL H",		0x0000},
 		(t_opcode){0x15, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RL_L, this),  	"RL L",		0x0000},
-		(t_opcode){0x16, 0x00, 16, 16, 2, std::bind(&Cpu_z80::RL_HL, this),  	"RL HL",	0x0000},
+		(t_opcode){0x16, 0x00, 16, 16, 2, std::bind(&Cpu_z80::RL_HL, this),	"RL (HL)",	0x0000},
 		(t_opcode){0x17, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RL_A, this),  	"RL A",		0x0000},
 		(t_opcode){0x18, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RR_B, this),  	"RR B",		0x0000},
 		(t_opcode){0x19, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RR_C, this),	"RR C",		0x0000},
@@ -1507,7 +1509,7 @@ void Cpu_z80::_setCbOpcodeMap()
 		(t_opcode){0x1b, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RR_E, this),   	"RR E",		0x0000},
 		(t_opcode){0x1c, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RR_H, this),   	"RR H",		0x0000},
 		(t_opcode){0x1d, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RR_L, this),  	"RR L",		0x0000},
-		(t_opcode){0x1e, 0x00, 16, 16, 2, std::bind(&Cpu_z80::RR_HL, this),   "RR HL",	0x0000},
+		(t_opcode){0x1e, 0x00, 16, 16, 2, std::bind(&Cpu_z80::RR_HL, this), "RR (HL)",	0x0000},
 		(t_opcode){0x1f, 0x00, 8, 8, 2, std::bind(&Cpu_z80::RR_A, this),   	"RR A",		0x0000},
 		(t_opcode){0x20, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SLA_B, this),   "SLA B",	0x0000},
 		(t_opcode){0x21, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SLA_C, this), 	"SLA C",	0x0000},
@@ -1515,7 +1517,7 @@ void Cpu_z80::_setCbOpcodeMap()
 		(t_opcode){0x23, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SLA_E, this),   "SLA E",	0x0000},
 		(t_opcode){0x24, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SLA_H, this),   "SLA H",	0x0000},
 		(t_opcode){0x25, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SLA_L, this),   "SLA L",	0x0000},
-		(t_opcode){0x26, 0x00, 16, 16, 2, std::bind(&Cpu_z80::SLA_HL, this),  "SLA HL",	0x0000},
+		(t_opcode){0x26, 0x00, 16, 16, 2, std::bind(&Cpu_z80::SLA_HL, this),"SLA (HL)",	0x0000},
 		(t_opcode){0x27, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SLA_A, this),   "SLA A",	0x0000},
 		(t_opcode){0x28, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SRA_B, this),   "SRA B",	0x0000},
 		(t_opcode){0x29, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SRA_C, this),	"SRA C",	0x0000},
@@ -1523,7 +1525,7 @@ void Cpu_z80::_setCbOpcodeMap()
 		(t_opcode){0x2b, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SRA_E, this),   "SRA E",	0x0000},
 		(t_opcode){0x2c, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SRA_H, this),   "SRA H",	0x0000},
 		(t_opcode){0x2d, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SRA_L, this),   "SRA L",	0x0000},
-		(t_opcode){0x2e, 0x00, 16, 16, 2, std::bind(&Cpu_z80::SRA_HL, this),  "SRA HL",	0x0000},
+		(t_opcode){0x2e, 0x00, 16, 16, 2, std::bind(&Cpu_z80::SRA_HL, this),"SRA (HL)",	0x0000},
 		(t_opcode){0x2f, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SRA_A, this),   "SRA A",	0x0000},
 		(t_opcode){0x30, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SWAP_B, this),  "SWAP B",	0x0000},
 		(t_opcode){0x31, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SWAP_C, this),  "SWAP C",	0x0000},
@@ -1531,7 +1533,7 @@ void Cpu_z80::_setCbOpcodeMap()
 		(t_opcode){0x33, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SWAP_E, this),  "SWAP E",	0x0000},
 		(t_opcode){0x34, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SWAP_H, this),  "SWAP H",	0x0000},
 		(t_opcode){0x35, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SWAP_L, this),  "SWAP L",	0x0000},
-		(t_opcode){0x36, 0x00, 16, 16, 2, std::bind(&Cpu_z80::SWAP_HL, this), "SWAP HL",	0x0000},
+		(t_opcode){0x36, 0x00, 16, 16, 2, std::bind(&Cpu_z80::SWAP_HL, this), "SWAP (HL)",	0x0000},
 		(t_opcode){0x37, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SWAP_A, this),  "SWAP A",	0x0000},
 		(t_opcode){0x38, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SRL_B, this),   "SRL B",	0x0000},
 		(t_opcode){0x39, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SRL_C, this),	"SRL C",	0x0000},
@@ -1539,7 +1541,7 @@ void Cpu_z80::_setCbOpcodeMap()
 		(t_opcode){0x3b, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SRL_E, this),   "SRL E",	0x0000},
 		(t_opcode){0x3c, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SRL_H, this),   "SRL H",	0x0000},
 		(t_opcode){0x3d, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SRL_L, this),   "SRL L",	0x0000},
-		(t_opcode){0x3e, 0x00, 16, 16, 2, std::bind(&Cpu_z80::SRL_HL, this),  "SRL HL",	0x0000},
+		(t_opcode){0x3e, 0x00, 16, 16, 2, std::bind(&Cpu_z80::SRL_HL, this),  "SRL (HL)",	0x0000},
 		(t_opcode){0x3f, 0x00, 8, 8, 2, std::bind(&Cpu_z80::SRL_A, this),   "SRL A",	0x0000},
 		(t_opcode){0x40, 0x00, 8, 8, 2, std::bind(&Cpu_z80::BIT0_B, this),  "BIT 0 B",	0x0000},
 		(t_opcode){0x41, 0x00, 8, 8, 2, std::bind(&Cpu_z80::BIT0_C, this),  "BIT 0 C",	0x0000},

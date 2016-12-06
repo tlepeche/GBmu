@@ -499,8 +499,8 @@ void	Cpu_z80::DEC_HLF() //0x35
 
 	tmp = _memory->read_byte(_cpuRegister.HL);
 	_cpuRegister.n = 1;
-	_cpuRegister.h = (tmp & 0x0f) == 0x0f ? 1 : 0; 
 	_memory->write_byte(_cpuRegister.HL, (tmp - 1));
+	_cpuRegister.h = ((tmp - 1) & 0x0f) == 0x0f ? 1 : 0; 
 	_cpuRegister.z = (_memory->read_byte(_cpuRegister.HL) == 0) ? 1 : 0;
 }
 
