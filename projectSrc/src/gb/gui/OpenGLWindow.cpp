@@ -5,6 +5,8 @@
 #include <QMenuBar>
 #include <QKeyEvent>
 #include <QTimer>
+#include <QDragEnterEvent>
+#include <QMimeData>
 
 #include <QFileDialog>
 
@@ -17,6 +19,7 @@ OpenGLWindow::OpenGLWindow(QWidget *parent)
 	, _menuBar(this->genMenuBar())
 	, frameBuffer(new QImage(WIN_WIDTH, WIN_HEIGHT, QImage::Format_RGB32))
 {
+	setAcceptDrops(true);
 	resize(500,500);
 
 	connect(&timerScreen, &QTimer::timeout, this, &OpenGLWindow::updateSlot);
@@ -123,24 +126,15 @@ void OpenGLWindow::initialize()
 			drawPixel(y * WIN_WIDTH + x, defaultColor);
 }
 
-void OpenGLWindow::renderLater()
+void OpenGLWindow::dragEnterEvent(QDragEnterEvent *event)
 {
-	if (!m_update_pending) {
-		m_update_pending = true;
-		QCoreApplication::postEvent(this, new QEvent(QEvent::UpdateRequest));
-	}
+	event->acceptProposedAction();
 }
 
-bool OpenGLWindow::event(QEvent *event)
+void OpenGLWindow::dropEvent(QDropEvent *event)
 {
-	switch (event->type()) {
-		case QEvent::UpdateRequest:
-			renderNow();
-			m_update_pending = false;
-			return true;
-		default:
-			return QWindow::event(event);
-	}
+	const QMimeData *mimeData = event->mimeData();
+	emit openRomSign(mimeData->urls().at(0).toLocalFile().toStdString());
 }
 
 void OpenGLWindow::paintEvent(__attribute__((unused)) QPaintEvent *event)

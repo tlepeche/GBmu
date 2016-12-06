@@ -29,6 +29,8 @@ class OpenGLWindow : public QWidget
 		void drawPixel(uint16_t addr, uint32_t color);
 
 		QMenuBar*	genMenuBar(void);
+		void dragEnterEvent(QDragEnterEvent *event) override;
+		void dropEvent(QDropEvent *event) override;
 
 	private slots:
 		void openSlot();
