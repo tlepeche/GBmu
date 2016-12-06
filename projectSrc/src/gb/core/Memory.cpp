@@ -268,6 +268,12 @@ void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 						// I/O
 						if (!super)
 						{
+							if (addr == REGISTER_NR30)
+								val |= 0x7F;
+							if (addr == REGISTER_NR52) {
+								val &= 0x80;
+								val |= _m_io[REGISTER_NR52 & 0xFF] & 0x0F;
+							}
 							if (addr == REGISTER_KEY1)
 								val &= 0x7F;
 							if (addr == REGISTER_IF)

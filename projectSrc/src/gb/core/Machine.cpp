@@ -34,9 +34,9 @@ bool Machine::step(void)
 			_cpu->execInterrupt();
 			cycles = 16;
 		}
-		cycles /= (_cpu->isGBCSpeed() ? 2 : 1);
 		_cyclesAcc += cycles;
 		_clock->step(cycles);
+		cycles >>= (_cpu->isGBCSpeed() ? 1 : 0);
 		_gpu->accClock(cycles);
 		_gpu->step();
 		if (_cyclesAcc >= (uint32_t)(_cyclesMax / 59.7))

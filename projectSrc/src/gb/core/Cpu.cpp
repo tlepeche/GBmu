@@ -227,7 +227,7 @@ void Cpu_z80::init(htype hardware)
 	this->_memory->write_byte(REGISTER_NR30_, 0xBF, true);
 	this->_memory->write_byte(REGISTER_NR50, 0x77, true);
 	this->_memory->write_byte(REGISTER_NR51, 0xF3, true);
-	this->_memory->write_byte(REGISTER_NR52, 0xF1, true);
+	this->_memory->write_byte(REGISTER_NR52, 0x70, true); // F1 ?
 
 	// Other register
 	this->_memory->write_byte(REGISTER_P1, 0xCF, true);
