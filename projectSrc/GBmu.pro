@@ -8,6 +8,8 @@ TEMPLATE = app
 
 OBJECTS_DIR   = obj
 
+LIBS += -L ~/.brew/lib -lSDL2main -lSDL2
+
 INCPATH  += include/gb/gui \
 			include/db \
 			include/gb \
