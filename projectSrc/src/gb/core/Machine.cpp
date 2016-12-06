@@ -3,6 +3,12 @@
 #include "interrupt.hpp"
 #include <unistd.h>
 
+#include "Cpu.hpp"
+#include "Gpu.hpp"
+#include "Memory.hpp"
+#include "Timer.hpp"
+#include "Audio.hpp"
+
 #define DEBUG_LOOP 1
 #define DEBUG_ROM 1
 #define DEBUG_GPU
@@ -19,6 +25,7 @@ Machine::Machine(void) :
 	_cyclesMax(Cpu_z80::getClockSpeed()),
 	_cyclesAcc(0)
 {
+	_audio = new Audio(); _memory->setAudio(_audio);
 	_cpu = new Cpu_z80(_memory);
 	_gpu = new Gpu(_memory);
 	_clock = new Timer(_memory);
@@ -39,6 +46,7 @@ bool Machine::step(void)
 		cycles >>= (_cpu->isGBCSpeed() ? 1 : 0);
 		_gpu->accClock(cycles);
 		_gpu->step();
+		_audio->step(cycles);
 		if (_cyclesAcc >= (uint32_t)(_cyclesMax / 59.7))
 		{
 			_cyclesAcc -= (uint32_t)(_cyclesMax / 59.7);

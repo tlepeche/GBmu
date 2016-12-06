@@ -1,9 +1,15 @@
 
+#include "Gameboy.hpp"
 
 #include "OpenGLWindow.hpp"
 #include "DbWindow.hpp"
 #include "registerAddr.hpp"
-#include "Gameboy.hpp"
+
+#include "Cpu.hpp"
+#include "Gpu.hpp"
+#include "Memory.hpp"
+#include "Timer.hpp"
+#include "Audio.hpp"
 
 void setLowBit(Memory *memory, uint16_t addr, uint8_t bit)
 {
@@ -84,7 +90,9 @@ void	Gameboy::reset(void)
 	if (_romPath.length())
 	{
 		this->_memory->reset();
+		this->_memory->setAudio(_audio);
 		this->_clock->reset();
+		this->_audio->reset(_memory->getRomType() == GBC);
 		this->_cyclesAcc = 0;
 		if (_memory->loadRom(_romPath.c_str(), this->_hardware) == 0)
 		{

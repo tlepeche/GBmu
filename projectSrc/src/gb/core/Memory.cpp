@@ -1,5 +1,7 @@
 #include <iostream>
 #include <cstring>
+
+#include "Audio.hpp"
 #include "Memory.hpp"
 #include "registerAddr.hpp"
 
@@ -17,11 +19,17 @@ void			Memory::reset(void)
 	memset(this->_bcp, 0x00, sizeof(_bcp));
 	memset(this->_ocp, 0x00, sizeof(_ocp));
 	this->_inBios = true;
+	this->_audio = nullptr;
 }
 
 void			Memory::saverom(void)
 {
 	this->_rom.save();
+}
+
+void			Memory::setAudio(Audio *audio)
+{
+	this->_audio = audio;
 }
 
 htype			Memory::getRomType(void)
@@ -262,18 +270,15 @@ void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 						// DIV
 						this->_m_io[(addr & 0xFF)] = 0x00;
 					}
-
 					else if ((addr & 0xFF) <= 0x7F)
 					{
+						if (addr >= 0xFF10 && addr <= 0xFF3F && _audio != nullptr) {
+							_audio->write_register(addr, val);
+							val = _audio->read_register(addr);
+						}
 						// I/O
 						if (!super)
 						{
-							if (addr == REGISTER_NR30)
-								val |= 0x7F;
-							if (addr == REGISTER_NR52) {
-								val &= 0x80;
-								val |= _m_io[REGISTER_NR52 & 0xFF] & 0x0F;
-							}
 							if (addr == REGISTER_KEY1)
 								val &= 0x7F;
 							if (addr == REGISTER_IF)
