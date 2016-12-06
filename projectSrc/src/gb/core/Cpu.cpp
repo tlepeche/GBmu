@@ -138,7 +138,8 @@ bool Cpu_z80::getIME(void)
 bool Cpu_z80::isInterrupt(void)
 {
 	uint8_t _IE = _memory->read_byte(REGISTER_IE);
-	return ((getIME() || getHalt()) && this->_memory->read_byte(REGISTER_IF) & INTER_MASK & _IE);
+	return ((getIME() || getHalt()) && (this->_memory->read_byte(REGISTER_IF) & INTER_MASK & _IE)
+			&& (_spBeforeInterrupt == 0xFFFF));
 }
 
 bool Cpu_z80::_getInterrupt(uint8_t interrupt)
@@ -181,6 +182,8 @@ uint8_t Cpu_z80::executeNextOpcode(void)
 	uint8_t cycle = this->_getCycleOpcode();
 	this->_nextPtr();
 	setStepState(true);
+	if (_spBeforeInterrupt != 0xFFFF && _cpuRegister.SP == _spBeforeInterrupt)
+		_spBeforeInterrupt = 0xFFFF;
 	return cycle;
 }
 
