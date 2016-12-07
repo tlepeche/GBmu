@@ -154,6 +154,7 @@ void	Gameboy::openRomSlot(std::string path)
 {
 	_romPath = path;
 	reset();
+	_stepMode.store(false);
 }
 
 void	Gameboy::gbDbSlot()
