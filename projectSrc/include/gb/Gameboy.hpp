@@ -59,6 +59,8 @@ class Gameboy : public Machine, public QWidget
 		void	stepPressedSlot(unsigned int count);
 		void	framePressedSlot();
 		void	switchStepModeSlot();
+		void	switchPlaySlot();
+		void	switchPauseSlot();
 		void	addBreakpointSlot(uint16_t addr);
 		void	delBreakpointSlot(uint16_t addr);
 		void	resetPressedSlot();
