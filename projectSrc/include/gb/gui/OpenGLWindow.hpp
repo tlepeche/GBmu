@@ -41,6 +41,8 @@ class OpenGLWindow : public QWidget
 		void gbComPlaySlot();
 		void gbComPauseSlot();
 		void gbComStopSlot();
+		void gbSoundOnSlot();
+		void gbSoundOffSlot();
 		void updateSlot();
 
 	signals:
@@ -52,6 +54,7 @@ class OpenGLWindow : public QWidget
 		void gbComPlay();
 		void gbComPause();
 		void gbComStop();
+		void gbSoundSign(bool on);
 
 	private:
 		QMenuBar			*_menuBar;

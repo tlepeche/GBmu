@@ -76,7 +76,7 @@ void			Memory::transferData(uint16_t startAddr)
 {
 	uint8_t a = 0x00;
 
-	for (uint16_t currAddr = startAddr ; currAddr <= (startAddr + 0xA0) ; currAddr++)
+	for (uint16_t currAddr = startAddr ; currAddr < (startAddr + 0xA0) ; currAddr++)
 	{
 		_m_oam[a] = read_byte(currAddr);
 		++a;
