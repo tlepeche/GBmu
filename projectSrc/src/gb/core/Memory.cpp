@@ -74,12 +74,12 @@ void			Memory::setInBios(bool inBios)
 
 void			Memory::transferData(uint16_t startAddr)
 {
-	int a = 0;
+	uint8_t a = 0x00;
 
-	for (uint16_t currAddr = startAddr ; currAddr <= (startAddr + 0x8c) ; currAddr++)
+	for (uint16_t currAddr = startAddr ; currAddr <= (startAddr + 0xA0) ; currAddr++)
 	{
-		write_byte(0xfe00 + a, read_byte(currAddr));
-		a++;
+		_m_oam[a] = read_byte(currAddr);
+		++a;
 	}
 }
 
@@ -299,7 +299,6 @@ void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 							//DMA
 							if (addr == REGISTER_DMA) {
 								transferData(val << 8);
-
 							}
 							if (addr == 0xFF55) {
 								this->_m_io[(addr & 0xFF)] = val;
