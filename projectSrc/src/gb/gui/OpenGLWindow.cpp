@@ -86,9 +86,9 @@ QMenuBar	*OpenGLWindow::genMenuBar()
 	gcom->addAction(com1);
 	gcom->addAction(com2);
 	com0->setCheckable(true);
+	com0->setChecked(true);
 	com1->setCheckable(true);
 	com2->setCheckable(true);
-	com2->setChecked(true);
 	com->addAction(com0); com0->setShortcut(tr("Ctrl+P"));
 	com->addAction(com1); com1->setShortcut(tr("Ctrl+O"));
 	com->addAction(com2); com2->setShortcut(tr("Ctrl+S"));
