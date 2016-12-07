@@ -35,8 +35,8 @@ Gameboy::Gameboy(const char *path) :
 	connect(_window, &OpenGLWindow::keyPressSign, this, &Gameboy::KeyPress);
 	connect(_window, &OpenGLWindow::keyReleaseSign, this, &Gameboy::KeyRelease);
 	connect(_window, &OpenGLWindow::gbTypeSign, this, &Gameboy::gbTypeSlot);
-	connect(_window, &OpenGLWindow::gbComPlay, this, &Gameboy::switchStepModeSlot);
-	connect(_window, &OpenGLWindow::gbComPause, this, &Gameboy::switchStepModeSlot);
+	connect(_window, &OpenGLWindow::gbComPlay, this, &Gameboy::switchPlaySlot);
+	connect(_window, &OpenGLWindow::gbComPause, this, &Gameboy::switchPauseSlot);
 	connect(_window, &OpenGLWindow::gbComStop, this, &Gameboy::resetPressedSlot);
 
 	_window->show();
@@ -169,6 +169,16 @@ void	Gameboy::gbDbSlot()
 	connect(_windowDebug, &DbWindow::bpDelSign, this, &Gameboy::delBreakpointSlot);
 
 	_windowDebug->show();
+	_stepMode.store(true);
+}
+
+void	Gameboy::switchPlaySlot(void)
+{
+	_stepMode.store(false);
+}
+
+void	Gameboy::switchPauseSlot(void)
+{
 	_stepMode.store(true);
 }
 
