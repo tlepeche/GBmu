@@ -252,7 +252,7 @@ void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 			if ((addr & 0xF000) < 0xD000)
 				this->_m_wram[0][(addr & 0x1FFF)] = val;
 			else
-				this->_m_wram[(this->_m_io[(SVBK & 0xFF)] & 0x03)][(addr & 0x1FFF)] = val;
+				this->_m_wram[(this->_m_io[(SVBK & 0xFF)] & 0x07)][(addr & 0x1FFF)] = val;
 			break;
 		case 0xF000:
 			switch (addr & 0x0F00){
@@ -282,7 +282,7 @@ void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 							val = _audio->read_register(addr);
 						}
 						// I/O
-						if (!super)
+						else if (!super)
 						{
 							if (addr == REGISTER_KEY1)
 								val &= 0x7F;
