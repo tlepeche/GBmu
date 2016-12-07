@@ -94,6 +94,25 @@ QMenuBar	*OpenGLWindow::genMenuBar()
 	com->addAction(com2); com2->setShortcut(tr("Ctrl+S"));
 	menuBar->addMenu(com);
 
+	QMenu*		sound		= new QMenu(tr("Son"));
+	QAction*	sound0		= new QAction(tr("ON"));
+	QAction*	sound1		= new QAction(tr("OFF"));
+
+	connect(sound0, &QAction::triggered, this, &OpenGLWindow::gbSoundOnSlot);
+	connect(sound1, &QAction::triggered, this, &OpenGLWindow::gbSoundOffSlot);
+
+	QActionGroup*	gsound = new QActionGroup(this);
+	gsound->setExclusive(true);
+	gsound->addAction(sound0);
+	gsound->addAction(sound1);
+	sound0->setCheckable(true);
+	sound0->setChecked(true);
+	sound1->setCheckable(true);
+
+	sound->addAction(sound0);
+	sound->addAction(sound1);
+	menuBar->addMenu(sound);
+
 	return menuBar;
 }
 
@@ -125,6 +144,16 @@ void	OpenGLWindow::gbComPauseSlot()
 void	OpenGLWindow::gbComStopSlot()
 {
 	emit	gbComStop();
+}
+
+void	OpenGLWindow::gbSoundOnSlot()
+{
+	emit	gbSoundSign(true);
+}
+
+void	OpenGLWindow::gbSoundOffSlot()
+{
+	emit	gbSoundSign(false);
 }
 
 void	OpenGLWindow::openSlot()

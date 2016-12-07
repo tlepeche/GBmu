@@ -38,6 +38,7 @@ Gameboy::Gameboy(const char *path) :
 	connect(_window, &OpenGLWindow::gbComPlay, this, &Gameboy::switchPlaySlot);
 	connect(_window, &OpenGLWindow::gbComPause, this, &Gameboy::switchPauseSlot);
 	connect(_window, &OpenGLWindow::gbComStop, this, &Gameboy::resetPressedSlot);
+	connect(_window, &OpenGLWindow::gbSoundSign, this, &Gameboy::soundSlot);
 
 	_window->show();
 #ifdef DEBUG
@@ -181,6 +182,11 @@ void	Gameboy::switchPlaySlot(void)
 void	Gameboy::switchPauseSlot(void)
 {
 	_stepMode.store(true);
+}
+
+void	Gameboy::soundSlot(bool on)
+{
+	_audio->enable(on);
 }
 
 void	Gameboy::switchStepModeSlot(void)
