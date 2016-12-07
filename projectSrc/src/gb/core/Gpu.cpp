@@ -189,7 +189,7 @@ void	Gpu::step()
 					_clock -= 204;
 					setLy(++line);
 
-					if (line == 143)
+					if (line == 144)
 					{
 						_memory->write_byte(REGISTER_IF, _memory->read_byte(REGISTER_IF) | INTER_VBLANK);
 						writeGpuMode(VBLANK);
