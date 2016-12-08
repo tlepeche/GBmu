@@ -443,10 +443,8 @@ void		Rom::_writeMbc5(uint16_t addr, uint8_t val)
 			// ROMB 1
 			if (val <= 0x01)
 			{
-				val <<= 5;
 				this->_bank &= 0xFF;
-				val &= 0x0100;
-				this->_bank |= val;
+				this->_bank |= (uint16_t)(val << 8);
 			}
 			break;
 		case 0x4000:
