@@ -327,7 +327,8 @@ void Cpu_z80::execInterrupt(void)
 
 	else if (TEST_INTERRUPT(INTER_TPIN))
 	{
-		runInterrupt(0x60, INTER_TPIN);
+		if (_memory->getRomType() == GB)
+			runInterrupt(0x60, INTER_TPIN);
 		this->setStop(false);
 	}
 
