@@ -78,6 +78,7 @@ class Memory {
 		t_color15			getObjColor15(uint8_t palId, uint8_t colId);
 		uint8_t				*getOamBuffer();
 		void				setAudio(Audio *audio);
+		char				*romTitle(void);
 
 		std::array<uint8_t, 2>	key {{0x0f, 0x0f}};
 	private:

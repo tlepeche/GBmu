@@ -1,7 +1,7 @@
 #include <fstream>
 #include <iostream>
-#include "Rom.hpp"
 #include <string.h>
+#include "Rom.hpp"
 
 Rom::Rom(void) :
 	_rom(nullptr),
@@ -61,12 +61,16 @@ char		*Rom::getNameSave(const char *nameFile)
 void		Rom::init(const char *file)
 {
 	uint8_t	flag_cgb;
+	uint8_t	i;
 
 	flag_cgb = (this->_rom[CGBFLAG] & 0xFF);
 	if (flag_cgb == 0x00)
 		this->_hardware = GB;
 	else if (flag_cgb == 0xC0 || flag_cgb == 0x80)
 		this->_hardware = GBC;
+	for (i = 0; this->_rom[TITLE + i] != '\0' && i < 15; ++i)
+		this->_title[i] = this->_rom[TITLE + i];
+	this->_title[i] = '\0';
 	this->_mbc = this->getMbc(this->_rom[CARTRIDGE]);
 	if (this->getBankEram(this->_rom[RAMSIZE]) > 0)
 	{
@@ -115,10 +119,18 @@ int			Rom::load(const char *file)
 		romFile.close();
 		this->init(file);
 		if (this->_mbc == 0xFF || !this->_checkHeader())
+		{
+			memcpy(this->_title, "GBmu\0", 5);
 			return -2;
+		}
 		return 0;
 	}
 	return -1;
+}
+
+char		*Rom::getTitle(void)
+{
+	return this->_title;
 }
 
 htype		Rom::getHardware(void)

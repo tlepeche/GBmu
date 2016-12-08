@@ -27,6 +27,11 @@ void			Memory::saverom(void)
 	this->_rom.save();
 }
 
+char			*Memory::romTitle(void)
+{
+	return this->_rom.getTitle();
+}
+
 void			Memory::setAudio(Audio *audio)
 {
 	this->_audio = audio;
