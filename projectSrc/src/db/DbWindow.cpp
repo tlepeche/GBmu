@@ -46,6 +46,8 @@ DbWindow::DbWindow(t_register* r, Memory* mem, std::list<uint16_t> *breakpoint) 
 {
 	ui->setupUi(this);
 
+	setWindowTitle("Debuggeur");
+
 	tableRegisters		= this->findChild<QTableWidget*>("tableRegisters");
 	tableOtherRegisters	= this->findChild<QTableWidget*>("tableOtherRegisters");
 	tableVideoRegisters	= this->findChild<QTableWidget*>("tableVideoRegisters");
