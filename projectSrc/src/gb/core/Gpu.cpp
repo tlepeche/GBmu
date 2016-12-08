@@ -324,5 +324,4 @@ unsigned int	Gpu::scanSprite(uint8_t line, uint8_t x, unsigned int pixel)
 		}
 	}
 	return pixel;
-
 }
