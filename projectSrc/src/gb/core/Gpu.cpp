@@ -66,7 +66,7 @@ unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 	uint16_t tileSetAddr = gpuC.tile_set ? TILES1_ADDR : TILES0_ADDR;
 	uint16_t tileMapAddr = gpuC.tile_map ? MAP1_ADDR : MAP0_ADDR;
 
-	if ((gpuC.window && 6 < wx && wx <= 166 && wy <= 143)
+	if ((gpuC.window && 6 <= wx && wx <= 166 && wy <= 143)
 		&& ((int)wx) - 7 <= (int)x && wy <= line)
 	{
 		tileMapAddr = gpuC.wtile_map ? MAP1_ADDR : MAP0_ADDR;
