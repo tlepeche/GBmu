@@ -296,8 +296,9 @@ void Cpu_z80::runInterrupt(uint16_t addr, uint8_t interrupt)
 	this->_cpuRegister.SP -= 2;
 	this->_memory->write_word(_cpuRegister.SP, _cpuRegister.PC);
 	// set low interrupt
-	this->_memory->write_byte(REGISTER_IF,
-			_memory->read_byte(REGISTER_IF) & (INTER_MASK ^ interrupt));
+	(void)interrupt;
+	this->_memory->write_byte(REGISTER_IF, 0);
+//			_memory->read_byte(REGISTER_IF) & (INTER_MASK ^ interrupt));
 	// Go to 0x40
 	this->_cpuRegister.PC = addr;
 	this->_loadPtr(this->_cpuRegister.PC);
