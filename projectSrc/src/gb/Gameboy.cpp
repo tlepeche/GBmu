@@ -109,6 +109,8 @@ void	Gameboy::reset(void)
 			_willRun.store(true);
 			_thread = new std::thread(&Gameboy::run, this);
 		}
+		else
+			_window->initialize();
 	}
 	else
 		std::cerr << "Gameboy: No rom path defined" << std::endl;
