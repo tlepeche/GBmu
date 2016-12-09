@@ -271,17 +271,20 @@ void	DbWindow::lineStepCountEditedSlot()
 
 void	DbWindow::stepPressedSlot()
 {
-	emit	stepPressedSign(_stepCount);
+	if (_mem->romIsLoaded())
+		emit	stepPressedSign(_stepCount);
 }
 
 void	DbWindow::framePressedSlot()
 {
-	emit	framePressedSign();
+	if (_mem->romIsLoaded())
+		emit	framePressedSign();
 }
 
 void	DbWindow::runPressedSlot()
 {
-	emit	runPressedSign();
+	if (_mem->romIsLoaded())
+		emit	runPressedSign();
 }
 
 void	DbWindow::resetPressedSlot()
@@ -334,10 +337,24 @@ void	DbWindow::bpDoubleClikedSlot(QListWidgetItem *item)
 // This function il call every 100ms see _timer
 void	DbWindow::updateAllSlot()
 {
-	updateRegister(*_r);
-	updateOtherRegister(*_mem);
-	updateMemory(*_mem);
-	updateDisassembler(*_r, *_mem);
+	if (_mem->romIsLoaded())
+	{
+		updateRegister(*_r);
+		updateOtherRegister(*_mem);
+		updateMemory(*_mem);
+		updateDisassembler(*_r, *_mem);
+	}
+	else
+	{
+		unsigned int row, col, curr;
+
+		for (row = 0 ; row < 9 ; ++row) {
+			curr = _start + row * 0x10;
+			customSetItem(tableMemory, row - 1, col + 1, "%.4X:", curr);
+			for (col = 0 ; col <= 0xF ; ++col)
+				customSetItem(tableMemory, row, col + 1, "", 0x00);
+		}
+	}
 }
 
 DbWindow::~DbWindow()

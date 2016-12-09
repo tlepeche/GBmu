@@ -79,6 +79,7 @@ class Memory {
 		uint8_t				*getOamBuffer();
 		void				setAudio(Audio *audio);
 		char				*romTitle(void);
+		bool				romIsLoaded(void);
 
 		std::array<uint8_t, 2>	key {{0x0f, 0x0f}};
 	private:

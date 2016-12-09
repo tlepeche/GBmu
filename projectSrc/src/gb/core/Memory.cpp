@@ -62,6 +62,11 @@ int				Memory::loadRom(const char *file, htype hardware)
 	return ret;
 }
 
+bool			Memory::romIsLoaded(void)
+{
+	return this->_rom.isLoaded();
+}
+
 bool			Memory::isBiosLoaded()
 {
 	return (this->_codeBios != nullptr);
