@@ -120,6 +120,8 @@ int			Rom::load(const char *file)
 		this->init(file);
 		if (this->_mbc == 0xFF || !this->_checkHeader())
 		{
+			delete[] this->_rom;
+			this->_rom = NULL;
 			memcpy(this->_title, "GBmu\0", 5);
 			return -2;
 		}
