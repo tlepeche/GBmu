@@ -14,6 +14,7 @@ QTimer timer;
 
 #include <iostream>
 #include <sstream>
+#include <unistd.h>
 
 	static inline
 void customSetItem(QTableWidget* table, int x, int y, const char *format, int value)
@@ -47,6 +48,8 @@ DbWindow::DbWindow(t_register* r, Memory* mem, std::list<uint16_t> *breakpoint) 
 	ui->setupUi(this);
 
 	setWindowTitle("Debuggeur");
+	if (_mem->isBiosLoaded() == false)
+		usleep(100);
 
 	tableRegisters		= this->findChild<QTableWidget*>("tableRegisters");
 	tableOtherRegisters	= this->findChild<QTableWidget*>("tableOtherRegisters");
@@ -190,7 +193,6 @@ void DbWindow::updateDisassembler(t_register& r, Memory& mem)
 	uint16_t	pc;
 
 	pc = r.PC;
-	if (mem.isBiosLoaded())
 	for (int i = 0; i < tableDisassembler->rowCount(); ++i)
 	{
 		char	buffer[32] = "%.2X";
