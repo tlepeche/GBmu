@@ -464,6 +464,7 @@ void		Rom::_writeMbc3(uint16_t addr, uint8_t val)
 				this->_rambank = val;
 			break;
 		case 0x6000:
+		case 0x7000:
 			// LOCK CLOCK
 			if (val == 0x00 || val == 0x01)
 			{
@@ -482,7 +483,6 @@ void		Rom::_writeMbc3(uint16_t addr, uint8_t val)
 				}
 			}
 			break;
-		//case 0x7000:
 		case 0xA000:
 		case 0xB000:
 				if (this->_mbcTimerAccess() && _isRTC)
@@ -506,14 +506,12 @@ void		Rom::_writeMbc3(uint16_t addr, uint8_t val)
 						//_timer.reg.rtc_dh = val;
 						//this->_eram[(addr & 0x1FFF)] = _timer.reg.rtc_dh;
 				}
-			break;
 			if (this->_mbcRamAccess())
 			{
 				if (this->_rambank <= 0x03)
 					this->_eram[(addr & 0x1FFF) + (this->_rambank * 0x2000)] = val;
 			}
 			break;
-		case 0xC000:
 		default:
 			break;
 	}
