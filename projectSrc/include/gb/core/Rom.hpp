@@ -30,6 +30,11 @@ typedef struct	s_reg
 	uint8_t			rtc_h;
 	uint8_t			rtc_dl;
 	uint8_t			rtc_dh;
+	uint8_t			rtcOld_s;
+	uint8_t			rtcOld_m;
+	uint8_t			rtcOld_h;
+	uint8_t			rtcOld_dl;
+	uint8_t			rtcOld_dh;
 }				t_reg;
 
 typedef struct		s_timer
@@ -69,6 +74,9 @@ class Rom {
 		std::array<FnReadRom, 5>		_mbcPtrRead;
 		std::array<FnWriteRom, 5>		_mbcPtrWrite;
 		t_timer							_timer;
+		time_t							_RTCCurrentTime;
+		time_t							_RTCOldTime;
+		bool							_isRTC = false;
 		char							_title[16];
 
 		Rom(void);
@@ -78,6 +86,7 @@ class Rom {
 		uint8_t							getMbc(uint8_t octet);
 		uint8_t							getBankEram(uint8_t octet);
 		char							*getTitle(void);
+		void							updateRTC(void);
 		bool							_mbcRamAccess(void);
 		bool							_mbcTimerAccess(void);
 		bool							_checkHeader(void);
@@ -93,6 +102,9 @@ class Rom {
 		void							_writeMbc2(uint16_t addr, uint8_t val);
 		void							_writeMbc3(uint16_t addr, uint8_t val);
 		void							_writeMbc5(uint16_t addr, uint8_t val);
+
+		void							_setRTC(void);
+		void							_initRTC(void);
 };
 
 #endif

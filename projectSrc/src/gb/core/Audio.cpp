@@ -27,7 +27,7 @@ Audio::~Audio()
 void Audio::init()
 {
     int error = SDL_Init(SDL_INIT_AUDIO);
-    
+
     if (error < 0)
     {
 		std::cerr <<  "--> ** (" << error << ") SDL Audio not initialized: " << SDL_GetError() << std::endl;

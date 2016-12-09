@@ -1,12 +1,14 @@
 #include <fstream>
 #include <iostream>
-#include <string.h>
 #include "Rom.hpp"
+#include <cstring>
+#include <ctime>
 
 Rom::Rom(void) :
 	_rom(nullptr),
 	_eram(nullptr),
-	_pathsave(nullptr)
+	_pathsave(nullptr),
+	_isRTC(false)
 {
 	this->_mbcPtrRead = {
 		std::bind(&Rom::_readRom, this, std::placeholders::_1),
@@ -22,6 +24,9 @@ Rom::Rom(void) :
 		std::bind(&Rom::_writeMbc3, this, std::placeholders::_1, std::placeholders::_2),
 		std::bind(&Rom::_writeMbc5, this, std::placeholders::_1, std::placeholders::_2)
 		};
+	_RTCOldTime = 0;
+	_RTCCurrentTime = 0;
+	std::memset(&_timer, 0, sizeof(_timer));
 }
 
 Rom::~Rom(void)
@@ -43,6 +48,19 @@ void		Rom::save(void)
 		{
 			uint32_t	size = this->getBankEram(this->_rom[RAMSIZE]) * 8192;
 			this->_save.write((const char *)this->_eram, size);
+			if (this->_mbc == MBC3 && _isRTC)
+			{
+				this->_save.write(reinterpret_cast<char*>(&_timer.reg.rtc_s), 4);
+				this->_save.write(reinterpret_cast<char*>(&_timer.reg.rtc_m), 4);
+				this->_save.write(reinterpret_cast<char*>(&_timer.reg.rtc_h), 4);
+				this->_save.write(reinterpret_cast<char*>(&_timer.reg.rtc_dl), 4);
+				this->_save.write(reinterpret_cast<char*>(&_timer.reg.rtc_dh), 4);
+				this->_save.write(reinterpret_cast<char*>(&_timer.reg.rtcOld_s), 4);
+				this->_save.write(reinterpret_cast<char*>(&_timer.reg.rtcOld_m), 4);
+				this->_save.write(reinterpret_cast<char*>(&_timer.reg.rtcOld_h), 4);
+				this->_save.write(reinterpret_cast<char*>(&_timer.reg.rtcOld_dl), 4);
+				this->_save.write(reinterpret_cast<char*>(&_timer.reg.rtcOld_dh), 4);
+			}
 			this->_save.close();
 		}
 	}
@@ -63,6 +81,7 @@ void		Rom::init(const char *file)
 	uint8_t	flag_cgb;
 	uint8_t	i;
 
+	this->_isRTC = false;
 	flag_cgb = (this->_rom[CGBFLAG] & 0xFF);
 	if (flag_cgb == 0x00)
 		this->_hardware = GB;
@@ -72,6 +91,8 @@ void		Rom::init(const char *file)
 		this->_title[i] = this->_rom[TITLE + i];
 	this->_title[i] = '\0';
 	this->_mbc = this->getMbc(this->_rom[CARTRIDGE]);
+	if (_isRTC)
+		_initRTC();
 	if (this->getBankEram(this->_rom[RAMSIZE]) > 0)
 	{
 		uint32_t	size = this->getBankEram(this->_rom[RAMSIZE]) * 8192;
@@ -85,6 +106,20 @@ void		Rom::init(const char *file)
 		{
 			uint32_t	sizeSave = this->getBankEram(this->_rom[RAMSIZE]) * 8192;
 			this->_save.read((char *)this->_eram, sizeSave);
+			if (this->_mbc == MBC3 && _isRTC)
+			{
+				this->_save.read(reinterpret_cast<char*>(&_timer.reg.rtc_s), 4);
+				this->_save.read(reinterpret_cast<char*>(&_timer.reg.rtc_m), 4);
+				this->_save.read(reinterpret_cast<char*>(&_timer.reg.rtc_h), 4);
+				this->_save.read(reinterpret_cast<char*>(&_timer.reg.rtc_dl), 4);
+				this->_save.read(reinterpret_cast<char*>(&_timer.reg.rtc_dh), 4);
+				this->_save.read(reinterpret_cast<char*>(&_timer.reg.rtcOld_s), 4);
+				this->_save.read(reinterpret_cast<char*>(&_timer.reg.rtcOld_m), 4);
+				this->_save.read(reinterpret_cast<char*>(&_timer.reg.rtcOld_h), 4);
+				this->_save.read(reinterpret_cast<char*>(&_timer.reg.rtcOld_dl), 4);
+				this->_save.read(reinterpret_cast<char*>(&_timer.reg.rtcOld_dh), 4);
+				_timer.lock = 0;
+			}
 			this->_save.close();
 		}
 	}
@@ -231,6 +266,9 @@ uint8_t		Rom::getMbc(uint8_t octet)
 			break ;
 		case 0x0F:
 		case 0x10:
+			_isRTC = true;
+			return MBC3;
+			break ;
 		case 0x11:
 		case 0x12:
 		case 0x13:
@@ -290,8 +328,20 @@ uint8_t		Rom::_readMbc3(uint16_t addr)
 	{
 		if (this->_rambank <= 0x03 && this->_mbcRamAccess())
 			return this->_eram[(addr & 0x1FFF) + (this->_rambank * 0x2000)];
-		else if (this->_mbcTimerAccess())
-			return *(&this->_timer.reg.rtc_s + (this->_rambank - 0x08));
+		else if (this->_mbcTimerAccess() && _isRTC)
+		{
+			if (this->_rambank == 0x08)
+				return _timer.reg.rtcOld_s;
+			else if (this->_rambank == 0x09)
+				return _timer.reg.rtcOld_m;
+			else if (this->_rambank == 0x0A)
+				return _timer.reg.rtcOld_h;
+			else if (this->_rambank == 0x0B)
+				return _timer.reg.rtcOld_dl;
+			else if (this->_rambank == 0x0C)
+				return _timer.reg.rtcOld_dh;
+			else return 0xFF;
+		}
 	}
 	return 0;
 }
@@ -414,26 +464,56 @@ void		Rom::_writeMbc3(uint16_t addr, uint8_t val)
 				this->_rambank = val;
 			break;
 		case 0x6000:
-		case 0x7000:
 			// LOCK CLOCK
-			if (val <= 0x01)
+			if (val == 0x00 || val == 0x01)
 			{
-				if (this->_timer.last == false)
-					this->_timer.lock = !this->_timer.lock;
-				this->_timer.last = !this->_timer.last;
+					this->_timer.lock = val;
+			}
+			if (_isRTC)
+			{
+				if (val == 0x01 && this->_mbcTimerAccess())
+				{
+					updateRTC();
+					_timer.reg.rtcOld_s = _timer.reg.rtc_s;
+					_timer.reg.rtcOld_m = _timer.reg.rtc_m;
+					_timer.reg.rtcOld_h = _timer.reg.rtc_h;
+					_timer.reg.rtcOld_dl = _timer.reg.rtc_dl;
+					_timer.reg.rtcOld_dh = _timer.reg.rtc_dh;
+				}
 			}
 			break;
+		//case 0x7000:
 		case 0xA000:
 		case 0xB000:
-		case 0xC000:
+				if (this->_mbcTimerAccess() && _isRTC)
+				{
+					_RTCOldTime = _RTCCurrentTime;
+					if (this->_rambank == 0x08)
+						_timer.reg.rtc_s = val;
+					else if (this->_rambank == 0x09)
+						_timer.reg.rtc_m = val;
+					else if (this->_rambank == 0x0A)
+						_timer.reg.rtc_h = val;
+					else if (this->_rambank == 0x0B)
+						_timer.reg.rtc_dl = val;
+					else if (this->_rambank == 0x0C)
+					{
+						if (_timer.reg.rtc_dh & 0x80)
+							_timer.reg.rtc_dh = 0x80 | val;
+						else
+							_timer.reg.rtc_dh = val;
+					}
+						//_timer.reg.rtc_dh = val;
+						//this->_eram[(addr & 0x1FFF)] = _timer.reg.rtc_dh;
+				}
+			break;
 			if (this->_mbcRamAccess())
 			{
 				if (this->_rambank <= 0x03)
 					this->_eram[(addr & 0x1FFF) + (this->_rambank * 0x2000)] = val;
-				else
-					*(&this->_timer.reg.rtc_s + (this->_rambank - 0x08)) = val;
 			}
 			break;
+		case 0xC000:
 		default:
 			break;
 	}
@@ -475,5 +555,57 @@ void		Rom::_writeMbc5(uint16_t addr, uint8_t val)
 			break;
 		default:
 			break;
+	}
+}
+
+
+void			Rom::_initRTC(void)
+{
+	_RTCOldTime = time(nullptr);
+}
+
+void			Rom::updateRTC(void)
+{
+	if (!_isRTC)
+		return ;
+	_RTCCurrentTime = time(nullptr);
+	uint32_t diff = (_RTCCurrentTime - _RTCOldTime);
+
+	// Sec to min
+	if (diff > 0)
+	{
+		_timer.reg.rtc_s += diff % 60;
+		if (_timer.reg.rtc_s > 59)
+		{
+			_timer.reg.rtc_s -= 60;
+			++_timer.reg.rtc_m;
+		}
+
+		//min to hours
+		diff /= 60;
+		_timer.reg.rtc_m += diff % 60;
+		if (_timer.reg.rtc_m > 59)
+		{
+			_timer.reg.rtc_m -= 60;
+			++_timer.reg.rtc_h;
+		}
+
+		//min to hours
+		diff /= 60;
+		_timer.reg.rtc_h += diff % 24;
+		if (_timer.reg.rtc_h > 23)
+		{
+			_timer.reg.rtc_h -= 60;
+
+			//hours to Day
+			uint16_t date = _timer.reg.rtc_dl;
+			date &= (uint16_t)(_timer.reg.rtc_dh & 0x1) << 8;
+			if (++date >= 365)
+				date -= 365;
+			_timer.reg.rtc_dl &= (uint8_t)date;
+			date >>= 8;
+			_timer.reg.rtc_dh = (_timer.reg.rtc_dh & 0xFE) | (date & 0x1);
+		}
+		_RTCOldTime = _RTCCurrentTime;
 	}
 }
