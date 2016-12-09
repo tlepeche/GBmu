@@ -278,7 +278,7 @@ bool	Gpu::findSprite(uint8_t line, uint8_t x, unsigned int spriteHeight, t_sprit
 				unsigned int colorId = findSpritePixel(*tmp, line, x, spriteHeight);
 				if (colorId == 0)
 					continue;
-				if (!hasSprite || sprite->x_pos > tmp->x_pos)
+				if (!hasSprite || (sprite->x_pos > tmp->x_pos && _memory->getRomType() == GB))
 				{
 					*sprite = *tmp;
 					hasSprite = true;
