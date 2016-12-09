@@ -46,6 +46,8 @@ class Gpu
 		~Gpu();
 		uint8_t	_colorId;
 		uint8_t	*_oamBuffer;
+		bool	_bgdPrio = false;
+
 	public:
 		void	step();
 		void	init();
@@ -56,8 +58,8 @@ class Gpu
 		t_gpuMode	readGpuMode(void);
 		void		writeGpuMode(t_gpuMode mode);
 
-		unsigned int	scanPixel(uint8_t line, unsigned int x);
-		unsigned int	scanSprite(uint8_t line, uint8_t x, unsigned int pixel);
+		unsigned int	scanPixel(uint8_t line, unsigned int x, bool *isBgd);
+		unsigned int	scanSprite(uint8_t line, uint8_t x, unsigned int pixel, bool isBgd);
 		unsigned int	findSpritePixel(t_sprite sprite, uint8_t line, uint8_t x, uint8_t spriteHeight);
 		bool			findSprite(uint8_t line, uint8_t x, unsigned int spriteHeight, t_sprite *sprites);
 
