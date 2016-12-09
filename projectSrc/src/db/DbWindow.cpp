@@ -354,6 +354,15 @@ void	DbWindow::updateAllSlot()
 			for (col = 0 ; col <= 0xF ; ++col)
 				customSetItem(tableMemory, row, col + 1, "", 0x00);
 		}
+		for (int i = 0; i < tableRegisters->rowCount(); ++i)
+			customSetItem(tableRegisters, 0, i, "", 0x00);
+		for (int i = 0; i < tableDisassembler->columnCount(); ++i)
+			for (int j = 0; j < tableDisassembler->rowCount(); ++j)
+				customSetItem(tableDisassembler, j, i, "", 0x00);
+		for (int i = 0; i < tableOtherRegisters->rowCount(); ++i)
+			customSetItem(tableOtherRegisters, i, 1, "", 0x00);
+		for (int i = 0; i <= tableVideoRegisters->rowCount(); ++i)
+			customSetItem(tableVideoRegisters, i, 1, "", 0x00);
 	}
 }
 
