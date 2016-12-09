@@ -199,11 +199,11 @@ uint8_t			Memory::read_byte(uint16_t addr)
 		case 0xD000:
 			// WRAM
 			if ((addr & 0xF000) < 0xD000)
-				return this->_m_wram[0][(addr & 0x1FFF)];
+				return this->_m_wram[0][(addr & 0x0FFF)];
 			else
 				return this->_m_wram
 					[(this->_m_io[(SVBK & 0xFF)] & 0x07)]
-					[(addr & 0x1FFF)];
+					[(addr & 0x0FFF)];
 			break;
 		case 0xF000:
 			switch (addr & 0x0F00){
@@ -260,9 +260,9 @@ void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 		case 0xD000:
 			// WRAM
 			if ((addr & 0xF000) < 0xD000)
-				this->_m_wram[0][(addr & 0x1FFF)] = val;
+				this->_m_wram[0][(addr & 0x0FFF)] = val;
 			else
-				this->_m_wram[(this->_m_io[(SVBK & 0xFF)] & 0x07)][(addr & 0x1FFF)] = val;
+				this->_m_wram[(this->_m_io[(SVBK & 0xFF)] & 0x07)][(addr & 0x0FFF)] = val;
 			break;
 		case 0xF000:
 			switch (addr & 0x0F00){
@@ -306,6 +306,8 @@ void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 								if ((val & 0x40) && read_byte(REGISTER_LY) == read_byte(REGISTER_LYC))
 									this->_m_io[0x0f] |= 0x02;
 							}
+							if (addr == REGISTER_VBK)
+								val &= 1;
 							//DMA
 							if (addr == REGISTER_DMA) {
 								transferData(val << 8);

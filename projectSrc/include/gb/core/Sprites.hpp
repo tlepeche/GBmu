@@ -4,9 +4,9 @@
 typedef struct s_sprite
 {
 	uint8_t 		y_pos;		//y pos of top-left corner
-							// spriteScreenPosY = y_pos - 16;
+								// spriteScreenPosY = y_pos - 16;
 	uint8_t			x_pos;		//x pos if top-left corner
-	uint8_t		tile_nbr;	//data tile number (0 - 255)
+	uint8_t			tile_nbr;	//data tile number (0 - 255)
 	union
 	{
 		uint8_t		options;

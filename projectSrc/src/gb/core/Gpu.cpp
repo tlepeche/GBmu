@@ -66,7 +66,7 @@ unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 	uint16_t tileSetAddr = gpuC.tile_set ? TILES1_ADDR : TILES0_ADDR;
 	uint16_t tileMapAddr = gpuC.tile_map ? MAP1_ADDR : MAP0_ADDR;
 
-	if ((gpuC.window && 6 <= wx && wx <= 166 && wy <= 143)
+	if ((gpuC.window && wx <= 166 && wy <= 143)
 		&& ((int)wx) - 7 <= (int)x && wy <= line)
 	{
 		tileMapAddr = gpuC.wtile_map ? MAP1_ADDR : MAP0_ADDR;
@@ -259,8 +259,8 @@ bool	Gpu::findSprite(uint8_t line, uint8_t x, unsigned int spriteHeight, t_sprit
 		{
 			if (tmp->x_pos <= (x + 8) && x < tmp->x_pos)
 			{
-				unsigned int _colorId = findSpritePixel(*tmp, line, x, spriteHeight);
-				if (_colorId == 0)
+				unsigned int colorId = findSpritePixel(*tmp, line, x, spriteHeight);
+				if (colorId == 0)
 					continue;
 				if (!hasSprite || sprite->x_pos > tmp->x_pos)
 				{
@@ -288,8 +288,8 @@ unsigned int	Gpu::findSpritePixel(t_sprite sprite, uint8_t line, uint8_t x, uint
 	uint8_t sdata1 = _memory->force_read_vram(start, bank); 
 	uint8_t sdata2 = _memory->force_read_vram(start + 1, bank); 
 	unsigned int rx = BYTE_SIZE - sx - 1;
-	unsigned int _colorId = ((sdata1 >> rx) & 1) | (((sdata2 >> rx) & 1) << 1);
-	return _colorId;
+	unsigned int colorId = ((sdata1 >> rx) & 1) | (((sdata2 >> rx) & 1) << 1);
+	return colorId;
 }
 
 unsigned int	Gpu::scanSprite(uint8_t line, uint8_t x, unsigned int pixel)
@@ -304,15 +304,15 @@ unsigned int	Gpu::scanSprite(uint8_t line, uint8_t x, unsigned int pixel)
 		{
 			if (sprite.bckgrd_prio == 0 || _colorId == 0)
 			{
-				unsigned int _colorId = findSpritePixel(sprite, line, x, spriteHeight);
+				unsigned int colorId = findSpritePixel(sprite, line, x, spriteHeight);
 				uint8_t	pal = sprite.pal == 0
 					? _memory->read_byte(REGISTER_OBP0)
 					: _memory->read_byte(REGISTER_OBP1);
 				if (_memory->getTypeBios() == GB) {
-					uint8_t palId = pal >> (2 * _colorId) & 0x03;
+					uint8_t palId = pal >> (2 * colorId) & 0x03;
 					pixel = gbColors[palId];
 				} else {
-					uint8_t palId = _colorId;
+					uint8_t palId = colorId;
 					uint8_t cpalId = sprite.cpal & 0x7;
 					t_color15 c15 = _memory->getObjColor15(cpalId, palId);
 					pixel = 0x00 
