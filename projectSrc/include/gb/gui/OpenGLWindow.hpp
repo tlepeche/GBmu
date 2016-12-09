@@ -17,6 +17,7 @@ class OpenGLWindow : public QWidget
 		~OpenGLWindow();
 
 		void paintEvent(QPaintEvent *event) override;
+		void closeEvent(QCloseEvent *event) override;
 
 	public:
 		static OpenGLWindow	*Instance();
@@ -55,6 +56,7 @@ class OpenGLWindow : public QWidget
 		void gbComPause();
 		void gbComStop();
 		void gbSoundSign(bool on);
+		void closeSign();
 
 	private:
 		QMenuBar			*_menuBar;

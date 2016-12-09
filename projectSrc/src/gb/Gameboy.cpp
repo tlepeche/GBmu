@@ -40,6 +40,8 @@ Gameboy::Gameboy(const char *path) :
 	connect(_window, &OpenGLWindow::gbComStop, this, &Gameboy::resetPressedSlot);
 	connect(_window, &OpenGLWindow::gbSoundSign, this, &Gameboy::soundSlot);
 
+	connect(_window, &OpenGLWindow::closeSign, this, &Gameboy::closeEmu);
+
 	_window->show();
 	_window->setWindowTitle("GBmu");
 #ifdef DEBUG
@@ -53,6 +55,11 @@ Gameboy::~Gameboy()
 	this->_memory->saverom();
 	delete this->_windowDebug;
 	this->stopThread();
+}
+
+void	Gameboy::closeEmu()
+{
+	this->_windowDebug->close();
 }
 
 void	Gameboy::stopThread()

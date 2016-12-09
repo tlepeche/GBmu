@@ -26,6 +26,18 @@ OpenGLWindow::OpenGLWindow(QWidget *parent)
 	timerScreen.start(16);
 }
 
+OpenGLWindow::~OpenGLWindow()
+{
+	delete _menuBar;
+	delete frameBuffer;
+}
+
+void			OpenGLWindow::closeEvent(QCloseEvent *event)
+{
+	emit	closeSign();
+	event->accept();
+}
+
 OpenGLWindow	*OpenGLWindow::Instance()
 {
 	static OpenGLWindow	*_instance = nullptr;
@@ -166,12 +178,6 @@ void	OpenGLWindow::openSlot()
 void	OpenGLWindow::gbDbSlot()
 {
 	emit gbDbSign();
-}
-
-OpenGLWindow::~OpenGLWindow()
-{
-	delete _menuBar;
-	delete frameBuffer;
 }
 
 void OpenGLWindow::keyReleaseEvent(QKeyEvent* e)
