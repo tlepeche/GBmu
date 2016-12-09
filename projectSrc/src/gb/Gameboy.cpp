@@ -40,7 +40,10 @@ Gameboy::Gameboy(const char *path) :
 	connect(_window, &OpenGLWindow::gbComStop, this, &Gameboy::resetPressedSlot);
 	connect(_window, &OpenGLWindow::gbSoundSign, this, &Gameboy::soundSlot);
 
+	connect(_window, &OpenGLWindow::closeSign, this, &Gameboy::closeEmu);
+
 	_window->show();
+	_window->setWindowTitle("GBmu");
 #ifdef DEBUG
 	gbDbSlot(); // Open Debug window. WARNING: Peux generer SGFAULT random
 	reset();
@@ -52,6 +55,11 @@ Gameboy::~Gameboy()
 	this->_memory->saverom();
 	delete this->_windowDebug;
 	this->stopThread();
+}
+
+void	Gameboy::closeEmu()
+{
+	this->_windowDebug->close();
 }
 
 void	Gameboy::stopThread()
@@ -104,8 +112,14 @@ void	Gameboy::reset(void)
 			hardRom = (this->_hardware == AUTO) ? this->_memory->getRomType() : this->_hardware;
 			this->_cpu->init(hardRom);
 			this->_gpu->init(); // TODO pour passer hardware au gpu: this->_gpu->init(hardRom)
+			_window->setWindowTitle(_memory->romTitle());
 			_willRun.store(true);
 			_thread = new std::thread(&Gameboy::run, this);
+		}
+		else
+		{
+			_window->setWindowTitle(_memory->romTitle());
+			_window->initialize();
 		}
 	}
 	else

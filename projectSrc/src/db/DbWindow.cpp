@@ -14,6 +14,7 @@ QTimer timer;
 
 #include <iostream>
 #include <sstream>
+#include <unistd.h>
 
 	static inline
 void customSetItem(QTableWidget* table, int x, int y, const char *format, int value)
@@ -45,6 +46,10 @@ DbWindow::DbWindow(t_register* r, Memory* mem, std::list<uint16_t> *breakpoint) 
 	_stepCount(1)
 {
 	ui->setupUi(this);
+
+	setWindowTitle("Debuggeur");
+	if (_mem->isBiosLoaded() == false)
+		usleep(100);
 
 	tableRegisters		= this->findChild<QTableWidget*>("tableRegisters");
 	tableOtherRegisters	= this->findChild<QTableWidget*>("tableOtherRegisters");
@@ -188,7 +193,6 @@ void DbWindow::updateDisassembler(t_register& r, Memory& mem)
 	uint16_t	pc;
 
 	pc = r.PC;
-	if (mem.isBiosLoaded())
 	for (int i = 0; i < tableDisassembler->rowCount(); ++i)
 	{
 		char	buffer[32] = "%.2X";
@@ -269,17 +273,20 @@ void	DbWindow::lineStepCountEditedSlot()
 
 void	DbWindow::stepPressedSlot()
 {
-	emit	stepPressedSign(_stepCount);
+	if (_mem->romIsLoaded())
+		emit	stepPressedSign(_stepCount);
 }
 
 void	DbWindow::framePressedSlot()
 {
-	emit	framePressedSign();
+	if (_mem->romIsLoaded())
+		emit	framePressedSign();
 }
 
 void	DbWindow::runPressedSlot()
 {
-	emit	runPressedSign();
+	if (_mem->romIsLoaded())
+		emit	runPressedSign();
 }
 
 void	DbWindow::resetPressedSlot()
@@ -332,10 +339,33 @@ void	DbWindow::bpDoubleClikedSlot(QListWidgetItem *item)
 // This function il call every 100ms see _timer
 void	DbWindow::updateAllSlot()
 {
-	updateRegister(*_r);
-	updateOtherRegister(*_mem);
-	updateMemory(*_mem);
-	updateDisassembler(*_r, *_mem);
+	if (_mem->romIsLoaded())
+	{
+		updateRegister(*_r);
+		updateOtherRegister(*_mem);
+		updateMemory(*_mem);
+		updateDisassembler(*_r, *_mem);
+	}
+	else
+	{
+		unsigned int row, col, curr;
+
+		for (row = 0 ; row < 9 ; ++row) {
+			curr = _start + row * 0x10;
+			customSetItem(tableMemory, row - 1, col + 1, "%.4X:", curr);
+			for (col = 0 ; col <= 0xF ; ++col)
+				customSetItem(tableMemory, row, col + 1, "", 0x00);
+		}
+		for (int i = 0; i < tableRegisters->rowCount(); ++i)
+			customSetItem(tableRegisters, 0, i, "", 0x00);
+		for (int i = 0; i < tableDisassembler->columnCount(); ++i)
+			for (int j = 0; j < tableDisassembler->rowCount(); ++j)
+				customSetItem(tableDisassembler, j, i, "", 0x00);
+		for (int i = 0; i < tableOtherRegisters->rowCount(); ++i)
+			customSetItem(tableOtherRegisters, i, 1, "", 0x00);
+		for (int i = 0; i <= tableVideoRegisters->rowCount(); ++i)
+			customSetItem(tableVideoRegisters, i, 1, "", 0x00);
+	}
 }
 
 DbWindow::~DbWindow()

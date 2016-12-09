@@ -69,6 +69,7 @@ class Rom {
 		std::array<FnReadRom, 5>		_mbcPtrRead;
 		std::array<FnWriteRom, 5>		_mbcPtrWrite;
 		t_timer							_timer;
+		char							_title[16];
 
 		Rom(void);
 		~Rom(void);
@@ -76,6 +77,7 @@ class Rom {
 		char							*getNameSave(const char *nameFile);
 		uint8_t							getMbc(uint8_t octet);
 		uint8_t							getBankEram(uint8_t octet);
+		char							*getTitle(void);
 		bool							_mbcRamAccess(void);
 		bool							_mbcTimerAccess(void);
 		bool							_checkHeader(void);
