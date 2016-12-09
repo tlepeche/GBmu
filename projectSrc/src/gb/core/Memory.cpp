@@ -27,6 +27,11 @@ void			Memory::saverom(void)
 	this->_rom.save();
 }
 
+char			*Memory::romTitle(void)
+{
+	return this->_rom.getTitle();
+}
+
 void			Memory::setAudio(Audio *audio)
 {
 	this->_audio = audio;
@@ -55,6 +60,11 @@ int				Memory::loadRom(const char *file, htype hardware)
 		this->_hdmaInProgress = 0;
 	}
 	return ret;
+}
+
+bool			Memory::romIsLoaded(void)
+{
+	return this->_rom.isLoaded();
 }
 
 bool			Memory::isBiosLoaded()

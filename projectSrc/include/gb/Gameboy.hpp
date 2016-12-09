@@ -65,6 +65,7 @@ class Gameboy : public Machine, public QWidget
 		void	addBreakpointSlot(uint16_t addr);
 		void	delBreakpointSlot(uint16_t addr);
 		void	resetPressedSlot();
+		void	closeEmu();
 };
 
 #endif
