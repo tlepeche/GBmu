@@ -50,6 +50,7 @@ bool Machine::step(void)
 		if (_cyclesAcc >= (uint32_t)(_cyclesMax / 59.7))
 		{
 			_cyclesAcc -= (uint32_t)(_cyclesMax / 59.7);
+			//_memory->updateRTC();
 			//	usleep(16750);
 		}
 
