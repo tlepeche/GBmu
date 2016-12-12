@@ -164,6 +164,7 @@ int			Rom::load(const char *file)
 		}
 		return 0;
 	}
+	memcpy(this->_title, "GBmu\0", 5);
 	return -1;
 }
 

@@ -18,7 +18,6 @@ Cpu_z80::Cpu_z80(Memory *memory) :
 {
 	_setOpcodeMap();
 	_setCbOpcodeMap();
-	this->init();
 }
 
 Cpu_z80::~Cpu_z80(void)
