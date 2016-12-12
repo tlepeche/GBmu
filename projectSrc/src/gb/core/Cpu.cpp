@@ -324,8 +324,10 @@ void Cpu_z80::execInterrupt(void)
 		runInterrupt(0x50, INTER_TOVERF);
 
 	else if (TEST_INTERRUPT(INTER_TIOE))
+	{
 		runInterrupt(0x58, INTER_TIOE);
-
+		this->_memory->write_byte(REGISTER_SB, 0);
+	}
 	else if (TEST_INTERRUPT(INTER_TPIN))
 	{
 		if (_memory->getRomType() == GB)
