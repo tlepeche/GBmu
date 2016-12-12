@@ -26,6 +26,8 @@ class OpenGLWindow : public QWidget
 
 		virtual void keyReleaseEvent(QKeyEvent *e) override;
 		virtual void keyPressEvent(QKeyEvent *e) override;
+//		virtual void QResizeEvent(const QSize &size, const QSize &oldSize);
+		virtual void resizeEvent(QResizeEvent *event) override;
 		void drawPixel(uint16_t addr, uint8_t r, uint8_t g, uint8_t b);
 		void drawPixel(uint16_t addr, uint32_t color);
 
