@@ -137,8 +137,7 @@ bool Cpu_z80::getIME(void)
 bool Cpu_z80::isInterrupt(void)
 {
 	uint8_t _IE = _memory->read_byte(REGISTER_IE);
-	return ((getIME() || getHalt()) && (this->_memory->read_byte(REGISTER_IF) & INTER_MASK & _IE)
-			&& (_spBeforeInterrupt == 0xFFFF));
+	return ((getIME() || getHalt()) && (this->_memory->read_byte(REGISTER_IF) & INTER_MASK & _IE));
 }
 
 bool Cpu_z80::_getInterrupt(uint8_t interrupt)
@@ -181,8 +180,6 @@ uint8_t Cpu_z80::executeNextOpcode(void)
 	uint8_t cycle = this->_getCycleOpcode();
 	this->_nextPtr();
 	setStepState(true);
-	if (_spBeforeInterrupt != 0xFFFF && _cpuRegister.SP == _spBeforeInterrupt)
-		_spBeforeInterrupt = 0xFFFF;
 	return cycle;
 }
 
@@ -196,7 +193,6 @@ void Cpu_z80::init(htype hardware)
 	this->_halt = false;
 	this->_stop = false;
 	this->_isSpeed = false;
-	this->_spBeforeInterrupt = 0xFFFF;
 	//init register cpu
 	this->_cpuRegister.A = hardware == GB ? 0x01 : 0x11;
 	this->_cpuRegister.F = 0xB0;
@@ -232,18 +228,18 @@ void Cpu_z80::init(htype hardware)
 	this->_memory->write_byte(REGISTER_P1, 0xCF, true);
 	this->_memory->write_byte(REGISTER_SB, 0x00, true);
 	this->_memory->write_byte(REGISTER_SC, 0x7E, true);
-	this->_memory->write_byte(REGISTER_DIV, 0xD3, true); // bios: 0xD3 start: 0x81
+	this->_memory->write_byte(REGISTER_DIV, _memory->getRomType() == GB ? 0xD3 : 0x44 , true); // bios: 0xD3 start: 0x81
 	this->_memory->write_byte(REGISTER_TIMA, 0x00, true);
 	this->_memory->write_byte(REGISTER_TMA, 0x00, true);
-	this->_memory->write_byte(REGISTER_TAC, 0xFC, true);
+	this->_memory->write_byte(REGISTER_TAC, _memory->getRomType() == GB ? 0xFC : 0xf8, true);
 	this->_memory->write_byte(REGISTER_KEY1, 0x7E, true);
-	this->_memory->write_byte(REGISTER_VBK, 0x00, true);
+	this->_memory->write_byte(REGISTER_VBK, _memory->getRomType() == GB ? 0x00 : 0xFE, true);
 	this->_memory->write_byte(REGISTER_HDMA1, 0xFF, true);
 	this->_memory->write_byte(REGISTER_HDMA2, 0xFF, true);
 	this->_memory->write_byte(REGISTER_HDMA3, 0xFF, true);
 	this->_memory->write_byte(REGISTER_HDMA4, 0xFF, true);
 	this->_memory->write_byte(REGISTER_HDMA5, 0xFF, true);
-	this->_memory->write_byte(REGISTER_SVBK, 0x01, true);
+	this->_memory->write_byte(REGISTER_SVBK, _memory->getRomType() == GB ? 0x01 : 0xf8 , true);
 	this->_memory->write_byte(REGISTER_IF, 0xE1, true);
 	this->_memory->write_byte(REGISTER_IE, 0x00, true);
 
@@ -254,7 +250,7 @@ void Cpu_z80::init(htype hardware)
 	this->_memory->write_byte(REGISTER_SCX, 0x00, true);
 	this->_memory->write_byte(REGISTER_LY, 0x00, true); // bios: 0x00 start: 0x99
 	this->_memory->write_byte(REGISTER_LYC, 0x00, true);
-	this->_memory->write_byte(REGISTER_DMA, 0xFF, true);
+	this->_memory->write_byte(REGISTER_DMA, _memory->getRomType() == GB ? 0xFF : 0x00, true);
 	this->_memory->write_byte(REGISTER_BGP, 0xFC, true); // edelangh: this is bullshit !!
 	this->_memory->write_byte(REGISTER_OBP0, 0x00, true);
 	this->_memory->write_byte(REGISTER_OBP1, 0x00, true);
@@ -291,7 +287,6 @@ void Cpu_z80::_setHightBit(uint16_t addr, uint8_t bit)
 void Cpu_z80::runInterrupt(uint16_t addr, uint8_t interrupt)
 {
 	// push PC on stack
-	this->_spBeforeInterrupt = this->_cpuRegister.SP;
 	this->_cpuRegister.SP -= 2;
 	this->_memory->write_word(_cpuRegister.SP, _cpuRegister.PC);
 	// set low interrupt
@@ -301,6 +296,7 @@ void Cpu_z80::runInterrupt(uint16_t addr, uint8_t interrupt)
 	// Go to 0x40
 	this->_cpuRegister.PC = addr;
 	this->_loadPtr(this->_cpuRegister.PC);
+	this->_setIME(false);
 }
 
 #define TEST_INTERRUPT(X) ((this->_memory->read_byte(REGISTER_IF) & X) > 0 && _IE & X)
@@ -332,10 +328,6 @@ void Cpu_z80::execInterrupt(void)
 		if (_memory->getRomType() == GB)
 			runInterrupt(0x60, INTER_TPIN);
 		this->setStop(false);
-	}
-
-	else {
-		this->_setIME(true);
 	}
 }
 

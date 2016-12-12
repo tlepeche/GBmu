@@ -668,7 +668,6 @@ class Cpu_z80
 		bool							_stop = false;
 		bool							_IME = true;
 		bool							_holdIME = true;
-		uint16_t						_spBeforeInterrupt = 0xFFFF;
 		public:
 		unsigned int					_addrLength;
 		t_opcode						_opcodeInProgress; // TODO: go private
