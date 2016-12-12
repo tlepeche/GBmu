@@ -60,6 +60,7 @@ void		Rom::save(void)
 				this->_save.write(reinterpret_cast<char*>(&_timer.reg.rtcOld_h), 4);
 				this->_save.write(reinterpret_cast<char*>(&_timer.reg.rtcOld_dl), 4);
 				this->_save.write(reinterpret_cast<char*>(&_timer.reg.rtcOld_dh), 4);
+				this->_save.write(reinterpret_cast<char*>(&_RTCCurrentTime), 4);
 			}
 			this->_save.close();
 		}
@@ -118,6 +119,7 @@ void		Rom::init(const char *file)
 				this->_save.read(reinterpret_cast<char*>(&_timer.reg.rtcOld_h), 4);
 				this->_save.read(reinterpret_cast<char*>(&_timer.reg.rtcOld_dl), 4);
 				this->_save.read(reinterpret_cast<char*>(&_timer.reg.rtcOld_dh), 4);
+				this->_save.read(reinterpret_cast<char*>(&_RTCOldTime), 4);
 				_timer.lock = 0;
 			}
 			this->_save.close();
