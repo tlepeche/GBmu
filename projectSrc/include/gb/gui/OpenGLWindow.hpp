@@ -36,6 +36,8 @@ class OpenGLWindow : public QWidget
 
 	private slots:
 		void openSlot();
+		void openStateSlot();
+		void saveStateSlot();
 		void gbDbSlot();
 		void gbTypeAUTOSlot();
 		void gbTypeGBSlot();
@@ -52,6 +54,8 @@ class OpenGLWindow : public QWidget
 
 	signals:
 		void openRomSign(std::string path);
+		void openStateSign(std::string path);
+		void saveStateSign(std::string path);
 		void gbTypeSign(htype hardware);
 		void gbDbSign();
 		void keyPressSign(int key);
