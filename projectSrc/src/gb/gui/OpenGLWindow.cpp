@@ -9,6 +9,9 @@
 #include <QMimeData>
 #include <QActionGroup>
 #include <QFileDialog>
+#include <QEvent>
+#include <QSize>
+
 
 #include <iostream>
 
@@ -20,7 +23,7 @@ OpenGLWindow::OpenGLWindow(QWidget *parent)
 	, frameBuffer(new QImage(WIN_WIDTH, WIN_HEIGHT, QImage::Format_RGB32))
 {
 	setAcceptDrops(true);
-	resize(500,500);
+	resize(160*2,144*2);
 
 	connect(&timerScreen, &QTimer::timeout, this, &OpenGLWindow::updateSlot);
 	timerScreen.start(16);
@@ -188,6 +191,35 @@ void OpenGLWindow::keyReleaseEvent(QKeyEvent* e)
 void OpenGLWindow::keyPressEvent(QKeyEvent* e)
 {
 	emit keyPressSign(e->key());
+}
+
+void OpenGLWindow::resizeEvent(QResizeEvent *event)
+{
+	(void)event;
+	QSize newSize = QWidget::size();
+	float Htmp = newSize.rheight() / 144.0;
+	float Wtmp = newSize.rwidth() / 160.0;
+	if (Htmp <= 1 && Wtmp <= 1)
+	{
+		newSize.rwidth() = 160;
+		newSize.rheight() = 144;
+	}
+	else if (Htmp <= 1 || Wtmp > Htmp)
+	{
+		newSize.rwidth() = (int)(160 * Wtmp);
+		newSize.rheight() = (int)(144 * Wtmp);
+	}
+	else if (Wtmp <= 1 || Htmp > Wtmp)
+	{
+		newSize.rwidth() = (int)(160 * Htmp);
+		newSize.rheight() = (int)(144 * Htmp);
+	}
+	else
+	{
+		newSize.rwidth() = (int)(160 * Htmp);
+		newSize.rheight() = (int)(144 * Htmp);
+	}
+	resize(newSize);
 }
 
 void OpenGLWindow::drawPixel(uint16_t addr, uint8_t r, uint8_t g, uint8_t b)
