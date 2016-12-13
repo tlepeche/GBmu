@@ -28,6 +28,7 @@ class Audio
 		int				_Time;
 		int				_AbsoluteTime;
 		int				_iSampleRate;
+		uint8_t			_speed;
 		Gb_Apu			*_Apu;
 		Stereo_Buffer	*_Buffer;
 		Sound_Queue		*_Sound;
