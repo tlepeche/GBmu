@@ -1,12 +1,14 @@
 
 #include "Audio.hpp"
 #include <iostream>
+#include <unistd.h>
 
 Audio::Audio() :
 	_enabled(true),
 	_Time(0),
 	_AbsoluteTime(0),
 	_iSampleRate(44100),
+	_speed(1),
 	_Apu(nullptr),
 	_Buffer(nullptr),
 	_Sound(nullptr),
@@ -70,6 +72,12 @@ void Audio::enable(bool enabled)
     _enabled = enabled;
 }
 
+void Audio::setSpeed(uint8_t speed)
+{
+	_speed = speed;
+    _Buffer->clock_rate(4194304 * speed);
+}
+
 bool Audio::isEnabled() const
 {
     return _enabled;
@@ -95,8 +103,8 @@ void Audio::endFrame()
     {
         long count = _Buffer->read_samples(_SampleBuffer, sample_buffer_size);
         if (_enabled)
-        {
             _Sound->write(_SampleBuffer, (int)count);
-        }
+		else
+			usleep(16750 / _speed);
     }
 }

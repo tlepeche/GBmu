@@ -46,6 +46,9 @@ class OpenGLWindow : public QWidget
 		void gbSoundOnSlot();
 		void gbSoundOffSlot();
 		void updateSlot();
+		void gbSpeedx1Slot();
+		void gbSpeedx2Slot();
+		void gbSpeedx4Slot();
 
 	signals:
 		void openRomSign(std::string path);
@@ -58,6 +61,7 @@ class OpenGLWindow : public QWidget
 		void gbComStop();
 		void gbSoundSign(bool on);
 		void closeSign();
+		void gbSpeedSign(uint8_t speed);
 
 	private:
 		QMenuBar			*_menuBar;
