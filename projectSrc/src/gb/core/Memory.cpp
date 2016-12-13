@@ -85,7 +85,6 @@ void			Memory::setInBios(bool inBios)
 void			Memory::transferData(uint16_t startAddr)
 {
 	uint8_t a = 0x00;
-
 	for (uint16_t currAddr = startAddr ; currAddr < (startAddr + 0xA0) ; currAddr++)
 	{
 		_m_oam[a] = read_byte(currAddr);
@@ -95,37 +94,48 @@ void			Memory::transferData(uint16_t startAddr)
 
 void			Memory::HDMAprogress(uint16_t len)
 {
-	uint16_t start =  (((uint16_t)(read_byte(0xFF51) & 0xFF) << 4)
-			| (((uint16_t)(read_byte(0xFF52) & 0xF0) >> 4)));
-	uint16_t dest =   (((uint16_t)(read_byte(0xFF53) & 0x1F) << 4)
-			| (((uint16_t)(read_byte(0xFF54) & 0xF0) >> 4)));
-	start <<= 4; dest <<= 4; // *16
+	uint16_t start =  (((uint16_t)(read_byte(0xFF51) & 0xFF) << 8)
+			| (((uint16_t)(read_byte(0xFF52) & 0xF0))));
+	uint16_t dest =   (((uint16_t)(read_byte(0xFF53) & 0x1F) << 8)
+			| (((uint16_t)(read_byte(0xFF54) & 0xF0))));
 	dest += 0x8000;
-	for (auto curr = start ; curr < start + (len << 4) ; ++curr, ++dest)
+	dprintf(1, "start = 0x%.4x, dest = 0x%.4x, len = %d\n", start, dest, len);
+	uint16_t curr;
+	for (curr = start ; curr < start + (len << 4) ; ++curr, ++dest)
 		write_byte(dest, read_byte(curr));
 
+	dprintf(1, "start2 = 0x%.4x, dest2 = 0x%.4x, len = %d\n\n", curr, dest, len);
+	dest -= 0x8000;
+	write_byte(0xff51, (uint8_t)(curr >> 8), true);
+	write_byte(0xff52, (uint8_t)((curr & 0x00FF) & 0xF0), true);
+	write_byte(0xff53, (uint8_t)((dest >> 8) & 0x1F), true);
+	write_byte(0xff54, (uint8_t)((dest & 0x00FF) & 0xF0), true);
 	// Dec hdma5
-	uint8_t hdma5 = read_byte(0xFF55);
+	uint8_t hdma5 = (read_byte(0xFF55) & 0x7F);
 	if (len >= hdma5)
-		write_byte(0xFF55, 0x80, true); // End
+		write_byte(0xFF55, 0x00, true); // End
 	else
 		write_byte(0xFF55, hdma5 - len, true); // cte
 }
 
 void			Memory::HDMA()
 {
-	if (getRomType() == GBC/* && read_byte(0xFF55) & 0x80*/)
+	std::cout << "DMA" << std::endl;
+	if (getRomType() == GBC)
 	{
 		uint8_t hdma5 = read_byte(0xFF55);
-		if (hdma5 & 0x80) {
-			if (_hdmaInProgress > 0)
-				_hdmaInProgress = 0;
-			else
-				this->_hdmaInProgress = ((uint16_t)hdma5 & 0x7F) + 1;
+		if (hdma5 & 0x80)
+		{
+			this->_hdmaInProgress = (uint16_t)hdma5 & 0x7F + 1;
+			write_byte(0xff55, hdma5 & 0x7f, true);
 		}
 		else
-			HDMAprogress(((uint16_t)hdma5 & 0x7F) + 1);
-		write_byte(0xFF55, read_byte(0xFF55) | 0x80, true);
+		{
+			if (hdma5 > 0)
+				HDMAprogress(((uint16_t)hdma5 & 0x7F) + 1);
+				write_byte(0xff55, 0xFF, true);
+		}
+
 	}
 }
 
@@ -309,29 +319,45 @@ void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 							if (addr == REGISTER_VBK)
 								val &= 1;
 							//DMA
-							if (addr == REGISTER_DMA) {
+							if (addr == REGISTER_DMA)
 								transferData(val << 8);
-							}
-							if (addr == 0xFF55) {
+							if (addr == 0xFF52)
+								val &= 0xF0;
+							if (addr == 0xFF53)
+								val &= 0x1F;
+							if (addr == 0xFF54)
+								val &= 0xF0;
+							if (addr == 0xFF55)
+							{
 								this->_m_io[(addr & 0xFF)] = val;
 								HDMA();
+								return ;
 							}
-							if (_hdmaInProgress > 0 && addr == 0xFF41 && (val & 0x3) == 0) // HBLANK == 0
-								HDMAprogress((_hdmaInProgress--, 1));
+							if (_hdmaInProgress > 0 && addr == 0xFF41 && (((val & 0x3) == 0) || ((val & 0x03) == 1 && (read_byte(0xff55) & 0x80) == 0)))
+							{
+								if (_hdmaInProgress != 0)
+								{
+									dprintf(1, "progress 41, _hdmaprog = %d\n", _hdmaInProgress);
+									HDMAprogress((_hdmaInProgress--, 1));
+								}
+							}
+
 							// BCPS / BCPD
-							if (addr == REGISTER_BCPS) {
+							if (addr == REGISTER_BCPS)
 								this->_m_io[REGISTER_BCPD & 0xFF] = ((uint8_t*)_bcp)[val & 0x3F];
-							}
-							if (addr == REGISTER_BCPD) {
+							if (addr == REGISTER_BCPD)
+							{
 								((uint8_t*)_bcp)[read_byte(REGISTER_BCPS) & 0x3F] = val;
 								if (read_byte(REGISTER_BCPS) & 0x80)
 									write_byte(REGISTER_BCPS, ((((read_byte(REGISTER_BCPS) << 2) + 4) & 0xFF) >> 2) | 0x80);
 							}
 							// OCPS / OCPD
-							if (addr == REGISTER_OCPS) {
+							if (addr == REGISTER_OCPS)
+							{
 								this->_m_io[REGISTER_OCPD & 0xFF] = ((uint8_t*)_ocp)[val & 0x3F];
 							}
-							if (addr == REGISTER_OCPD) {
+							if (addr == REGISTER_OCPD)
+							{
 								((uint8_t*)_ocp)[read_byte(REGISTER_OCPS) & 0x3F] = val;
 								if (read_byte(REGISTER_OCPS) & 0x80)
 									write_byte(REGISTER_OCPS, ((((read_byte(REGISTER_OCPS) << 2) + 4) & 0xFF) >> 2) | 0x80);
@@ -357,6 +383,13 @@ void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 								this->_m_io[0x41] |= 0x04;
 							else
 								this->_m_io[0x41] &= 0xfb;
+						}
+						if (addr == 0xFF44 && (read_byte(REGISTER_STAT) & 0x03) == 0 && (read_byte(0xff55) & 0x80) == 0)
+						{
+							if (_hdmaInProgress != 0)
+							{
+								HDMAprogress((_hdmaInProgress--, 1));
+							}
 						}
 					}
 					else

@@ -268,7 +268,7 @@ bool	Gpu::findSprite(uint8_t line, uint8_t x, unsigned int spriteHeight, t_sprit
 				unsigned int colorId = findSpritePixel(*tmp, line, x, spriteHeight);
 				if (colorId == 0)
 					continue;
-				if (!hasSprite || (sprite->x_pos > tmp->x_pos && _memory->getRomType() == GB))
+				if (!hasSprite/* || (sprite->x_pos > tmp->x_pos && _memory->getRomType() == GB)*/)
 				{
 					*sprite = *tmp;
 					hasSprite = true;
@@ -303,7 +303,7 @@ unsigned int	Gpu::scanSprite(uint8_t line, uint8_t x, unsigned int pixel)
 	t_gpuControl	gpuC = (t_gpuControl){{_memory->read_byte(REGISTER_LCDC)}};
 	uint8_t spriteHeight = gpuC.sprite_size ? 16 : 8;
 
-	if (gpuC.sprite && !(_bgdPrio && gpuC.background))
+	if (gpuC.sprite && (!gpuC.background || !_bgdPrio))
 	{
 		t_sprite sprite;
 		if (findSprite(line, x, spriteHeight, &sprite))
