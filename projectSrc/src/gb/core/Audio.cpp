@@ -70,6 +70,11 @@ void Audio::enable(bool enabled)
     _enabled = enabled;
 }
 
+void Audio::setSpeed(uint8_t speed)
+{
+    _Buffer->clock_rate(4194304 * speed);
+}
+
 bool Audio::isEnabled() const
 {
     return _enabled;

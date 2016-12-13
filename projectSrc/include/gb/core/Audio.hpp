@@ -21,6 +21,7 @@ class Audio
 		void		write_register(uint16_t address, uint8_t value);
 		void		endFrame();
 		void		step(unsigned int clockCycles);
+		void		setSpeed(uint8_t speed);
 
 	private:
 		bool			_enabled;

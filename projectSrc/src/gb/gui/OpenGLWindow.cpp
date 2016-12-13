@@ -128,7 +128,46 @@ QMenuBar	*OpenGLWindow::genMenuBar()
 	sound->addAction(sound1);
 	menuBar->addMenu(sound);
 
+	QMenu*		speed		= new QMenu(tr("Speed"));
+	QAction*	speedx1		= new QAction(tr("x1"));
+	QAction*	speedx2		= new QAction(tr("x2"));
+	QAction*	speedx4		= new QAction(tr("x4"));
+
+	connect(speedx1, &QAction::triggered, this, &OpenGLWindow::gbSpeedx1Slot);
+	connect(speedx2, &QAction::triggered, this, &OpenGLWindow::gbSpeedx2Slot);
+	connect(speedx4, &QAction::triggered, this, &OpenGLWindow::gbSpeedx4Slot);
+
+	QActionGroup*	gspeed = new QActionGroup(this);
+	gspeed->setExclusive(true);
+	gspeed->addAction(speedx1);
+	gspeed->addAction(speedx2);
+	gspeed->addAction(speedx4);
+	speedx1->setCheckable(true);
+	speedx1->setChecked(true);
+	speedx2->setCheckable(true);
+	speedx4->setCheckable(true);
+
+	speed->addAction(speedx1);
+	speed->addAction(speedx2);
+	speed->addAction(speedx4);
+	menuBar->addMenu(speed);
+
 	return menuBar;
+}
+
+void	OpenGLWindow::gbSpeedx1Slot()
+{
+	emit gbSpeedSign(1);
+}
+
+void	OpenGLWindow::gbSpeedx2Slot()
+{
+	emit gbSpeedSign(2);
+}
+
+void	OpenGLWindow::gbSpeedx4Slot()
+{
+	emit gbSpeedSign(4);
 }
 
 void	OpenGLWindow::gbTypeAUTOSlot()
