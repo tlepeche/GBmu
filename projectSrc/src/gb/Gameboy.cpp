@@ -39,8 +39,8 @@ Gameboy::Gameboy(const char *path) :
 	connect(_window, &OpenGLWindow::gbComPause, this, &Gameboy::switchPauseSlot);
 	connect(_window, &OpenGLWindow::gbComStop, this, &Gameboy::resetPressedSlot);
 	connect(_window, &OpenGLWindow::gbSoundSign, this, &Gameboy::soundSlot);
-
 	connect(_window, &OpenGLWindow::closeSign, this, &Gameboy::closeEmu);
+	connect(_window, &OpenGLWindow::gbSpeedSign, this, &Gameboy::setSpeed);
 
 	_window->show();
 	_window->setWindowTitle("GBmu");
@@ -60,6 +60,11 @@ Gameboy::~Gameboy()
 void	Gameboy::closeEmu()
 {
 	this->_windowDebug->close();
+}
+
+void	Gameboy::setSpeed(uint8_t speed)
+{
+	_audio->setSpeed(speed);
 }
 
 void	Gameboy::stopThread()

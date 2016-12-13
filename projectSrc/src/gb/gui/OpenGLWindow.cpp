@@ -9,6 +9,9 @@
 #include <QMimeData>
 #include <QActionGroup>
 #include <QFileDialog>
+#include <QEvent>
+#include <QSize>
+
 
 #include <iostream>
 
@@ -20,7 +23,7 @@ OpenGLWindow::OpenGLWindow(QWidget *parent)
 	, frameBuffer(new QImage(WIN_WIDTH, WIN_HEIGHT, QImage::Format_RGB32))
 {
 	setAcceptDrops(true);
-	resize(500,500);
+	resize(160*2,144*2);
 
 	connect(&timerScreen, &QTimer::timeout, this, &OpenGLWindow::updateSlot);
 	timerScreen.start(16);
@@ -125,7 +128,46 @@ QMenuBar	*OpenGLWindow::genMenuBar()
 	sound->addAction(sound1);
 	menuBar->addMenu(sound);
 
+	QMenu*		speed		= new QMenu(tr("Speed"));
+	QAction*	speedx1		= new QAction(tr("x1"));
+	QAction*	speedx2		= new QAction(tr("x2"));
+	QAction*	speedx4		= new QAction(tr("x4"));
+
+	connect(speedx1, &QAction::triggered, this, &OpenGLWindow::gbSpeedx1Slot);
+	connect(speedx2, &QAction::triggered, this, &OpenGLWindow::gbSpeedx2Slot);
+	connect(speedx4, &QAction::triggered, this, &OpenGLWindow::gbSpeedx4Slot);
+
+	QActionGroup*	gspeed = new QActionGroup(this);
+	gspeed->setExclusive(true);
+	gspeed->addAction(speedx1);
+	gspeed->addAction(speedx2);
+	gspeed->addAction(speedx4);
+	speedx1->setCheckable(true);
+	speedx1->setChecked(true);
+	speedx2->setCheckable(true);
+	speedx4->setCheckable(true);
+
+	speed->addAction(speedx1);
+	speed->addAction(speedx2);
+	speed->addAction(speedx4);
+	menuBar->addMenu(speed);
+
 	return menuBar;
+}
+
+void	OpenGLWindow::gbSpeedx1Slot()
+{
+	emit gbSpeedSign(1);
+}
+
+void	OpenGLWindow::gbSpeedx2Slot()
+{
+	emit gbSpeedSign(2);
+}
+
+void	OpenGLWindow::gbSpeedx4Slot()
+{
+	emit gbSpeedSign(4);
 }
 
 void	OpenGLWindow::gbTypeAUTOSlot()
@@ -188,6 +230,35 @@ void OpenGLWindow::keyReleaseEvent(QKeyEvent* e)
 void OpenGLWindow::keyPressEvent(QKeyEvent* e)
 {
 	emit keyPressSign(e->key());
+}
+
+void OpenGLWindow::resizeEvent(QResizeEvent *event)
+{
+	(void)event;
+	QSize newSize = QWidget::size();
+	float Htmp = newSize.rheight() / 144.0;
+	float Wtmp = newSize.rwidth() / 160.0;
+	if (Htmp <= 1 && Wtmp <= 1)
+	{
+		newSize.rwidth() = 160;
+		newSize.rheight() = 144;
+	}
+	else if (Htmp <= 1 || Wtmp > Htmp)
+	{
+		newSize.rwidth() = (int)(160 * Wtmp);
+		newSize.rheight() = (int)(144 * Wtmp);
+	}
+	else if (Wtmp <= 1 || Htmp > Wtmp)
+	{
+		newSize.rwidth() = (int)(160 * Htmp);
+		newSize.rheight() = (int)(144 * Htmp);
+	}
+	else
+	{
+		newSize.rwidth() = (int)(160 * Htmp);
+		newSize.rheight() = (int)(144 * Htmp);
+	}
+	resize(newSize);
 }
 
 void OpenGLWindow::drawPixel(uint16_t addr, uint8_t r, uint8_t g, uint8_t b)

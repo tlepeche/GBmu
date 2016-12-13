@@ -26,6 +26,7 @@ class OpenGLWindow : public QWidget
 
 		virtual void keyReleaseEvent(QKeyEvent *e) override;
 		virtual void keyPressEvent(QKeyEvent *e) override;
+		virtual void resizeEvent(QResizeEvent *event) override;
 		void drawPixel(uint16_t addr, uint8_t r, uint8_t g, uint8_t b);
 		void drawPixel(uint16_t addr, uint32_t color);
 
@@ -45,6 +46,9 @@ class OpenGLWindow : public QWidget
 		void gbSoundOnSlot();
 		void gbSoundOffSlot();
 		void updateSlot();
+		void gbSpeedx1Slot();
+		void gbSpeedx2Slot();
+		void gbSpeedx4Slot();
 
 	signals:
 		void openRomSign(std::string path);
@@ -57,6 +61,7 @@ class OpenGLWindow : public QWidget
 		void gbComStop();
 		void gbSoundSign(bool on);
 		void closeSign();
+		void gbSpeedSign(uint8_t speed);
 
 	private:
 		QMenuBar			*_menuBar;

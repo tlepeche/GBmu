@@ -55,7 +55,7 @@ std::string	Gpu::toString()
 
 unsigned int gbColors[4] = {0x00FFFFFF, 0x00C0C0C0, 0x00606060, 0x00000000};
 
-unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x, bool *isBgd)
+unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x)
 {
 	t_gpuControl	gpuC = (t_gpuControl){{_memory->read_byte(REGISTER_LCDC)}};
 	uint8_t			scy = _memory->read_byte(REGISTER_SCY);
@@ -63,7 +63,6 @@ unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x, bool *isBgd)
 	uint8_t			wx = _memory->read_byte(REGISTER_WX);
 	uint8_t			wy = _memory->read_byte(REGISTER_WY);
 
-	*isBgd = false;
 	if (!(!gpuC.background && _memory->getRomType() == GB))
 	{
 		uint16_t tileSetAddr = gpuC.tile_set ? TILES1_ADDR : TILES0_ADDR;
@@ -78,8 +77,6 @@ unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x, bool *isBgd)
 			x -= wx - 7;
 			line -= wy;
 		}
-		else
-			*isBgd = true;
 
 		uint16_t tileIdAddr = tileMapAddr
 			+ ((((line + scy) % (MAP_W * TILE_H)) / TILE_H) * MAP_W)
@@ -97,23 +94,17 @@ unsigned int	Gpu::scanPixel(uint8_t line, unsigned int x, bool *isBgd)
 			_bgdPrio = false;
 		else
 			_bgdPrio = (bgd & 0x80) ? true : false;
-		unsigned int sy = (line + scy) % TILE_H;
+			unsigned int sy = (line + scy) % TILE_H;
 		unsigned int sx = (x + scx) % TILE_W;
 		if (bgd & 0x20) sx = 7 - sx;
 		if (bgd & 0x40) sy = 7 - sy;
 		unsigned int rsx = BYTE_SIZE - sx - 1;
 
-		//*
 		uint8_t tileBank = bgd & 0x8 ? 1 : 0;
 		uint8_t	sdata1 = _memory->force_read_vram(tileAddr + (sy * 2), tileBank);
 		uint8_t	sdata2 = _memory->force_read_vram(tileAddr + (sy * 2) + 1, tileBank);
-		/*/
-		  uint8_t	sdata1 = _memory->read_byte(tileAddr + (sy * 2));
-		  uint8_t	sdata2 = _memory->read_byte(tileAddr + (sy * 2) + 1);
-		//*/
 		_colorId = ((sdata1 >> rsx) & 1) | (((sdata2 >> (rsx)) & 1) << 1);
 		unsigned int color;
-		//if (bgd & 0x8) return (0x0000FF00);
 		if (_memory->getTypeBios() == GB || bgd & 0x10) { // GB
 			color = gbColors[(bgp >> (2 * _colorId)) & 0x3];
 		} else { // GBC
@@ -142,9 +133,8 @@ void	Gpu::scanActLine()
 	if (line < WIN_HEIGHT)
 	for (int x = 0 ; x < WIN_WIDTH ; ++x) {
 		addrLine = line * WIN_WIDTH + x;
-		bool isBgd = false;
-		pixel = scanPixel(line, x, &isBgd);
-		pixel = scanSprite(line, x, pixel, isBgd);
+		pixel = scanPixel(line, x);
+		pixel = scanSprite(line, x, pixel);
 		_window->drawPixel(addrLine, pixel);
 	}
 	else
@@ -308,12 +298,12 @@ unsigned int	Gpu::findSpritePixel(t_sprite sprite, uint8_t line, uint8_t x, uint
 	return colorId;
 }
 
-unsigned int	Gpu::scanSprite(uint8_t line, uint8_t x, unsigned int pixel, bool isBgd)
+unsigned int	Gpu::scanSprite(uint8_t line, uint8_t x, unsigned int pixel)
 {
 	t_gpuControl	gpuC = (t_gpuControl){{_memory->read_byte(REGISTER_LCDC)}};
 	uint8_t spriteHeight = gpuC.sprite_size ? 16 : 8;
 
-	if (gpuC.sprite && !(_bgdPrio && gpuC.background) && isBgd)
+	if (gpuC.sprite && !(_bgdPrio && gpuC.background))
 	{
 		t_sprite sprite;
 		if (findSprite(line, x, spriteHeight, &sprite))
