@@ -10,6 +10,8 @@ OBJECTS_DIR   = obj
 
 LIBS += -L ~/.brew/lib -lSDL2main -lSDL2
 
+QMAKE_RPATHDIR += @executable_path/../Frameworks @executable_path/../Libraries
+
 INCPATH  += include/gb/gui \
 			include/db \
 			include/gb \
