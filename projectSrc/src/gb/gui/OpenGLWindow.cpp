@@ -11,6 +11,7 @@
 #include <QFileDialog>
 #include <QEvent>
 #include <QSize>
+#include <QMessageBox>
 
 
 #include <iostream>
@@ -55,17 +56,17 @@ QMenuBar	*OpenGLWindow::genMenuBar()
 	QMenuBar*	menuBar		= new QMenuBar();
 	QMenu*		menu		= new QMenu(tr("Actions"));
 	QAction*	openAct		= new QAction(tr("Open"));
+	QAction*	gbDbAct		= new QAction(tr("Debbuger"));
 	QAction*	openState	= new QAction(tr("Open State"));
 	QAction*	saveState	= new QAction(tr("Save State"));
-	QAction*	gbDbAct		= new QAction(tr("Debbuger"));
 
 	connect(openAct, &QAction::triggered, this, &OpenGLWindow::openSlot);
 	connect(openState, &QAction::triggered, this, &OpenGLWindow::openStateSlot);
 	connect(saveState, &QAction::triggered, this, &OpenGLWindow::saveStateSlot);
 	connect(gbDbAct, &QAction::triggered, this, &OpenGLWindow::gbDbSlot);
 	menu->addAction(openAct); openAct->setShortcut(tr("Ctrl+O"));
-	menu->addAction(openState);
-	menu->addAction(saveState);
+	menu->addAction(openState); openState->setShortcut(tr("Space+O"));
+	menu->addAction(saveState); openState->setShortcut(tr("Space+S"));
 	menu->addAction(gbDbAct); gbDbAct->setShortcut(tr("Ctrl+D"));
 	menuBar->addMenu(menu);
 
@@ -176,6 +177,13 @@ void	OpenGLWindow::gbSpeedx4Slot()
 	emit gbSpeedSign(4);
 }
 
+void	OpenGLWindow::alert(const char *alert)
+{
+	QMessageBox msgBox;
+	msgBox.setText(alert);
+	msgBox.exec();
+}
+
 void	OpenGLWindow::gbTypeAUTOSlot()
 {
 	emit gbTypeSign(AUTO);
@@ -218,20 +226,20 @@ void	OpenGLWindow::gbSoundOffSlot()
 
 void	OpenGLWindow::openSlot()
 {
-	QString path = QFileDialog::getOpenFileName(NULL, tr("Open Rom File"), "/home", tr("*.gb, *.gbc"));
+	QString path = QFileDialog::getOpenFileName(NULL, tr("Open Rom File"), "./", tr("Text files (*.gb *.gbc)"));
 
 	emit openRomSign(path.toStdString());
 }
 void	OpenGLWindow::openStateSlot()
 {
-	QString path = QFileDialog::getOpenFileName(NULL, tr("Open Save File"), "/home", tr("*.sgb"));
+	QString path = QFileDialog::getOpenFileName(NULL, tr("Open Save File"), "./", tr("Text files (*.sgb)"));
 
 	emit openStateSign(path.toStdString());
 }
 
 void	OpenGLWindow::saveStateSlot()
 {
-	QString path = QFileDialog::getSaveFileName(NULL, tr("Save State File"), "/home", tr("*.sgb"));
+	QString path = QFileDialog::getSaveFileName(NULL, tr("Save State File"), "./", tr("Text files (*.sgb)"));
 
 	emit saveStateSign(path.toStdString());
 }

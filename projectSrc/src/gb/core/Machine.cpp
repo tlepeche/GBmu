@@ -77,16 +77,8 @@ void Machine::setHardware(htype hardware)
 	reset();
 }
 
-void Machine::saveState(const char *file)
+void Machine::saveState(std::fstream &save)
 {
-	std::fstream					save;
-
-	save.open(file, std::fstream::out | std::fstream::binary);
-	if (!save.is_open())
-	{
-		std::cerr << "Cannot save file " << file << std::endl;
-		return ;
-	}
 	_clock->saveState(save);
 	_gpu->saveState(save);
 	_cpu->saveState(save);
@@ -95,23 +87,13 @@ void Machine::saveState(const char *file)
 	save.close();
 }
 
-void Machine::loadState(const char *file)
+void Machine::loadState(std::ifstream &load)
 {
-	if (!file)
-		return ;
-	std::ifstream					load;
-	load.open(file, std::ios::in | std::ios::ate | std::ios::binary);
-
-	if (load.is_open())
-	{
-		load.seekg(0, std::ios::beg);
-		_clock->loadState(load);
-		_gpu->loadState(load);
-		_cpu->loadState(load);
-		_memory->loadState(load);
-		load.read(reinterpret_cast<char*>(&_cyclesAcc), sizeof(_cyclesAcc));
-	}
-	else
-		std::cerr << "Cannot open file " << file << std::endl;
+	load.seekg(0, std::ios::beg);
+	_clock->loadState(load);
+	_gpu->loadState(load);
+	_cpu->loadState(load);
+	_memory->loadState(load);
+	load.read(reinterpret_cast<char*>(&_cyclesAcc), sizeof(_cyclesAcc));
 	load.close();
 }

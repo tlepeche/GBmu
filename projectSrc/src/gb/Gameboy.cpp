@@ -177,25 +177,49 @@ void	Gameboy::resetPressedSlot()
 
 void	Gameboy::openRomSlot(std::string path)
 {
+	bool state = _stepMode.load();
+	_stepMode.store(true);
 	_romPath = path;
 	reset();
-	_stepMode.store(false);
+	_stepMode.store(state);
 }
 
 void	Gameboy::openStateSlot(std::string path)
 {
-	bool state = _stepMode.load();
-	_stepMode.store(true);
-	loadState(path.c_str());
-	_stepMode.store(state);
+	std::ifstream					load;
+
+	load.open(path, std::ios::in | std::ios::ate | std::ios::binary);
+	if (load.is_open())
+	{
+		bool state = _stepMode.load();
+		_stepMode.store(true);
+		loadState(load);
+		_stepMode.store(state);
+	}
+	else
+	{
+		std::string text = "Cannot open file " + path;
+		_window->alert(text.c_str());
+	}
 }
 
 void	Gameboy::saveStateSlot(std::string path)
 {
-	bool state = _stepMode.load();
-	_stepMode.store(true);
-	saveState(path.c_str());
-	_stepMode.store(state);
+	std::fstream					save;
+
+	save.open(path, std::fstream::out | std::fstream::binary);
+	if (save.is_open())
+	{
+		bool state = _stepMode.load();
+		_stepMode.store(true);
+		saveState(save);
+		_stepMode.store(state);
+	}
+	else
+	{
+		std::string text = "Cannot open file " + path;
+		_window->alert(text.c_str());
+	}
 }
 
 void	Gameboy::gbDbSlot()

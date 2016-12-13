@@ -2,6 +2,7 @@
 #define _MACHINE_HPP
 
 #include "htype.hpp"
+#include <fstream>
 
 class Audio;
 class Memory;
@@ -27,8 +28,8 @@ class Machine
 		virtual void	run(void);
 		virtual	void	reset(void) = 0;
 		void			setHardware(htype hardware);
-		void			loadState(const char *file);
-		void			saveState(const char *file);
+		void			loadState(std::ifstream &out);
+		void			saveState(std::fstream &out);
 
 		unsigned int	_cyclesMax;
 		unsigned int	_cyclesAcc;
