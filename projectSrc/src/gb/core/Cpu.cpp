@@ -258,7 +258,7 @@ void Cpu_z80::init(htype hardware)
 	this->_memory->write_byte(REGISTER_BCPD, 0xFF, true);
 	this->_memory->write_byte(REGISTER_OCPS, 0xC1, true);
 	this->_memory->write_byte(REGISTER_OCPD, 0x00, true);
-	
+
 	this->_memory->write_byte(0xFF56, 0x3F, true); // Register RP, IR disable
 
 	this->_opcodeInProgress = this->_getOpcode(this->_memory->read_byte(this->_cpuRegister.PC));
@@ -349,7 +349,6 @@ void Cpu_z80::saveState(std::fstream &out)
 	out.write(reinterpret_cast<char*>(&holdIME), sizeof(int));
 	out.write(reinterpret_cast<char*>(&_cpuRegister), sizeof(_cpuRegister));
 	out.write(reinterpret_cast<char*>(&isSpeed), sizeof(int));
-	out.write(reinterpret_cast<char*>(&_spBeforeInterrupt), sizeof(_spBeforeInterrupt));
 }
 
 void Cpu_z80::loadState(std::ifstream &out)
@@ -367,7 +366,6 @@ void Cpu_z80::loadState(std::ifstream &out)
 	out.read(reinterpret_cast<char*>(&holdIME), sizeof(int));
 	out.read(reinterpret_cast<char*>(&_cpuRegister), sizeof(_cpuRegister));
 	out.read(reinterpret_cast<char*>(&isSpeed), sizeof(int));
-	out.read(reinterpret_cast<char*>(&_spBeforeInterrupt), sizeof(_spBeforeInterrupt));
 	if (_memory->read_byte(_cpuRegister.PC - 1) == 0xCB)
 		_opcodeInProgress = _getOpcode(_cpuRegister.PC - 1);
 	else
