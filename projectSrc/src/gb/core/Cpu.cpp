@@ -225,18 +225,18 @@ void Cpu_z80::init(htype hardware)
 	this->_memory->write_byte(REGISTER_P1, 0xCF, true);
 	this->_memory->write_byte(REGISTER_SB, 0x00, true);
 	this->_memory->write_byte(REGISTER_SC, 0x7E, true);
-	this->_memory->write_byte(REGISTER_DIV, _memory->getRomType() == GB ? 0xD3 : 0x44 , true); // bios: 0xD3 start: 0x81
+	this->_memory->write_byte(REGISTER_DIV, _memory->getTypeBios() == GB ? 0xD3 : 0x44 , true); // bios: 0xD3 start: 0x81
 	this->_memory->write_byte(REGISTER_TIMA, 0x00, true);
 	this->_memory->write_byte(REGISTER_TMA, 0x00, true);
-	this->_memory->write_byte(REGISTER_TAC, _memory->getRomType() == GB ? 0xFC : 0xf8, true);
+	this->_memory->write_byte(REGISTER_TAC, _memory->getTypeBios() == GB ? 0xFC : 0xf8, true);
 	this->_memory->write_byte(REGISTER_KEY1, 0x7E, true);
-	this->_memory->write_byte(REGISTER_VBK, _memory->getRomType() == GB ? 0x00 : 0xFE, true);
+	this->_memory->write_byte(REGISTER_VBK, _memory->getTypeBios() == GB ? 0x00 : 0xFE, true);
 	this->_memory->write_byte(REGISTER_HDMA1, 0xFF, true);
 	this->_memory->write_byte(REGISTER_HDMA2, 0xFF, true);
 	this->_memory->write_byte(REGISTER_HDMA3, 0xFF, true);
 	this->_memory->write_byte(REGISTER_HDMA4, 0xFF, true);
 	this->_memory->write_byte(REGISTER_HDMA5, 0xFF, true);
-	this->_memory->write_byte(REGISTER_SVBK, _memory->getRomType() == GB ? 0x01 : 0xf8 , true);
+	this->_memory->write_byte(REGISTER_SVBK, _memory->getTypeBios() == GB ? 0x01 : 0xf8 , true);
 	this->_memory->write_byte(REGISTER_IF, 0xE1, true);
 	this->_memory->write_byte(REGISTER_IE, 0x00, true);
 
@@ -247,7 +247,7 @@ void Cpu_z80::init(htype hardware)
 	this->_memory->write_byte(REGISTER_SCX, 0x00, true);
 	this->_memory->write_byte(REGISTER_LY, 0x00, true); // bios: 0x00 start: 0x99
 	this->_memory->write_byte(REGISTER_LYC, 0x00, true);
-	this->_memory->write_byte(REGISTER_DMA, _memory->getRomType() == GB ? 0xFF : 0x00, true);
+	this->_memory->write_byte(REGISTER_DMA, _memory->getTypeBios() == GB ? 0xFF : 0x00, true);
 	this->_memory->write_byte(REGISTER_BGP, 0xFC, true); // edelangh: this is bullshit !!
 	this->_memory->write_byte(REGISTER_OBP0, 0x00, true);
 	this->_memory->write_byte(REGISTER_OBP1, 0x00, true);
@@ -294,13 +294,13 @@ void Cpu_z80::runInterrupt(uint16_t addr, uint8_t interrupt)
 	this->_cpuRegister.PC = addr;
 	this->_loadPtr(this->_cpuRegister.PC);
 	this->_setIME(false);
+	this->_setHalt(false);
 }
 
 #define TEST_INTERRUPT(X) ((this->_memory->read_byte(REGISTER_IF) & X) > 0 && _IE & X)
 
 void Cpu_z80::execInterrupt(void)
 {
-	this->_setHalt(false);
 	uint8_t _IE = _memory->read_byte(REGISTER_IE);
 	// Get interrupt here
 	if (getIME() == false)
