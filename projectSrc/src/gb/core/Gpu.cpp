@@ -319,7 +319,8 @@ unsigned int	Gpu::scanSprite(uint8_t line, uint8_t x, unsigned int pixel)
 					pixel = gbColors[palId];
 				} else {
 					uint8_t palId = colorId;
-					uint8_t cpalId = sprite.cpal & 0x7;
+					uint8_t cpalId = _memory->getRomType() == GB ? 0 :
+						sprite.cpal & 0x7;
 					t_color15 c15 = _memory->getObjColor15(cpalId, palId);
 					pixel = 0x00 
 						| ((c15.r * 0xFF / 0x1F) << 16)

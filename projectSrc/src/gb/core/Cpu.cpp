@@ -293,13 +293,13 @@ void Cpu_z80::runInterrupt(uint16_t addr, uint8_t interrupt)
 	this->_cpuRegister.PC = addr;
 	this->_loadPtr(this->_cpuRegister.PC);
 	this->_setIME(false);
-	this->_setHalt(false);
 }
 
 #define TEST_INTERRUPT(X) ((this->_memory->read_byte(REGISTER_IF) & X) > 0 && _IE & X)
 
 void Cpu_z80::execInterrupt(void)
 {
+	this->_setHalt(false);
 	uint8_t _IE = _memory->read_byte(REGISTER_IE);
 	// Get interrupt here
 	if (getIME() == false)
