@@ -31,6 +31,8 @@ Gameboy::Gameboy(const char *path) :
 	_willRun.store(false);
 
 	connect(_window, &OpenGLWindow::openRomSign, this, &Gameboy::openRomSlot);
+	connect(_window, &OpenGLWindow::openStateSign, this, &Gameboy::openStateSlot);
+	connect(_window, &OpenGLWindow::saveStateSign, this, &Gameboy::saveStateSlot);
 	connect(_window, &OpenGLWindow::gbDbSign, this, &Gameboy::gbDbSlot);
 	connect(_window, &OpenGLWindow::keyPressSign, this, &Gameboy::KeyPress);
 	connect(_window, &OpenGLWindow::keyReleaseSign, this, &Gameboy::KeyRelease);
@@ -175,9 +177,55 @@ void	Gameboy::resetPressedSlot()
 
 void	Gameboy::openRomSlot(std::string path)
 {
+	bool state = _stepMode.load();
+	_stepMode.store(true);
 	_romPath = path;
 	reset();
-	_stepMode.store(false);
+	_stepMode.store(state);
+}
+
+void	Gameboy::openStateSlot(std::string path)
+{
+	std::ifstream					load;
+
+	if (!_memory->romIsLoaded())
+	{
+		std::string text = "No rom loaded for this save state!";
+		_window->alert(text.c_str());
+		return ;
+	}
+	load.open(path, std::ios::in | std::ios::ate | std::ios::binary);
+	if (load.is_open())
+	{
+		bool state = _stepMode.load();
+		_stepMode.store(true);
+		loadState(load);
+		_stepMode.store(state);
+	}
+	else
+	{
+		std::string text = "Cannot open file " + path;
+		_window->alert(text.c_str());
+	}
+}
+
+void	Gameboy::saveStateSlot(std::string path)
+{
+	std::fstream					save;
+
+	save.open(path, std::fstream::out | std::fstream::binary);
+	if (save.is_open())
+	{
+		bool state = _stepMode.load();
+		_stepMode.store(true);
+		saveState(save);
+		_stepMode.store(state);
+	}
+	else
+	{
+		std::string text = "Cannot open file " + path;
+		_window->alert(text.c_str());
+	}
 }
 
 void	Gameboy::gbDbSlot()
