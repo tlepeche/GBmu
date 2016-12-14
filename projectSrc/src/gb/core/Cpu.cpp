@@ -253,7 +253,6 @@ void Cpu_z80::init(htype hardware)
 	this->_memory->write_byte(REGISTER_OBP1, 0x00, true);
 	this->_memory->write_byte(REGISTER_WY, 0x00, true);
 	this->_memory->write_byte(REGISTER_WX, 0x00, true);
-	/* TODO: WTF ? I dont see then in doc */
 	this->_memory->write_byte(REGISTER_BCPS, 0xC0, true);
 	this->_memory->write_byte(REGISTER_BCPD, 0xFF, true);
 	this->_memory->write_byte(REGISTER_OCPS, 0xC1, true);

@@ -14,7 +14,7 @@
 #define REGISTER_HDMA4	0xFF54
 #define REGISTER_HDMA5	0xFF55
 #define REGISTER_SVBK	0xFF70
-#define REGISTER_IF		0xFF0F //TODO timer overflow??? je peut le bypasser par le timer de base
+#define REGISTER_IF		0xFF0F
 #define REGISTER_IE		0xFFFF
 
 #define REGISTER_NR10	0xFF10
@@ -48,7 +48,6 @@
 #define REGISTER_OBP1	0xFF49
 #define REGISTER_WY		0xFF4A
 #define REGISTER_WX		0xFF4B
-/* TODO: WTF ? I dont see then in doc */
 #define REGISTER_BCPS	0xFF68
 #define REGISTER_BCPD	0xFF69
 #define REGISTER_OCPS	0xFF6A
