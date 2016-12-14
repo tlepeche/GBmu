@@ -331,3 +331,13 @@ unsigned int	Gpu::scanSprite(uint8_t line, uint8_t x, unsigned int pixel)
 	}
 	return pixel;
 }
+
+void Gpu::saveState(std::fstream &out)
+{
+	out.write(reinterpret_cast<char*>(&_clock), sizeof(_clock));
+}
+
+void Gpu::loadState(std::ifstream &out)
+{
+	out.read(reinterpret_cast<char *>(&_clock), sizeof(_clock));
+}

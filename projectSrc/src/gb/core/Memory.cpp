@@ -55,7 +55,7 @@ int				Memory::loadRom(const char *file, htype hardware)
 	if (ret == 0)
 	{
 		hardware = (hardware == AUTO) ? this->_rom.getHardware() : hardware;
-		this->_codeBios = this->_bios.load(hardware);
+		this->_codeBios = Bios::load(hardware);
 		this->_typeBios = hardware;
 		this->_hdmaInProgress = 0;
 	}
@@ -394,4 +394,42 @@ void			Memory::write_word(uint16_t addr, uint16_t val, bool super)
 {
 	this->write_byte(addr, (val & 0xFF), super);
 	this->write_byte(addr + 1, ((val & 0xFF00) >> 8), super);
+}
+
+void			Memory::saveState(std::fstream &out)
+{
+	uint8_t key1[2] = {key[0], key[1]};
+	dprintf(1, "Lecture du pointeur dans memory %p\n", &out);
+	_rom.saveState(out);
+	out.write(reinterpret_cast<char*>(key1), sizeof(key1));
+	out.write(reinterpret_cast<char*>(_bcp), sizeof(_bcp));
+	out.write(reinterpret_cast<char*>(_ocp), sizeof(_ocp));
+	out.write(reinterpret_cast<char*>(_m_wram), sizeof(_m_wram));
+	out.write(reinterpret_cast<char*>(_m_vram), sizeof(_m_vram));
+	out.write(reinterpret_cast<char*>(_m_oam), sizeof(_m_oam));
+	out.write(reinterpret_cast<char*>(_m_io), sizeof(_m_io));
+	out.write(reinterpret_cast<char*>(_m_zp), sizeof(_m_zp));
+	out.write(reinterpret_cast<char*>(&_inBios), sizeof(_inBios));
+	out.write(reinterpret_cast<char*>(&_typeBios), sizeof(_typeBios));
+	out.write(reinterpret_cast<char*>(&_hdmaInProgress), sizeof(_hdmaInProgress));
+}
+
+void			Memory::loadState(std::ifstream &out)
+{
+	uint8_t key1[2] = {0};
+	_rom.loadState(out);
+	out.read(reinterpret_cast<char*>(key1), sizeof(key1));
+	out.read(reinterpret_cast<char*>(_bcp), sizeof(_bcp));
+	out.read(reinterpret_cast<char*>(_ocp), sizeof(_ocp));
+	out.read(reinterpret_cast<char*>(_m_wram), sizeof(_m_wram));
+	out.read(reinterpret_cast<char*>(_m_vram), sizeof(_m_vram));
+	out.read(reinterpret_cast<char*>(_m_oam), sizeof(_m_oam));
+	out.read(reinterpret_cast<char*>(_m_io), sizeof(_m_io));
+	out.read(reinterpret_cast<char*>(_m_zp), sizeof(_m_zp));
+	out.read(reinterpret_cast<char*>(&_inBios), sizeof(_inBios));
+	out.read(reinterpret_cast<char*>(&_typeBios), sizeof(_typeBios));
+	out.read(reinterpret_cast<char*>(&_hdmaInProgress), sizeof(_hdmaInProgress));
+	_codeBios = Bios::load(_typeBios);
+	key[0] = key1[0];
+	key[1] = key1[1];
 }

@@ -76,3 +76,24 @@ void Machine::setHardware(htype hardware)
 	_hardware = hardware;
 	reset();
 }
+
+void Machine::saveState(std::fstream &save)
+{
+	_clock->saveState(save);
+	_gpu->saveState(save);
+	_cpu->saveState(save);
+	_memory->saveState(save);
+	save.write(reinterpret_cast<char*>(&_cyclesAcc), sizeof(_cyclesAcc));
+	save.close();
+}
+
+void Machine::loadState(std::ifstream &load)
+{
+	load.seekg(0, std::ios::beg);
+	_clock->loadState(load);
+	_gpu->loadState(load);
+	_cpu->loadState(load);
+	_memory->loadState(load);
+	load.read(reinterpret_cast<char*>(&_cyclesAcc), sizeof(_cyclesAcc));
+	load.close();
+}

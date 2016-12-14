@@ -24,9 +24,6 @@ Cpu_z80::~Cpu_z80(void)
 {
 }
 
-uint16_t Cpu_z80::getPCRegister(void)
-{ return (this->_cpuRegister.PC); }
-
 uint32_t Cpu_z80::getClockSpeed(void)
 {
 	return CLOCKSPEED;
@@ -261,7 +258,7 @@ void Cpu_z80::init(htype hardware)
 	this->_memory->write_byte(REGISTER_BCPD, 0xFF, true);
 	this->_memory->write_byte(REGISTER_OCPS, 0xC1, true);
 	this->_memory->write_byte(REGISTER_OCPD, 0x00, true);
-	
+
 	this->_memory->write_byte(0xFF56, 0x3F, true); // Register RP, IR disable
 
 	this->_opcodeInProgress = this->_getOpcode(this->_memory->read_byte(this->_cpuRegister.PC));
@@ -334,4 +331,49 @@ void Cpu_z80::execInterrupt(void)
 void Cpu_z80::_resetPtrAddr(void)
 {
 	this->_cpuRegister.PC = 0x100;
+}
+
+void Cpu_z80::saveState(std::fstream &out)
+{
+	int stepState = static_cast<int>(_stepState);
+	int halt = static_cast<int>(_halt);
+	int stop = static_cast<int>(_stop);
+	int IME = static_cast<int>(_IME);
+	int holdIME = static_cast<int>(_holdIME);
+	int isSpeed = static_cast<int>(_isSpeed);
+
+	out.write(reinterpret_cast<char*>(&stepState), sizeof(int));
+	out.write(reinterpret_cast<char*>(&halt), sizeof(int));
+	out.write(reinterpret_cast<char*>(&stop), sizeof(int));
+	out.write(reinterpret_cast<char*>(&IME), sizeof(int));
+	out.write(reinterpret_cast<char*>(&holdIME), sizeof(int));
+	out.write(reinterpret_cast<char*>(&_cpuRegister), sizeof(_cpuRegister));
+	out.write(reinterpret_cast<char*>(&isSpeed), sizeof(int));
+}
+
+void Cpu_z80::loadState(std::ifstream &out)
+{
+	int stepState = static_cast<int>(_stepState);
+	int halt = static_cast<int>(_halt);
+	int stop = static_cast<int>(_stop);
+	int IME = static_cast<int>(_IME);
+	int holdIME = static_cast<int>(_holdIME);
+	int isSpeed = static_cast<int>(_isSpeed);
+	out.read(reinterpret_cast<char*>(&stepState), sizeof(int));
+	out.read(reinterpret_cast<char*>(&halt), sizeof(int));
+	out.read(reinterpret_cast<char*>(&stop), sizeof(int));
+	out.read(reinterpret_cast<char*>(&IME), sizeof(int));
+	out.read(reinterpret_cast<char*>(&holdIME), sizeof(int));
+	out.read(reinterpret_cast<char*>(&_cpuRegister), sizeof(_cpuRegister));
+	out.read(reinterpret_cast<char*>(&isSpeed), sizeof(int));
+	if (_memory->read_byte(_cpuRegister.PC - 1) == 0xCB)
+		_opcodeInProgress = _getOpcode(_cpuRegister.PC - 1);
+	else
+		_opcodeInProgress = _getOpcode(_cpuRegister.PC);
+	_stepState = static_cast<bool>(stepState);
+	_halt = static_cast<bool>(halt);
+	_stop = static_cast<bool>(stop);
+	_IME = static_cast<bool>(IME);
+	_holdIME = static_cast<bool>(holdIME);
+	_isSpeed = static_cast<bool>(isSpeed);
 }
