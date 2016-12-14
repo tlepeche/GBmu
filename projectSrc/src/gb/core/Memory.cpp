@@ -95,28 +95,31 @@ void			Memory::transferData(uint16_t startAddr)
 
 void			Memory::HDMAprogress(uint16_t len)
 {
-	uint16_t start =  (((uint16_t)(read_byte(0xFF51) & 0xFF) << 8)
-			| (((uint16_t)(read_byte(0xFF52) & 0xF0))));
-	uint16_t dest =   (((uint16_t)(read_byte(0xFF53) & 0x1F) << 8)
-			| (((uint16_t)(read_byte(0xFF54) & 0xF0))));
-	dest |= 0x8000;
+	if (getTypeBios() == GBC)
+	{
+		uint16_t start =  (((uint16_t)(read_byte(0xFF51) & 0xFF) << 8)
+				| (((uint16_t)(read_byte(0xFF52) & 0xF0))));
+		uint16_t dest =   (((uint16_t)(read_byte(0xFF53) & 0x1F) << 8)
+				| (((uint16_t)(read_byte(0xFF54) & 0xF0))));
+		dest |= 0x8000;
 
-	for (auto curr = start ; curr < start + (len << 4) ; ++curr, ++dest)
-		write_byte(dest, read_byte(curr));
-	start += (len << 4);
-	dest &= 0x7FF0;
-	// Dec hdma5
-	uint8_t hdma5 = read_byte(0xFF55) & 0x7F;
-	write_byte(0xff51, (uint8_t)(start >> 8), true);
-	write_byte(0xff52, (uint8_t)((start & 0x00FF) & 0xF0), true);
-	write_byte(0xff53, (uint8_t)((dest >> 8) & 0x1F), true);
-	write_byte(0xff54, (uint8_t)((dest & 0x00FF) & 0xF0), true);
-	write_byte(0xFF55, hdma5 - len, true); // cte
+		for (auto curr = start ; curr < start + (len << 4) ; ++curr, ++dest)
+			write_byte(dest, read_byte(curr));
+		start += (len << 4);
+		dest &= 0x7FF0;
+		// Dec hdma5
+		uint8_t hdma5 = read_byte(0xFF55) & 0x7F;
+		write_byte(0xff51, (uint8_t)(start >> 8), true);
+		write_byte(0xff52, (uint8_t)((start & 0x00FF) & 0xF0), true);
+		write_byte(0xff53, (uint8_t)((dest >> 8) & 0x1F), true);
+		write_byte(0xff54, (uint8_t)((dest & 0x00FF) & 0xF0), true);
+		write_byte(0xFF55, hdma5 - len, true); // cte
+	}
 }
 
 void			Memory::HDMA()
 {
-	if (getRomType() == GBC)
+	if (getTypeBios() == GBC)
 	{
 		uint8_t hdma5 = read_byte(0xFF55);
 		if (hdma5 & 0x80)
