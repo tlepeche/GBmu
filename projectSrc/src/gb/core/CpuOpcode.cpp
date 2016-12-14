@@ -95,7 +95,6 @@ void Cpu_z80::adc(uint8_t val)
 	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
 }
 
-//TODO: verif flag h
 void Cpu_z80::sub(uint8_t val)
 {
 	_cpuRegister.n = 1;
@@ -105,7 +104,6 @@ void Cpu_z80::sub(uint8_t val)
 	_cpuRegister.z = (_cpuRegister.A == 0) ? 1 : 0;
 }
 
-//TODO: verif flag h
 void	Cpu_z80::sbc(uint8_t val)
 {
 	uint8_t	tmp;

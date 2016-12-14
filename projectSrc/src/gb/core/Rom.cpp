@@ -611,8 +611,6 @@ void			Rom::updateRTC(void)
 	}
 }
 
-//TODO save state _bank and _rambank
-//
 void		Rom::saveState(std::fstream &out)
 {
 	out.write(reinterpret_cast<char*>(&_hardware), sizeof(_hardware));

@@ -12,9 +12,6 @@ class DbWindow;
 // QWidget for signals 
 #include <QWidget>
 
-// TODO: DEBUG MOD active ! Remove me on release
-#define DEBUG
-
 #define START Qt::Key_Return
 #define	SELECT Qt::Key_Shift
 #define B_BUTTON Qt::Key_C

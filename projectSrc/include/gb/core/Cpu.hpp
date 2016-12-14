@@ -676,9 +676,9 @@ class Cpu_z80
 		bool							_stop = false;
 		bool							_IME = true;
 		bool							_holdIME = true;
-		public:
+		t_opcode						_opcodeInProgress;
+	public:
 		unsigned int					_addrLength;
-		t_opcode						_opcodeInProgress; // TODO: go private
 		t_register						_cpuRegister;
 		bool							_isSpeed = false;
 
