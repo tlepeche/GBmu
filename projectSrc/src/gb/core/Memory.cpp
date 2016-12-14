@@ -104,6 +104,7 @@ void			Memory::HDMAprogress(uint16_t len)
 	for (auto curr = start ; curr < start + (len << 4) ; ++curr, ++dest)
 		write_byte(dest, read_byte(curr));
 	start += (len << 4);
+	dest &= 0x7FF0;
 	// Dec hdma5
 	uint8_t hdma5 = read_byte(0xFF55) & 0x7F;
 	write_byte(0xff51, (uint8_t)(start >> 8), true);
@@ -115,17 +116,20 @@ void			Memory::HDMAprogress(uint16_t len)
 
 void			Memory::HDMA()
 {
-	if (getRomType() == GBC/* && read_byte(0xFF55) & 0x80*/)
+	if (getRomType() == GBC)
 	{
 		uint8_t hdma5 = read_byte(0xFF55);
-		if (hdma5 & 0x80) {
-			if (_hdmaInProgress > 0)
-				_hdmaInProgress = 0;
-			else
-				this->_hdmaInProgress = ((uint16_t)hdma5 & 0x7F) + 1;
+		if (hdma5 & 0x80)
+		{
+			this->_hdmaInProgress = ((uint16_t)hdma5 & 0x7F) + 1;
+			write_byte(0xff55, hdma5 & 0x7f, true);
 		}
 		else
-			HDMAprogress(((uint16_t)hdma5 & 0x7F) + 1);
+		{
+			if (hdma5 > 0)
+				HDMAprogress(((uint16_t)hdma5 & 0x7F) + 1);
+			write_byte(0xff55, 0xFF, true);
+		}
 	}
 }
 
@@ -309,14 +313,25 @@ void			Memory::write_byte(uint16_t addr, uint8_t val, bool super)
 							if (addr == REGISTER_VBK)
 								val &= 1;
 							//DMA
-							if (addr == REGISTER_DMA) {
+							else if (addr == REGISTER_DMA) {
 								transferData(val << 8);
 							}
-							if (addr == 0xFF55) {
+							else if (addr == 0xFF52)
+								val &= 0xF0;
+							else if (addr == 0xFF53)
+								val &= 0x1F;
+							else if (addr == 0xFF54)
+								val &= 0xF0;
+							else if (addr == 0xFF55) {
 								this->_m_io[(addr & 0xFF)] = val;
 								HDMA();
+								return ;
 							}
-							if (_hdmaInProgress > 0 && addr == 0xFF41 && (val & 0x3) == 0) // HBLANK == 0
+							if (_hdmaInProgress > 0 && 
+							   	((addr == 0xFF41 && (val & 0x3) == 0)  || // HBLANK == 0
+								 (addr == 0xFF44 && (read_byte(REGISTER_STAT) & 0x03) == 0
+								  && (read_byte(0xff55) & 0x80) == 0))
+							   )
 								HDMAprogress((_hdmaInProgress--, 1));
 							// BCPS / BCPD
 							if (addr == REGISTER_BCPS) {
