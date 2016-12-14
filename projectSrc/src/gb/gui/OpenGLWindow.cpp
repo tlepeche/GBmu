@@ -65,9 +65,9 @@ QMenuBar	*OpenGLWindow::genMenuBar()
 	connect(saveState, &QAction::triggered, this, &OpenGLWindow::saveStateSlot);
 	connect(gbDbAct, &QAction::triggered, this, &OpenGLWindow::gbDbSlot);
 	menu->addAction(openAct); openAct->setShortcut(tr("Ctrl+O"));
-	menu->addAction(openState); openState->setShortcut(tr("Space+O"));
-	menu->addAction(saveState); openState->setShortcut(tr("Space+S"));
 	menu->addAction(gbDbAct); gbDbAct->setShortcut(tr("Ctrl+D"));
+	menu->addAction(openState); openState->setShortcut(tr("Ctrl+N"));
+	menu->addAction(saveState); saveState->setShortcut(tr("Ctrl+M"));
 	menuBar->addMenu(menu);
 
 	QMenu*		hard	= new QMenu(tr("Model"));
@@ -94,25 +94,20 @@ QMenuBar	*OpenGLWindow::genMenuBar()
 	menuBar->addMenu(hard);
 
 	QMenu*		com		= new QMenu(tr("Commande"));
-	QAction*	com0	= new QAction(tr("PLAY"));
-	QAction*	com1	= new QAction(tr("PAUSE"));
+	QAction*	com0	= new QAction(tr("PLAY / PAUSE"));
 	QAction*	com2	= new QAction(tr("STOP"));
 
 	connect(com0, &QAction::triggered, this, &OpenGLWindow::gbComPlaySlot);
-	connect(com1, &QAction::triggered, this, &OpenGLWindow::gbComPauseSlot);
 	connect(com2, &QAction::triggered, this, &OpenGLWindow::gbComStopSlot);
 
 	QActionGroup*	gcom = new QActionGroup(this);
 	gcom->setExclusive(true);
 	gcom->addAction(com0);
-	gcom->addAction(com1);
 	gcom->addAction(com2);
 	com0->setCheckable(true);
 	com0->setChecked(true);
-	com1->setCheckable(true);
 	com2->setCheckable(true);
 	com->addAction(com0); com0->setShortcut(tr("Ctrl+P"));
-	com->addAction(com1); com1->setShortcut(tr("Ctrl+O"));
 	com->addAction(com2); com2->setShortcut(tr("Ctrl+S"));
 	menuBar->addMenu(com);
 
@@ -199,9 +194,22 @@ void	OpenGLWindow::gbTypeGBCSlot()
 	emit gbTypeSign(GBC);
 }
 
+void	OpenGLWindow::setIsPlay(bool state)
+{
+	_isPlay = state;
+}
+
 void	OpenGLWindow::gbComPlaySlot()
 {
-	emit	gbComPlay();
+	if (!_isPlay)
+	{
+		emit	gbComPlay();
+	}
+	else
+	{
+		emit	gbComPause();
+	}
+	setIsPlay(!_isPlay);
 }
 
 void	OpenGLWindow::gbComPauseSlot()

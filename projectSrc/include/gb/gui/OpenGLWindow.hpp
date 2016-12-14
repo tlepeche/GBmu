@@ -34,6 +34,7 @@ class OpenGLWindow : public QWidget
 		void dragEnterEvent(QDragEnterEvent *event) override;
 		void dropEvent(QDropEvent *event) override;
 		void alert(const char *alert);
+		void setIsPlay(bool state);
 
 	private slots:
 		void openSlot();
@@ -71,6 +72,7 @@ class OpenGLWindow : public QWidget
 	private:
 		QMenuBar			*_menuBar;
 		QImage				*frameBuffer;
+		bool				_isPlay = false;
 };
 
 #endif // OPENGLWINDOW_H

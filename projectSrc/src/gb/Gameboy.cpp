@@ -188,6 +188,12 @@ void	Gameboy::openStateSlot(std::string path)
 {
 	std::ifstream					load;
 
+	if (!_memory->romIsLoaded())
+	{
+		std::string text = "No rom loaded for this save state!";
+		_window->alert(text.c_str());
+		return ;
+	}
 	load.open(path, std::ios::in | std::ios::ate | std::ios::binary);
 	if (load.is_open())
 	{
