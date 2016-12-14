@@ -134,24 +134,29 @@ QMenuBar	*OpenGLWindow::genMenuBar()
 	QAction*	speedx1		= new QAction(tr("x1"));
 	QAction*	speedx2		= new QAction(tr("x2"));
 	QAction*	speedx4		= new QAction(tr("x4"));
+	QAction*	speedx8		= new QAction(tr("x8"));
 
 	connect(speedx1, &QAction::triggered, this, &OpenGLWindow::gbSpeedx1Slot);
 	connect(speedx2, &QAction::triggered, this, &OpenGLWindow::gbSpeedx2Slot);
 	connect(speedx4, &QAction::triggered, this, &OpenGLWindow::gbSpeedx4Slot);
+	connect(speedx8, &QAction::triggered, this, &OpenGLWindow::gbSpeedx8Slot);
 
 	QActionGroup*	gspeed = new QActionGroup(this);
 	gspeed->setExclusive(true);
 	gspeed->addAction(speedx1);
 	gspeed->addAction(speedx2);
 	gspeed->addAction(speedx4);
+	gspeed->addAction(speedx8);
 	speedx1->setCheckable(true);
 	speedx1->setChecked(true);
 	speedx2->setCheckable(true);
 	speedx4->setCheckable(true);
+	speedx8->setCheckable(true);
 
 	speed->addAction(speedx1);
 	speed->addAction(speedx2);
 	speed->addAction(speedx4);
+	speed->addAction(speedx8);
 	menuBar->addMenu(speed);
 
 	return menuBar;
@@ -170,6 +175,11 @@ void	OpenGLWindow::gbSpeedx2Slot()
 void	OpenGLWindow::gbSpeedx4Slot()
 {
 	emit gbSpeedSign(4);
+}
+
+void	OpenGLWindow::gbSpeedx8Slot()
+{
+	emit gbSpeedSign(8);
 }
 
 void	OpenGLWindow::alert(const char *alert)
