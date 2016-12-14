@@ -48,8 +48,8 @@ Gameboy::Gameboy(const char *path) :
 	_window->setWindowTitle("GBmu");
 #ifdef DEBUG
 	gbDbSlot();
-	reset();
 #endif
+	reset();
 }
 
 Gameboy::~Gameboy()
