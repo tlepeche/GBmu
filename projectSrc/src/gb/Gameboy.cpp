@@ -181,11 +181,10 @@ void	Gameboy::resetPressedSlot()
 
 void	Gameboy::openRomSlot(std::string path)
 {
-	bool state = _stepMode.load();
 	_stepMode.store(true);
 	_romPath = path;
 	reset();
-	_stepMode.store(state);
+	_stepMode.store(false);
 }
 
 void	Gameboy::openStateSlot(std::string path)
