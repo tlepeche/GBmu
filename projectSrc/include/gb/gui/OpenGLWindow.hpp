@@ -53,6 +53,7 @@ class OpenGLWindow : public QWidget
 		void gbSpeedx1Slot();
 		void gbSpeedx2Slot();
 		void gbSpeedx4Slot();
+		void gbSpeedx8Slot();
 
 	signals:
 		void openRomSign(std::string path);
