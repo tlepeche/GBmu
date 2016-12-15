@@ -112,7 +112,7 @@ void	Gameboy::reset(void)
 	{
 		stopThread();
 	}
-	
+
 	if (_romPath.length())
 	{
 		this->_memory->reset();
@@ -185,6 +185,7 @@ void	Gameboy::openRomSlot(std::string path)
 	_romPath = path;
 	reset();
 	_stepMode.store(false);
+	_window->setIsPlay(true);
 }
 
 void	Gameboy::openStateSlot(std::string path)
@@ -237,8 +238,14 @@ void	Gameboy::saveStateSlot(std::string path)
 	}
 }
 
+void	Gameboy::dbWindowClosed(void)
+{
+	_windowDebug = nullptr;
+}
+
 void	Gameboy::gbDbSlot()
 {
+	if (_windowDebug != nullptr) return ;
 	_windowDebug = new DbWindow(&_cpu->_cpuRegister, _memory, &_breakpoints);
 	connect(_windowDebug, &DbWindow::stepPressedSign, this, &Gameboy::stepPressedSlot);
 	connect(_windowDebug, &DbWindow::framePressedSign, this, &Gameboy::framePressedSlot);
@@ -248,6 +255,7 @@ void	Gameboy::gbDbSlot()
 
 	connect(_windowDebug, &DbWindow::bpAddSign, this, &Gameboy::addBreakpointSlot);
 	connect(_windowDebug, &DbWindow::bpDelSign, this, &Gameboy::delBreakpointSlot);
+	connect(_windowDebug, &DbWindow::closeSign, this, &Gameboy::dbWindowClosed);
 
 	_windowDebug->show();
 	_stepMode.store(true);

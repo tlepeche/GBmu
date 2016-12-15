@@ -60,7 +60,9 @@ public:
 		void	openPressedSign(std::string path);
 		void	bpAddSign(uint16_t addr);
 		void	bpDelSign(uint16_t addr);
+		void	closeSign(void);
 	public slots:
+		void	closeEvent(QCloseEvent *event);
 		void	stepPressedSlot();
 		void	lineStepCountEditedSlot();
 		void	framePressedSlot();

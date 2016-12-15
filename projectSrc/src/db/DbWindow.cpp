@@ -132,6 +132,12 @@ DbWindow::DbWindow(t_register* r, Memory* mem, std::list<uint16_t> *breakpoint) 
 	}
 }
 
+void DbWindow::closeEvent(QCloseEvent *event)
+{
+	emit closeSign();
+	(void)event;
+}
+
 void DbWindow::updateRegister(t_register& r)
 {
 	customSetItem(tableRegisters, 0, 0, "%.4X", r.PC);

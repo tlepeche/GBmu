@@ -66,6 +66,7 @@ class Gameboy : public Machine, public QWidget
 		void	resetPressedSlot();
 		void	closeEmu();
 		void	setSpeed(uint8_t speed);
+		void	dbWindowClosed(void);
 };
 
 #endif
